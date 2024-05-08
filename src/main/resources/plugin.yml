@@ -1,0 +1,4 @@
+name: SMPCore
+version: '${project.version}'
+main: pro.cloudnode.smp.smpcore.SMPCore
+api-version: '1.20'
