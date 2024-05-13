@@ -1,12 +1,21 @@
 package pro.cloudnode.smp.smpcore;
 
-import org.bukkit.configuration.file.FileConfiguration;
-import org.jetbrains.annotations.NotNull;
+public final class Configuration extends BaseConfig {
+    public Configuration() {
+        super("config.yml");
+    }
 
-public final class Configuration {
-    private final @NotNull FileConfiguration config;
+    /**
+     * REST API HTTP server port
+     */
+    public int apiPort() {
+        return config.getInt("api.port");
+    }
 
-    public Configuration(final @NotNull FileConfiguration config) {
-        this.config = config;
+    /**
+     * Number of days since last seen after which player is considered inactive
+     */
+    public int membersInactiveDays() {
+        return config.getInt("members.inactive-days");
     }
 }

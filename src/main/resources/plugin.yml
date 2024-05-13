@@ -1,4 +1,18 @@
 name: SMPCore
+author: Cloudnode
 version: '${project.version}'
 main: pro.cloudnode.smp.smpcore.SMPCore
 api-version: '1.20'
+commands:
+  smpcore:
+    description: SMPCore Main command
+    usage: /<command>
+  ban:
+    permission: smpcore.command.ban
+    description: Ban a member and all of their alts
+    usage: /<command> <username> [reason]
+  unban:
+    permission: smpcore.command.unban
+    description: Unban a member and all of their alts
+    usage: /<command> <username>
+    aliases: [ pardon ]

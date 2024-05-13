@@ -5,6 +5,9 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pro.cloudnode.smp.smpcore.command.BanCommand;
+import pro.cloudnode.smp.smpcore.command.MainCommand;
+import pro.cloudnode.smp.smpcore.command.UnbanCommand;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,23 +30,46 @@ public final class SMPCore extends JavaPlugin {
     }
 
     private @Nullable Configuration config;
+    private @Nullable Messages messages;
+
+    public static @NotNull Configuration config() {
+        return Objects.requireNonNull(getInstance().config);
+    }
+
+    public static @NotNull Messages messages() {
+        return Objects.requireNonNull(getInstance().messages);
+    }
+
+    private @Nullable Rest rest;
 
     @Override
     public void onEnable() {
-        saveDefaultConfig();
+        config = new Configuration();
+        messages = new Messages();
+        config.saveDefault();
+        messages.saveDefault();
+        config.load();
+
         reload();
         initDatabase();
+
+        Objects.requireNonNull(getServer().getPluginCommand("smpcore")).setExecutor(new MainCommand());
+        Objects.requireNonNull(getServer().getPluginCommand("ban")).setExecutor(new BanCommand());
+        Objects.requireNonNull(getServer().getPluginCommand("unban")).setExecutor(new UnbanCommand());
     }
 
     @Override
     public void onDisable() {
         db().close();
+        if (rest != null) rest.javalin.stop();
     }
 
-    public static void reload() {
-        getInstance().reloadConfig();
-        getInstance().config = new Configuration(getInstance().getConfig());
-        getInstance().setupDatabase();
+    public void reload() {
+        if (config != null) config.reload();
+        if (messages != null) messages.reload();
+        setupDatabase();
+        if (rest != null) rest.javalin.stop();
+        rest = new Rest(config.apiPort());
     }
 
     private void disable() {
@@ -93,5 +119,13 @@ public final class SMPCore extends JavaPlugin {
                 return;
             }
         }
+    }
+
+    public static void runAsync(final @NotNull Runnable runnable) {
+        getInstance().getServer().getScheduler().runTaskAsynchronously(getInstance(), runnable);
+    }
+
+    public static void runMain(final @NotNull Runnable runnable) {
+        getInstance().getServer().getScheduler().runTask(getInstance(), runnable);
     }
 }
