@@ -1,0 +1,13 @@
+reloaded: <green>(!) Plugin successfully reloaded.</green>
+usage: "<yellow>(!) Usage: <white>/<label> <args></white></yellow>"
+
+banned-player: <yellow>(!) Banned singular non-member player <gray><player></gray>.</yellow>
+banned-member: <green>(!) Banned member <gray><player></gray>. No alts found.</green>
+banned-member-chain: '<green>(!) Banned member <gray><player></gray> and <gray><n-alt></gray> alts: <gray><alts></gray>.</green>'
+
+unbanned-player: <yellow>(!) Unbanned singular non-member player <gray><player></gray>.</yellow>
+unbanned-member: <green>(!) Unbanned member <gray><player></gray> and <gray><n-alts></gray> alts.</green>
+
+error:
+  no-permission: <red>(!) You don't have permission to use this command.</red>
+  player-not-banned: <red>(!) Player <gray><player></gray> is not banned and is not a member.</red>

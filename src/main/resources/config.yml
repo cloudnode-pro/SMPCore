@@ -1,0 +1,7 @@
+api:
+  # REST API HTTP server port
+  port: 8080
+
+members:
+  # Number of days since last seen after which player is considered inactive
+  inactive-days: 30
