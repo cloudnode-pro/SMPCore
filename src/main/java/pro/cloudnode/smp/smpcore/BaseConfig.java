@@ -10,7 +10,7 @@ import java.io.Reader;
 import java.util.Objects;
 
 public abstract class BaseConfig {
-    protected @NotNull YamlConfiguration config;
+    protected final @NotNull YamlConfiguration config;
     protected final @NotNull String path;
 
     protected BaseConfig(final @NotNull String path) {
@@ -19,7 +19,7 @@ public abstract class BaseConfig {
         load();
     }
 
-    protected final @NotNull YamlConfiguration load() {
+    protected final void load() {
         if (!file().exists()) saveDefault();
         try {
             this.config.load(file());
@@ -28,11 +28,10 @@ public abstract class BaseConfig {
         }
 
         this.config.addDefaults(YamlConfiguration.loadConfiguration(resource()));
-        return this.config;
     }
 
     public final void reload() {
-        config = load();
+        load();
     }
 
     private @NotNull File file() {
