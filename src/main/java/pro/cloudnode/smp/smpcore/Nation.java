@@ -146,6 +146,10 @@ public final class Nation {
         }
     }
 
+    public static @NotNull Optional<@NotNull Nation> get(final @NotNull Team team) {
+        return get(team.getName());
+    }
+
     public static @NotNull Optional<@NotNull Nation> get(final @NotNull String id) {
         try (
                 final @NotNull Connection conn = SMPCore.getInstance().db()
