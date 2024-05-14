@@ -3,7 +3,11 @@ package pro.cloudnode.smp.smpcore;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.Objects;
 
 public abstract class BaseConfig {
     protected @NotNull YamlConfiguration config;
@@ -11,12 +15,20 @@ public abstract class BaseConfig {
 
     protected BaseConfig(final @NotNull String path) {
         this.path = path;
-        this.config = load();
+        this.config = new YamlConfiguration();
+        load();
     }
 
     protected final @NotNull YamlConfiguration load() {
         if (!file().exists()) saveDefault();
-        return YamlConfiguration.loadConfiguration(file());
+        try {
+            this.config.load(file());
+        }
+        catch (final @NotNull Exception ignored) {
+        }
+
+        this.config.addDefaults(YamlConfiguration.loadConfiguration(resource()));
+        return this.config;
     }
 
     public final void reload() {
@@ -28,7 +40,10 @@ public abstract class BaseConfig {
     }
 
     public final void saveDefault() {
-        if (!file().exists())
-            SMPCore.getInstance().saveResource(path, false);
+        if (!file().exists()) SMPCore.getInstance().saveResource(path, false);
+    }
+
+    private @NotNull Reader resource() {
+        return new BufferedReader(new InputStreamReader(Objects.requireNonNull(SMPCore.getInstance().getResource(path))));
     }
 }
