@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -122,6 +123,18 @@ public class Messages extends BaseConfig {
                         .ofNullable(alt.player().getName()).orElse(alt.player().getUniqueId().toString())));
     }
 
+    public @NotNull Component altsConfirmAdd(final @NotNull OfflinePlayer alt, final @NotNull String confirmCommand) {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("alts.confirm-add")).replace("<confirm-command>", confirmCommand), Placeholder.unparsed("alt", Optional
+                        .ofNullable(alt.getName()).orElse(alt.getUniqueId().toString())));
+    }
+
+    public @NotNull Component altsCreated(final @NotNull Member alt) {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("alts.created")), Placeholder.unparsed("alt", Optional
+                        .ofNullable(alt.player().getName()).orElse(alt.player().getUniqueId().toString())));
+    }
+
     // errors
 
     public @NotNull Component errorNoPermission() {
@@ -143,6 +156,29 @@ public class Messages extends BaseConfig {
     public @NotNull Component errorNotMember() {
         return MiniMessage.miniMessage()
                 .deserialize(Objects.requireNonNull(config.getString("error.not-member-you")));
+    }
+
+    public @NotNull Component errorAltAlreadyMember(final @NotNull Member player) {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("error.alt-already-member")), Placeholder.unparsed("player", Optional
+                        .ofNullable(player.player().getName()).orElse(player.player().getUniqueId().toString())));
+    }
+
+    public @NotNull Component errorDisallowedCharacters(final @NotNull HashSet<@NotNull Character> chars) {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("error.disallowed-characters")), Placeholder.unparsed("chars", chars.stream().map(String::valueOf).collect(Collectors.joining())));
+    }
+
+    public @NotNull Component errorFailedDeleteMember(final @NotNull Member player) {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("error.failed-delete-member")), Placeholder.unparsed("player", Optional
+                        .ofNullable(player.player().getName()).orElse(player.player().getUniqueId().toString())));
+    }
+
+    public @NotNull Component errorAlreadyYourAlt(final @NotNull Member alt) {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("error.already-your-alt")), Placeholder.unparsed("alt", Optional
+                        .ofNullable(alt.player().getName()).orElse(alt.player().getUniqueId().toString())));
     }
 
     public record SubCommandArgument(@NotNull String name, boolean required) {

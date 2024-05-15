@@ -21,9 +21,23 @@ alts:
     header: <green>Alts of <white><player></white>:</green>
     none: " <gray><italic>(none)</italic></gray>"
     entry: <dark_gray>></dark_gray> <white><alt></white>
+  confirm-add: |-
+    <gold><bold>(!) WARNING (!)</bold></gold>
+    <white>You are about to add <gold><alt></gold> as an alt.</white>
+    
+    <white>Adding an alt grants automatic membership, enabling the alt to join the server.</white>
+    <red>You bear full responsibility for all actions taken by the alt.
+    In the event of a ban on either your main account or any of your alts, all associated accounts will be banned automatically.</red>
+    
+    <click:run_command:<confirm-command>><hover:show_text:'<green>Click to confirm adding the alt</green>'><green>[I CONFIRM]</green></hover></click>
+  created: <green>(!) Created member profile for <gray><alt></gray> and added as an alt.</green>
 
 error:
   no-permission: <red>(!) You don't have permission to use this command.</red>
   player-not-banned: <red>(!) Player <gray><player></gray> is not banned and is not a member.</red>
   not-member: <red>(!) Player <gray><player></gray> is not a member.</red>
   not-member-you: <red>(!) You are not a member.</red>
+  alt-already-member: <red>(!) You cannot add <gray><player></gray> as an alt because they are either already a member, or an alt that has already played on the server.</red>
+  disallowed-characters: "<red>(!) You used the following disallowed characters: <gray><chars></gray></red>"
+  failed-delete-member: <red>(!) Failed to delete the member profile for <gray><player></gray>. Please contact staff.</red>
+  already-your-alt: <red>(!) Player <gray><alt></gray> is already your alt.</red>
