@@ -181,6 +181,11 @@ public class Messages extends BaseConfig {
                         .ofNullable(alt.player().getName()).orElse(alt.player().getUniqueId().toString())));
     }
 
+    public @NotNull Component errorMaxAltsReached(final int max) {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("error.max-alts-reached")), Placeholder.unparsed("max", String.valueOf(max)));
+    }
+
     public record SubCommandArgument(@NotNull String name, boolean required) {
         public @NotNull Component component() {
             return required ? SMPCore.messages().subCommandArgumentRequired(name) : SMPCore.messages()

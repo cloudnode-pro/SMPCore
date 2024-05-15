@@ -18,4 +18,11 @@ public final class Configuration extends BaseConfig {
     public int membersInactiveDays() {
         return config.getInt("members.inactive-days");
     }
+
+    /**
+     * Maximum number of alts you can have
+     */
+    public int altsMax() {
+        return config.getInt("alts.max");
+    }
 }

@@ -24,4 +24,9 @@ public final class Permission {
      * Add an alt for someone else
      */
     public static @NotNull String ALT_ADD_OTHER = "smpcore.alt.add.other";
+
+    /**
+     * Bypass the maximum alts limit
+     */
+    public static @NotNull String ALT_MAX_BYPASS = "smpcore.alt.bypass.max";
 }

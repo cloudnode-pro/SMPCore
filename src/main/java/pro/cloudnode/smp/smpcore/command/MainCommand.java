@@ -164,6 +164,9 @@ public final class MainCommand extends Command {
                 if (SMPCore.ifDisallowedCharacters(args[1], Pattern.compile("[^A-Za-z\\d._]+"), s -> sendMessage(sender, SMPCore.messages().errorDisallowedCharacters(s))))
                     return true;
 
+                if (!sender.hasPermission(Permission.ALT_MAX_BYPASS) && targetMember.get().getAlts().size() >= SMPCore.config().altsMax())
+                    return sendMessage(sender, SMPCore.messages().errorMaxAltsReached(SMPCore.config().altsMax()));
+
                 final @NotNull OfflinePlayer altPlayer = sender.getServer().getOfflinePlayer(args[1]);
                 final @NotNull Optional<@NotNull Member> altMember = Member.get(altPlayer);
                 if (altMember.isPresent()) {

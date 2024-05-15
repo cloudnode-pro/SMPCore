@@ -41,3 +41,4 @@ error:
   disallowed-characters: "<red>(!) You used the following disallowed characters: <gray><chars></gray></red>"
   failed-delete-member: <red>(!) Failed to delete the member profile for <gray><player></gray>. Please contact staff.</red>
   already-your-alt: <red>(!) Player <gray><alt></gray> is already your alt.</red>
+  max-alts-reached: <red>(!) You cannot have more than <gray><max></gray> alts.</red>
