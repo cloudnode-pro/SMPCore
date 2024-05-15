@@ -94,9 +94,9 @@ public final class MainCommand extends Command {
         final @NotNull TextComponent.Builder subCommandBuilder = Component.text()
                 .append(SMPCore.messages().subCommandHeader("Alt", command + " ...")).append(Component.newline())
                 .append(SMPCore.messages()
-                        .subCommandEntry(command + " list ", "list", Messages.SubCommandArgument.of(sender.hasPermission(Permission.ALT_OTHER) ? new Messages.SubCommandArgument("player", false) : null)));
+                        .subCommandEntry(command + " list ", "list", Messages.SubCommandArgument.of(sender.hasPermission(Permission.ALT_OTHER) ? new Messages.SubCommandArgument("player", !(sender instanceof Player)) : null)));
         if (sender.hasPermission(Permission.ALT_ADD)) subCommandBuilder.append(Component.newline()).append(SMPCore.messages()
-                .subCommandEntry(command + " add ", "add", Messages.SubCommandArgument.of(new Messages.SubCommandArgument("username", true), sender.hasPermission(Permission.ALT_ADD_OTHER) ? new Messages.SubCommandArgument("owner", false) : null)));
+                .subCommandEntry(command + " add ", "add", Messages.SubCommandArgument.of(new Messages.SubCommandArgument("username", true), sender.hasPermission(Permission.ALT_ADD_OTHER) ? new Messages.SubCommandArgument("owner", !(sender instanceof Player)) : null)));
 
         if (args.length == 0) return sendMessage(sender, subCommandBuilder.build());
         else switch (args[0]) {
