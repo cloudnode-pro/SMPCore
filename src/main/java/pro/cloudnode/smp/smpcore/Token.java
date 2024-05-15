@@ -8,8 +8,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public final class Token {
     public final @NotNull UUID token;
@@ -27,16 +29,16 @@ public final class Token {
     public Token(final @NotNull ResultSet rs) throws @NotNull SQLException {
         this(
                 UUID.fromString(rs.getString("token")),
-                UUID.fromString(rs.getString("player")),
+                UUID.fromString(rs.getString("member")),
                 rs.getTimestamp("created"),
                 rs.getTimestamp("last_used")
         );
     }
 
-    public void save() throws @NotNull SQLException {
+    public void save() {
         try (
                 final @NotNull Connection conn = SMPCore.getInstance().db()
-                        .getConnection(); final @NotNull PreparedStatement stmt = conn.prepareStatement("INSERT OR REPLACE INTO `tokens` (`token`, `player`, `created`, `last_used`) VALUES (?, ?, ?, ?)")
+                        .getConnection(); final @NotNull PreparedStatement stmt = conn.prepareStatement("INSERT OR REPLACE INTO `tokens` (`token`, `member`, `created`, `last_used`) VALUES (?, ?, ?, ?)")
         ) {
             stmt.setString(1, token.toString());
             stmt.setString(2, memberUUID.toString());
@@ -44,15 +46,21 @@ public final class Token {
             stmt.setString(4, lastUsed.toString());
             stmt.executeUpdate();
         }
+        catch (final @NotNull SQLException e) {
+            SMPCore.getInstance().getLogger().log(Level.SEVERE, "could not save token " + token, e);
+        }
     }
 
-    public void delete() throws @NotNull SQLException {
+    public void delete() {
         try (
                 final @NotNull Connection conn = SMPCore.getInstance().db()
                         .getConnection(); final @NotNull PreparedStatement stmt = conn.prepareStatement("DELETE FROM `tokens` WHERE `token` = ?")
         ) {
             stmt.setString(1, token.toString());
             stmt.executeUpdate();
+        }
+        catch (final @NotNull SQLException e) {
+            SMPCore.getInstance().getLogger().log(Level.SEVERE, "could not delete token " + token, e);
         }
     }
 
@@ -66,6 +74,22 @@ public final class Token {
             if (!rs.next()) return Optional.empty();
             return Optional.of(new Token(rs));
         }
+    }
+
+    public static @NotNull HashSet<@NotNull Token> get(final @NotNull Member member) {
+        final @NotNull HashSet<@NotNull Token> tokens = new HashSet<>();
+        try (
+                final @NotNull Connection conn = SMPCore.getInstance().db()
+                        .getConnection(); final @NotNull PreparedStatement stmt = conn.prepareStatement("SELECT * FROM `tokens` WHERE `member` = ?")
+        ) {
+            stmt.setString(1, member.uuid.toString());
+            final @NotNull ResultSet rs = stmt.executeQuery();
+            while (rs.next()) tokens.add(new Token(rs));
+        }
+        catch (final @NotNull SQLException e) {
+            SMPCore.getInstance().getLogger().log(Level.SEVERE, "could not get tokens for member " + member.uuid, e);
+        }
+        return tokens;
     }
 
     public static @NotNull Token create(final @NotNull Member member) throws @NotNull SQLException {
