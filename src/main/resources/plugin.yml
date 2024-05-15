@@ -7,6 +7,7 @@ commands:
   smpcore:
     description: SMPCore Main command
     usage: /<command>
+    aliases: [ smp ]
   ban:
     permission: smpcore.ban
     description: Ban a member and all of their alts
