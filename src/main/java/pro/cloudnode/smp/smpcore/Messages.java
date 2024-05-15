@@ -64,6 +64,8 @@ public class Messages extends BaseConfig {
                                 .toString())), Placeholder.unparsed("n-alts", String.valueOf(alts.size())));
     }
 
+    // subcommands
+
     public @NotNull Component subCommandHeader(final @NotNull String name, final @NotNull String usage) {
         return MiniMessage.miniMessage()
                 .deserialize(Objects.requireNonNull(config.getString("subcommands.header")), Placeholder.unparsed("name", name), Placeholder.unparsed("usage", usage));
@@ -91,6 +93,18 @@ public class Messages extends BaseConfig {
                         .replace("<command>", command), Placeholder.unparsed("label", label), Placeholder.component("args", SubCommandArgument.join(SubCommandArgument.of())), Placeholder.unparsed("description", description));
     }
 
+    public @NotNull Component subCommandArgumentRequired(final @NotNull String argument) {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("subcommands.argument.required")), Placeholder.unparsed("arg", argument));
+    }
+
+    public @NotNull Component subCommandArgumentOptional(final @NotNull String argument) {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("subcommands.argument.optional")), Placeholder.unparsed("arg", argument));
+    }
+
+    // end of subcommands
+
     public @NotNull Component altsListHeader(final @NotNull Member member) {
         return MiniMessage.miniMessage()
                 .deserialize(Objects.requireNonNull(config.getString("alts.list.header")), Placeholder.unparsed("player", Optional
@@ -108,15 +122,7 @@ public class Messages extends BaseConfig {
                         .ofNullable(alt.player().getName()).orElse(alt.player().getUniqueId().toString())));
     }
 
-    public @NotNull Component subCommandArgumentRequired(final @NotNull String argument) {
-        return MiniMessage.miniMessage()
-                .deserialize(Objects.requireNonNull(config.getString("subcommands.argument.required")), Placeholder.unparsed("arg", argument));
-    }
-
-    public @NotNull Component subCommandArgumentOptional(final @NotNull String argument) {
-        return MiniMessage.miniMessage()
-                .deserialize(Objects.requireNonNull(config.getString("subcommands.argument.optional")), Placeholder.unparsed("arg", argument));
-    }
+    // errors
 
     public @NotNull Component errorNoPermission() {
         return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.no-permission")));
