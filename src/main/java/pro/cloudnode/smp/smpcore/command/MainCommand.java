@@ -155,16 +155,18 @@ public final class MainCommand extends Command {
                     if (args.length > 2 && player.hasPermission(Permission.ALT_ADD_OTHER)) target = player.getServer().getOfflinePlayer(args[2]);
                     else target = player;
                 }
-                final @NotNull Optional<@NotNull Member> targetMember = Member.get(target);
-                if (targetMember.isEmpty()) {
+                final @NotNull Optional<@NotNull Member> tempTargetMember = Member.get(target);
+                if (tempTargetMember.isEmpty()) {
                     if (sender instanceof final @NotNull Player player && target.getUniqueId().equals(player.getUniqueId())) return sendMessage(sender, SMPCore.messages().errorNotMember());
                     else return sendMessage(sender, SMPCore.messages().errorNotMember(target));
                 }
 
+                final @NotNull Member targetMember = tempTargetMember.get().altOwner().orElse(tempTargetMember.get());
+
                 if (SMPCore.ifDisallowedCharacters(args[1], Pattern.compile("[^A-Za-z\\d._]+"), s -> sendMessage(sender, SMPCore.messages().errorDisallowedCharacters(s))))
                     return true;
 
-                if (!sender.hasPermission(Permission.ALT_MAX_BYPASS) && targetMember.get().getAlts().size() >= SMPCore.config().altsMax())
+                if (!sender.hasPermission(Permission.ALT_MAX_BYPASS) && targetMember.getAlts().size() >= SMPCore.config().altsMax())
                     return sendMessage(sender, SMPCore.messages().errorMaxAltsReached(SMPCore.config().altsMax()));
 
                 final @NotNull OfflinePlayer altPlayer = sender.getServer().getOfflinePlayer(args[1]);
@@ -179,7 +181,7 @@ public final class MainCommand extends Command {
                 if (!confirm) return sendMessage(sender, SMPCore.messages().altsConfirmAdd(altPlayer, command + " " + String.join(" ", args) + " --confirm"));
                 if (altMember.isPresent() && !altMember.get().delete()) return sendMessage(sender, SMPCore.messages().errorFailedDeleteMember(altMember.get()));
 
-                final @NotNull Member alt = new Member(altPlayer, targetMember.get());
+                final @NotNull Member alt = new Member(altPlayer, targetMember);
                 alt.save();
                 SMPCore.runMain(() -> alt.player().setWhitelisted(true));
 
