@@ -14,8 +14,12 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class SMPCore extends JavaPlugin {
     public static @NotNull SMPCore getInstance() {
@@ -127,5 +131,23 @@ public final class SMPCore extends JavaPlugin {
 
     public static void runMain(final @NotNull Runnable runnable) {
         getInstance().getServer().getScheduler().runTask(getInstance(), runnable);
+    }
+
+    public static @NotNull HashSet<@NotNull Character> getDisallowedCharacters(final @NotNull String source, final @NotNull Pattern pattern) {
+        final @NotNull Matcher matcher = pattern.matcher(source);
+        final @NotNull HashSet<@NotNull Character> chars = new HashSet<>();
+        while (matcher.find())
+            for (char c : matcher.group().toCharArray())
+                chars.add(c);
+        return chars;
+    }
+
+    public static boolean ifDisallowedCharacters(final @NotNull String source, final @NotNull Pattern pattern, final @NotNull Consumer<@NotNull HashSet<@NotNull Character>> consumer) {
+        final @NotNull HashSet<@NotNull Character> chars = getDisallowedCharacters(source, pattern);
+        if (!chars.isEmpty()) {
+            consumer.accept(chars);
+            return true;
+        }
+        return false;
     }
 }
