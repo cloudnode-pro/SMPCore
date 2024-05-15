@@ -3,7 +3,7 @@ usage: "<yellow>(!) Usage: <white>/<label> <args></white></yellow>"
 
 banned-player: <yellow>(!) Banned singular non-member player <gray><player></gray>.</yellow>
 banned-member: <green>(!) Banned member <gray><player></gray>. No alts found.</green>
-banned-member-chain: '<green>(!) Banned member <gray><player></gray> and <gray><n-alt></gray> alts: <gray><alts></gray>.</green>'
+banned-member-chain: "<green>(!) Banned member <gray><player></gray> and <gray><n-alt></gray> alts: <gray><alts></gray>.</green>"
 
 unbanned-player: <yellow>(!) Unbanned singular non-member player <gray><player></gray>.</yellow>
 unbanned-member: <green>(!) Unbanned member <gray><player></gray> and <gray><n-alts></gray> alts.</green>
