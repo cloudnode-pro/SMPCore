@@ -107,7 +107,10 @@ public final class Member {
         }
     }
 
-    private void delete() {
+    /**
+     * Removes only from database
+     */
+    private void remove() {
         try (
                 final @NotNull Connection conn = SMPCore.getInstance().db()
                         .getConnection(); final @NotNull PreparedStatement stmt = conn.prepareStatement("DELETE FROM `members` WHERE `uuid` = ?")
@@ -118,6 +121,36 @@ public final class Member {
         catch (final @NotNull SQLException e) {
             SMPCore.getInstance().getLogger().log(Level.SEVERE, "could not delete member UUID " + uuid, e);
         }
+    }
+
+    /**
+     * Member deletion procedure, i.e. membership revocation
+     *
+     * <p>Will not be deleted if:</p>
+     * <ul>
+     *   <li>has alts (delete alts first)</li>
+     *   <li>is leader of a nation (change leader or delete nation)</li>
+     * </ul>
+     * <p>If vice leader of a nation, will set nation's leader to both leader and vice leader</p>
+     *
+     * @return whether the member was deleted
+     */
+    public boolean delete() {
+        if (!getAlts().isEmpty()) return false;
+        final @NotNull OfflinePlayer player = player();
+        player.setWhitelisted(false);
+        final @NotNull Optional<@NotNull Nation> nation = nation();
+        if (nation.isPresent()) {
+            if (nation.get().leaderUUID.equals(player.getUniqueId())) return false;
+            if (nation.get().viceLeaderUUID.equals(player.getUniqueId())) {
+                nation.get().viceLeaderUUID = nation.get().leaderUUID;
+                nation.get().save();
+            }
+            nation.get().getTeam().removePlayer(player);
+        }
+        tokens().forEach(Token::delete);
+        remove();
+        return true;
     }
 
     public static @NotNull Member create(final @NotNull OfflinePlayer player, final @Nullable Member altOwner) {
