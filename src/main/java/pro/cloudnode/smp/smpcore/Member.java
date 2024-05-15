@@ -65,6 +65,10 @@ public final class Member {
         return Token.create(this);
     }
 
+    public @NotNull HashSet<@NotNull Token> tokens() {
+        return Token.get(this);
+    }
+
     public @NotNull HashSet<@NotNull Member> getAlts() {
         final @NotNull HashSet<@NotNull Member> alts = new HashSet<>();
         try (
