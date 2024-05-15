@@ -17,9 +17,10 @@ subcommands:
     optional: <dark_gray>[</dark_gray><arg><dark_gray>]</dark_gray>
 
 alts:
-  header: <green>Alts of <white><player></white>:</green>
-  none: " <gray><italic>(none)</italic></gray>"
-  entry: <dark_gray>></dark_gray> <white><alt></white>
+  list:
+    header: <green>Alts of <white><player></white>:</green>
+    none: " <gray><italic>(none)</italic></gray>"
+    entry: <dark_gray>></dark_gray> <white><alt></white>
 
 error:
   no-permission: <red>(!) You don't have permission to use this command.</red>

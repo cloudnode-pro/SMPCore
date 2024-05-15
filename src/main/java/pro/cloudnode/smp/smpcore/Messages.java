@@ -91,20 +91,20 @@ public class Messages extends BaseConfig {
                         .replace("<command>", command), Placeholder.unparsed("label", label), Placeholder.component("args", SubCommandArgument.join(SubCommandArgument.of())), Placeholder.unparsed("description", description));
     }
 
-    public @NotNull Component altsHeader(final @NotNull Member member) {
+    public @NotNull Component altsListHeader(final @NotNull Member member) {
         return MiniMessage.miniMessage()
-                .deserialize(Objects.requireNonNull(config.getString("alts.header")), Placeholder.unparsed("player", Optional
+                .deserialize(Objects.requireNonNull(config.getString("alts.list.header")), Placeholder.unparsed("player", Optional
                         .ofNullable(member.player().getName()).orElse(member.player().getUniqueId().toString())));
     }
 
-    public @NotNull Component altsNone() {
+    public @NotNull Component altsListNone() {
         return MiniMessage.miniMessage()
-                .deserialize(Objects.requireNonNull(config.getString("alts.none")));
+                .deserialize(Objects.requireNonNull(config.getString("alts.list.none")));
     }
 
-    public @NotNull Component altsEntry(final @NotNull Member alt) {
+    public @NotNull Component altsListEntry(final @NotNull Member alt) {
         return MiniMessage.miniMessage()
-                .deserialize(Objects.requireNonNull(config.getString("alts.entry")), Placeholder.unparsed("alt", Optional
+                .deserialize(Objects.requireNonNull(config.getString("alts.list.entry")), Placeholder.unparsed("alt", Optional
                         .ofNullable(alt.player().getName()).orElse(alt.player().getUniqueId().toString())));
     }
 
