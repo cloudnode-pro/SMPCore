@@ -178,7 +178,7 @@ public final class MainCommand extends Command {
 
                 final @NotNull Member alt = new Member(altPlayer, targetMember.get());
                 alt.save();
-                alt.player().setWhitelisted(true);
+                SMPCore.runMain(() -> alt.player().setWhitelisted(true));
 
                 return sendMessage(sender, SMPCore.messages().altsCreated(alt));
             }

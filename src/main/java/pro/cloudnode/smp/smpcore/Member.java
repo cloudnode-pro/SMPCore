@@ -138,7 +138,7 @@ public final class Member {
     public boolean delete() {
         if (!getAlts().isEmpty()) return false;
         final @NotNull OfflinePlayer player = player();
-        player.setWhitelisted(false);
+        SMPCore.runMain(() -> player.setWhitelisted(false));
         final @NotNull Optional<@NotNull Nation> nation = nation();
         if (nation.isPresent()) {
             if (nation.get().leaderUUID.equals(player.getUniqueId())) return false;
@@ -146,7 +146,7 @@ public final class Member {
                 nation.get().viceLeaderUUID = nation.get().leaderUUID;
                 nation.get().save();
             }
-            nation.get().getTeam().removePlayer(player);
+            SMPCore.runMain(() -> nation.get().getTeam().removePlayer(player));
         }
         tokens().forEach(Token::delete);
         remove();
