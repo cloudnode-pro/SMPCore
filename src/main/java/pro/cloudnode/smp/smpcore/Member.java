@@ -11,9 +11,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public final class Member {
     public final @NotNull UUID uuid;
@@ -183,5 +186,9 @@ public final class Member {
             SMPCore.getInstance().getLogger().log(Level.SEVERE, "could not get members for nation " + nation.id, e);
         }
         return members;
+    }
+
+    public static @NotNull Set<@NotNull String> getNames() {
+        return get().stream().map(m -> m.player().getName()).filter(Objects::nonNull).collect(Collectors.toSet());
     }
 }

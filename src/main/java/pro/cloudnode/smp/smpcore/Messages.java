@@ -1,11 +1,14 @@
 package pro.cloudnode.smp.smpcore;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -61,6 +64,60 @@ public class Messages extends BaseConfig {
                                 .toString())), Placeholder.unparsed("n-alts", String.valueOf(alts.size())));
     }
 
+    public @NotNull Component subCommandHeader(final @NotNull String name, final @NotNull String usage) {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("subcommands.header")), Placeholder.unparsed("name", name), Placeholder.unparsed("usage", usage));
+    }
+
+    public @NotNull Component subCommandEntry(final @NotNull String command, final @NotNull String label, final @NotNull SubCommandArgument @NotNull [] args) {
+        return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("subcommands.entry"))
+                .replace("<command>", command), Placeholder.unparsed("label", label), Placeholder.component("args", SubCommandArgument.join(args)));
+    }
+
+    public @NotNull Component subCommandEntry(final @NotNull String command, final @NotNull String label) {
+        return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("subcommands.entry"))
+                .replace("<command>", command), Placeholder.unparsed("label", label), Placeholder.component("args", SubCommandArgument.join(SubCommandArgument.of())));
+    }
+
+    public @NotNull Component subCommandEntry(final @NotNull String command, final @NotNull String label, final @NotNull SubCommandArgument @NotNull [] args, final @NotNull String description) {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("subcommands.entry-with-description"))
+                        .replace("<command>", command), Placeholder.unparsed("label", label), Placeholder.component("args", SubCommandArgument.join(args)), Placeholder.unparsed("description", description));
+    }
+
+    public @NotNull Component subCommandEntry(final @NotNull String command, final @NotNull String label, final @NotNull String description) {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("subcommands.entry-with-description"))
+                        .replace("<command>", command), Placeholder.unparsed("label", label), Placeholder.component("args", SubCommandArgument.join(SubCommandArgument.of())), Placeholder.unparsed("description", description));
+    }
+
+    public @NotNull Component altsHeader(final @NotNull Member member) {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("alts.header")), Placeholder.unparsed("player", Optional
+                        .ofNullable(member.player().getName()).orElse(member.player().getUniqueId().toString())));
+    }
+
+    public @NotNull Component altsNone() {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("alts.none")));
+    }
+
+    public @NotNull Component altsEntry(final @NotNull Member alt) {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("alts.entry")), Placeholder.unparsed("alt", Optional
+                        .ofNullable(alt.player().getName()).orElse(alt.player().getUniqueId().toString())));
+    }
+
+    public @NotNull Component subCommandArgumentRequired(final @NotNull String argument) {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("subcommands.argument.required")), Placeholder.unparsed("arg", argument));
+    }
+
+    public @NotNull Component subCommandArgumentOptional(final @NotNull String argument) {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("subcommands.argument.optional")), Placeholder.unparsed("arg", argument));
+    }
+
     public @NotNull Component errorNoPermission() {
         return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.no-permission")));
     }
@@ -69,5 +126,37 @@ public class Messages extends BaseConfig {
         return MiniMessage.miniMessage()
                 .deserialize(Objects.requireNonNull(config.getString("error.player-not-banned")), Placeholder.unparsed("player", Optional
                         .ofNullable(player.getName()).orElse(player.getUniqueId().toString())));
+    }
+
+    public @NotNull Component errorNotMember(final @NotNull OfflinePlayer player) {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("error.not-member")), Placeholder.unparsed("player", Optional
+                        .ofNullable(player.getName()).orElse(player.getUniqueId().toString())));
+    }
+
+    public @NotNull Component errorNotMember() {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("error.not-member-you")));
+    }
+
+    public record SubCommandArgument(@NotNull String name, boolean required) {
+        public @NotNull Component component() {
+            return required ? SMPCore.messages().subCommandArgumentRequired(name) : SMPCore.messages()
+                    .subCommandArgumentOptional(name);
+        }
+
+        public static @NotNull Component join(final @NotNull SubCommandArgument @NotNull [] args) {
+            final @NotNull TextComponent.Builder builder = Component.text().append(Component.text(" "));
+
+            for (int i = 0; i < args.length; ++i) {
+                builder.append(args[i].component());
+                if (i < args.length - 1) builder.append(Component.text(" "));
+            }
+            return builder.build();
+        }
+
+        public static @NotNull SubCommandArgument @NotNull [] of(final @Nullable SubCommandArgument @NotNull ... args) {
+            return Arrays.stream(args).filter(Objects::nonNull).toArray(SubCommandArgument[]::new);
+        }
     }
 }
