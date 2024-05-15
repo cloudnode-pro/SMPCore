@@ -8,11 +8,11 @@ commands:
     description: SMPCore Main command
     usage: /<command>
   ban:
-    permission: smpcore.command.ban
+    permission: smpcore.ban
     description: Ban a member and all of their alts
     usage: /<command> <username> [reason]
   unban:
-    permission: smpcore.command.unban
+    permission: smpcore.ban
     description: Unban a member and all of their alts
     usage: /<command> <username>
     aliases: [ pardon ]
