@@ -135,6 +135,12 @@ public class Messages extends BaseConfig {
                         .ofNullable(alt.player().getName()).orElse(alt.player().getUniqueId().toString())));
     }
 
+    public @NotNull Component altsDeleted(final @NotNull Member alt) {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("alts.deleted")), Placeholder.unparsed("alt", Optional
+                        .ofNullable(alt.player().getName()).orElse(alt.player().getUniqueId().toString())));
+    }
+
     // errors
 
     public @NotNull Component errorNoPermission() {
@@ -184,6 +190,18 @@ public class Messages extends BaseConfig {
     public @NotNull Component errorMaxAltsReached(final int max) {
         return MiniMessage.miniMessage()
                 .deserialize(Objects.requireNonNull(config.getString("error.max-alts-reached")), Placeholder.unparsed("max", String.valueOf(max)));
+    }
+
+    public @NotNull Component errorMemberNotAlt(final @NotNull Member player) {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("error.member-not-alt")), Placeholder.unparsed("player", Optional
+                        .ofNullable(player.player().getName()).orElse(player.player().getUniqueId().toString())));
+    }
+
+    public @NotNull Component errorRemoveJoinedAlt(final @NotNull Member player) {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("error.remove-joined-alt")), Placeholder.unparsed("player", Optional
+                        .ofNullable(player.player().getName()).orElse(player.player().getUniqueId().toString())));
     }
 
     public record SubCommandArgument(@NotNull String name, boolean required) {

@@ -48,6 +48,7 @@ public final class MainCommand extends Command {
                 if (args.length == 2) {
                     if (sender.hasPermission(Permission.ALT)) suggestions.add("list");
                     if (sender.hasPermission(Permission.ALT_ADD)) suggestions.add("add");
+                    if (sender.hasPermission(Permission.ALT_REMOVE)) suggestions.add("remove");
                 }
                 else switch (args[1]) {
                     case "list" -> {
@@ -55,6 +56,16 @@ public final class MainCommand extends Command {
                     }
                     case "add" -> {
                         if (args.length == 4 && sender.hasPermission(Permission.ALT_ADD_OTHER)) suggestions.addAll(Member.getNames());
+                    }
+                    case "remove" -> {
+                        if (args.length == 3) {
+                            if (sender.hasPermission(Permission.ALT_REMOVE_OTHER)) suggestions.addAll(Member.getAltNames());
+                            if (sender instanceof final @NotNull Player player) {
+                                final @NotNull Optional<@NotNull Member> member = Member.get(player);
+                                member.ifPresent(value -> suggestions.addAll(value.getAlts().stream()
+                                        .map(m -> m.player().getName()).filter(Objects::nonNull).toList()));
+                            }
+                        }
                     }
                 }
             }
@@ -100,6 +111,8 @@ public final class MainCommand extends Command {
                         .subCommandEntry(command + " list ", "list", Messages.SubCommandArgument.of(sender.hasPermission(Permission.ALT_OTHER) ? new Messages.SubCommandArgument("player", !(sender instanceof Player)) : null)));
         if (sender.hasPermission(Permission.ALT_ADD)) subCommandBuilder.append(Component.newline()).append(SMPCore.messages()
                 .subCommandEntry(command + " add ", "add", Messages.SubCommandArgument.of(new Messages.SubCommandArgument("username", true), sender.hasPermission(Permission.ALT_ADD_OTHER) ? new Messages.SubCommandArgument("owner", !(sender instanceof Player)) : null)));
+        if (sender.hasPermission(Permission.ALT_REMOVE)) subCommandBuilder.append(Component.newline()).append(SMPCore.messages(
+                ).subCommandEntry(command + " remove ", "remove", Messages.SubCommandArgument.of(new Messages.SubCommandArgument("alt", true))));
 
         if (originalArgs.length == 0) return sendMessage(sender, subCommandBuilder.build());
         else switch (originalArgs[0]) {
@@ -186,6 +199,35 @@ public final class MainCommand extends Command {
                 SMPCore.runMain(() -> alt.player().setWhitelisted(true));
 
                 return sendMessage(sender, SMPCore.messages().altsCreated(alt));
+            }
+            case "remove" -> {
+                if (!sender.hasPermission(Permission.ALT_REMOVE))
+                    return sendMessage(sender, SMPCore.messages().errorNoPermission());
+
+                if (originalArgs.length == 1)
+                    return sendMessage(sender, SMPCore.messages().usage(label, "remove <alt>"));
+
+                final @NotNull OfflinePlayer altPlayer = sender.getServer().getOfflinePlayer(originalArgs[1]);
+                final @NotNull Optional<@NotNull Member> altMember = Member.get(altPlayer);
+                if (altMember.isEmpty()) return sendMessage(sender, SMPCore.messages().errorNotMember(altPlayer));
+
+                final @NotNull Optional<@NotNull Member> altOwner = altMember.get().altOwner();
+                if (altOwner.isEmpty())
+                    return sendMessage(sender, SMPCore.messages().errorMemberNotAlt(altMember.get()));
+
+                if (!sender.hasPermission(Permission.ALT_REMOVE_OTHER)) {
+                    final @NotNull Optional<@NotNull Member> member = sender instanceof final @NotNull Player player ? Member.get(player) : Optional.empty();
+                    if (member.isEmpty()) return sendMessage(sender, SMPCore.messages().errorNotMember());
+                    if (!altOwner.get().uuid.equals(member.get().uuid)) return sendMessage(sender, SMPCore.messages().errorNoPermission());
+                }
+
+                if (!sender.hasPermission(Permission.ALT_REMOVE_JOINED) && altPlayer.hasPlayedBefore())
+                    return sendMessage(sender, SMPCore.messages().errorRemoveJoinedAlt(altMember.get()));
+
+                if (!altMember.get().delete())
+                    return sendMessage(sender, SMPCore.messages().errorFailedDeleteMember(altMember.get()));
+
+                return sendMessage(sender, SMPCore.messages().altsDeleted(altMember.get()));
             }
             default -> {
                 return sendMessage(sender, subCommandBuilder.build());

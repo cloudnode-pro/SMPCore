@@ -31,6 +31,7 @@ alts:
     
     <click:run_command:<confirm-command>><hover:show_text:'<green>Click to confirm adding the alt</green>'><green>[I CONFIRM]</green></hover></click>
   created: <green>(!) Created member profile for <gray><alt></gray> and added as an alt.</green>
+  deleted: <green>(!) Deleted alt member profile for <gray><alt></gray>.</green>
 
 error:
   no-permission: <red>(!) You don't have permission to use this command.</red>
@@ -42,3 +43,5 @@ error:
   failed-delete-member: <red>(!) Failed to delete the member profile for <gray><player></gray>. Please contact staff.</red>
   already-your-alt: <red>(!) Player <gray><alt></gray> is already your alt.</red>
   max-alts-reached: <red>(!) You cannot have more than <gray><max></gray> alts.</red>
+  member-not-alt: <red>(!) Member <gray><player></gray> is not an alt.</red>
+  remove-joined-alt: <red>(!) You cannot remove alt player <gray><alt></gray> because they have played the server.</red>

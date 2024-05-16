@@ -29,4 +29,19 @@ public final class Permission {
      * Bypass the maximum alts limit
      */
     public static @NotNull String ALT_MAX_BYPASS = "smpcore.alt.bypass.max";
+
+    /**
+     * Remove an alt
+     */
+    public static @NotNull String ALT_REMOVE = "smpcore.alt.remove";
+
+    /**
+     * Remove someone else's alt
+     */
+    public static @NotNull String ALT_REMOVE_OTHER = "smpcore.alt.remove.other";
+
+    /**
+     * Remove an alt that has joined the server
+     */
+    public static @NotNull String ALT_REMOVE_JOINED = "smpcore.alt.remove.joined";
 }
