@@ -17,3 +17,8 @@ commands:
     description: Unban a member and all of their alts
     usage: /<command> <username>
     aliases: [ pardon ]
+  alts:
+    permission: smpcore.alt
+    description: Manage alternate accounts
+    usage: /<command>
+    aliases: [ alt ]

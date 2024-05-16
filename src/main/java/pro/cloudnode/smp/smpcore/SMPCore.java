@@ -5,7 +5,9 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pro.cloudnode.smp.smpcore.command.AltsCommand;
 import pro.cloudnode.smp.smpcore.command.BanCommand;
+import pro.cloudnode.smp.smpcore.command.Command;
 import pro.cloudnode.smp.smpcore.command.MainCommand;
 import pro.cloudnode.smp.smpcore.command.UnbanCommand;
 
@@ -14,7 +16,9 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.logging.Level;
@@ -56,10 +60,15 @@ public final class SMPCore extends JavaPlugin {
 
         reload();
         initDatabase();
-
-        Objects.requireNonNull(getServer().getPluginCommand("smpcore")).setExecutor(new MainCommand());
-        Objects.requireNonNull(getServer().getPluginCommand("ban")).setExecutor(new BanCommand());
-        Objects.requireNonNull(getServer().getPluginCommand("unban")).setExecutor(new UnbanCommand());
+        
+        final @NotNull HashMap<@NotNull String, @NotNull Command> commands = new HashMap<>() {{
+            put("smpcore", new MainCommand());
+            put("ban", new BanCommand());
+            put("unban", new UnbanCommand());
+        }};
+        commands.put("alts", new AltsCommand(commands.get("smpcore")));
+        for (final @NotNull Map.Entry<@NotNull String, @NotNull Command> entry : commands.entrySet())
+            Objects.requireNonNull(getServer().getPluginCommand(entry.getKey())).setExecutor(entry.getValue());
     }
 
     @Override
