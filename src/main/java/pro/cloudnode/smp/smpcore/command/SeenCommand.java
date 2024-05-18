@@ -21,7 +21,6 @@ public final class SeenCommand extends Command {
         final @NotNull OfflinePlayer player = sender.getServer().getOfflinePlayer(args[0]);
 
         if (!player.hasPlayedBefore()) return sendMessage(sender, SMPCore.messages().errorNeverJoined(player));
-        if (player.isOnline()) return sendMessage(sender, SMPCore.messages().seen(player));
 
         final @NotNull Optional<@NotNull Member> member = Member.get(player.getUniqueId());
         return member.map(m -> sendMessage(sender, SMPCore.messages().seen(m)))

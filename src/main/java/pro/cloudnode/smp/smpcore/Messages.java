@@ -145,6 +145,9 @@ public class Messages extends BaseConfig {
     }
 
     public @NotNull Component seen(final @NotNull Member member) {
+        if (member.player().isOnline()) return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("seen.online")), Placeholder.unparsed("player", Optional
+                        .ofNullable(member.player().getName()).orElse(member.uuid.toString())));
         final @NotNull Date lastSeen = new Date(member.player().getLastSeen());
         return MiniMessage.miniMessage()
                 .deserialize(Objects.requireNonNull(config.getString(member.isActive() ? "seen.active" : "seen.inactive")), Placeholder.unparsed("player", Optional
