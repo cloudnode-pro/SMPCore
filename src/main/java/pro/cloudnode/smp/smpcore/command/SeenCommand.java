@@ -27,7 +27,7 @@ public final class SeenCommand extends Command {
         final @NotNull Optional<@NotNull Member> member = Member.get(player.getUniqueId());
 
         return member.map(value -> sendMessage(sender, SMPCore.messages()
-                        .seen(value, value.isActive(), new Date(player.getLastSeen()), SMPCore.relativeTime(new Date(player.getLastSeen())))))
+                        .seen(value, value.isActive(), new Date(member.get().player().getLastSeen()), SMPCore.relativeTime(new Date(member.get().player().getLastSeen())))))
                 .orElseGet(() -> sendMessage(sender, SMPCore.messages().seen(player, new Date(player.getLastSeen()), SMPCore.relativeTime(new Date(player.getLastSeen())))));
     }
 
