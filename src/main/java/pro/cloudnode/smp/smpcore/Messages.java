@@ -144,28 +144,27 @@ public class Messages extends BaseConfig {
                         .ofNullable(alt.player().getName()).orElse(alt.player().getUniqueId().toString())));
     }
 
-    public @NotNull Component seenOnline(final @NotNull OfflinePlayer player) {
+    public @NotNull Component seen(final @NotNull Member member) {
+        final @NotNull Date lastSeen = new Date(member.player().getLastSeen());
         return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString(member.isActive() ? "seen.active" : "seen.inactive")), Placeholder.unparsed("player", Optional
+                        .ofNullable(member.player().getName())
+                        .orElse(member.uuid.toString())), Formatter.date("last-seen", lastSeen.toInstant()
+                        .atZone(ZoneOffset.UTC)
+                        .toLocalDateTime()), Placeholder.component("last-seen-relative", SMPCore.relativeTime(lastSeen)));
+    }
+
+    public @NotNull Component seen(final @NotNull OfflinePlayer player) {
+        if (player.isOnline()) return MiniMessage.miniMessage()
                 .deserialize(Objects.requireNonNull(config.getString("seen.online")), Placeholder.unparsed("player", Optional
                         .ofNullable(player.getName()).orElse(player.getUniqueId().toString())));
-    }
-
-    public @NotNull Component seen(final @NotNull Member player, final boolean active, final @NotNull Date lastSeen, final @NotNull Component lastSeenRelative) {
-        return MiniMessage.miniMessage()
-                .deserialize(Objects.requireNonNull(config.getString(active ? "seen.active" : "seen.inactive")), Placeholder.unparsed("player", Optional
-                        .ofNullable(player.player().getName())
-                        .orElse(player.uuid.toString())), Formatter.date("last-seen", lastSeen.toInstant()
-                        .atZone(ZoneOffset.UTC)
-                        .toLocalDateTime()), Placeholder.component("last-seen-relative", lastSeenRelative));
-    }
-
-    public @NotNull Component seen(final @NotNull OfflinePlayer player, final @NotNull Date lastSeen, final @NotNull Component lastSeenRelative) {
+        final @NotNull Date lastSeen = new Date(player.getLastSeen());
         return MiniMessage.miniMessage()
                 .deserialize(Objects.requireNonNull(config.getString("seen.non-member")), Placeholder.unparsed("player", Optional
                         .ofNullable(player.getName())
                         .orElse(player.getUniqueId().toString())), Formatter.date("last-seen", lastSeen.toInstant()
                         .atZone(ZoneOffset.UTC)
-                        .toLocalDateTime()), Placeholder.component("last-seen-relative", lastSeenRelative));
+                        .toLocalDateTime()), Placeholder.component("last-seen-relative", SMPCore.relativeTime(lastSeen)));
     }
 
     // errors

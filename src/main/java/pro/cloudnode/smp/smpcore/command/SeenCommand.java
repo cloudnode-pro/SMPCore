@@ -7,7 +7,6 @@ import pro.cloudnode.smp.smpcore.Member;
 import pro.cloudnode.smp.smpcore.Permission;
 import pro.cloudnode.smp.smpcore.SMPCore;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,15 +19,13 @@ public final class SeenCommand extends Command {
         if (args.length != 1) return sendMessage(sender, SMPCore.messages().usage(label, "<player>"));
 
         final @NotNull OfflinePlayer player = sender.getServer().getOfflinePlayer(args[0]);
-        if (player.isOnline()) return sendMessage(sender, SMPCore.messages().seenOnline(player));
 
         if (!player.hasPlayedBefore()) return sendMessage(sender, SMPCore.messages().errorNeverJoined(player));
+        if (player.isOnline()) return sendMessage(sender, SMPCore.messages().seen(player));
 
         final @NotNull Optional<@NotNull Member> member = Member.get(player.getUniqueId());
-
-        return member.map(value -> sendMessage(sender, SMPCore.messages()
-                        .seen(value, value.isActive(), new Date(member.get().player().getLastSeen()), SMPCore.relativeTime(new Date(member.get().player().getLastSeen())))))
-                .orElseGet(() -> sendMessage(sender, SMPCore.messages().seen(player, new Date(player.getLastSeen()), SMPCore.relativeTime(new Date(player.getLastSeen())))));
+        return member.map(m -> sendMessage(sender, SMPCore.messages().seen(m)))
+                .orElseGet(() -> sendMessage(sender, SMPCore.messages().seen(player)));
     }
 
     @Override
