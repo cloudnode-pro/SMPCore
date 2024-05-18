@@ -34,7 +34,7 @@ public class Rest {
         obj.addProperty("name", player.getName());
         obj.addProperty("nation", member.nationID);
         obj.addProperty("staff", member.staff);
-        obj.addProperty("online", player.isOnline());
+        obj.addProperty("online", member.onlineNotVanished());
         obj.addProperty("whitelisted", player.isWhitelisted());
         obj.addProperty("banned", player.isBanned());
         obj.addProperty("altOwner", member.altOwnerUUID == null ? null : member.altOwnerUUID.toString());
@@ -103,8 +103,8 @@ public class Rest {
             final @NotNull JsonArray arr = new JsonArray();
             for (final @NotNull Member member : members) {
                 if (filter != null) {
-                    if (filter.equals("online") && !member.player().isOnline()) continue;
-                    if (filter.equals("offline") && member.player().isOnline()) continue;
+                    if (filter.equals("online") && !member.onlineNotVanished()) continue;
+                    if (filter.equals("offline") && member.onlineNotVanished()) continue;
                     if (filter.equals("banned") && !member.player().isBanned()) continue;
                 }
                 final @NotNull JsonObject m = getMemberObject(member);

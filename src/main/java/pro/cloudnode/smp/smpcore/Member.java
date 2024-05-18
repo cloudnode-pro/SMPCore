@@ -2,6 +2,8 @@ package pro.cloudnode.smp.smpcore;
 
 import io.papermc.paper.ban.BanListType;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
+import org.bukkit.metadata.MetadataValue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,6 +45,17 @@ public final class Member {
 
     public @NotNull OfflinePlayer player() {
         return SMPCore.getInstance().getServer().getOfflinePlayer(uuid);
+    }
+
+    /**
+     * Check if player is online and not vanished
+     */
+    public boolean onlineNotVanished() {
+        final @NotNull Optional<@NotNull Player> player = Optional.ofNullable(player().getPlayer());
+        if (player.isEmpty()) return false;
+        for (final @NotNull MetadataValue meta : player.get().getMetadata("vanished"))
+            if (meta.asBoolean()) return false;
+        return player.get().isOnline();
     }
 
     public boolean isActive() {
