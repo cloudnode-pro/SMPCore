@@ -23,6 +23,9 @@ public final class SeenCommand extends Command {
         if (!player.hasPlayedBefore()) return sendMessage(sender, SMPCore.messages().errorNeverJoined(player));
 
         final @NotNull Optional<@NotNull Member> member = Member.get(player.getUniqueId());
+
+        if (!sender.hasPermission(Permission.SEEN_STAFF) && member.isPresent() && member.get().staff) return sendMessage(sender, SMPCore.messages().errorCommandOnStaff(label));
+
         return member.map(m -> sendMessage(sender, SMPCore.messages().seen(m)))
                 .orElseGet(() -> sendMessage(sender, SMPCore.messages().seen(player)));
     }
