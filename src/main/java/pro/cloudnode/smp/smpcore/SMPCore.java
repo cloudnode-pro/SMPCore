@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import pro.cloudnode.smp.smpcore.command.BanCommand;
 import pro.cloudnode.smp.smpcore.command.MainCommand;
 import pro.cloudnode.smp.smpcore.command.UnbanCommand;
+import pro.cloudnode.smp.smpcore.listener.NationTeamUpdaterListener;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -52,6 +53,8 @@ public final class SMPCore extends JavaPlugin {
 
         reload();
         initDatabase();
+
+        getServer().getPluginManager().registerEvents(new NationTeamUpdaterListener(), this);
 
         Objects.requireNonNull(getServer().getPluginCommand("smpcore")).setExecutor(new MainCommand());
         Objects.requireNonNull(getServer().getPluginCommand("ban")).setExecutor(new BanCommand());
