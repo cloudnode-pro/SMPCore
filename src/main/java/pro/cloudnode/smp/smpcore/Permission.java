@@ -44,4 +44,6 @@ public final class Permission {
      * Remove an alt that has joined the server
      */
     public static @NotNull String ALT_REMOVE_JOINED = "smpcore.alt.remove.joined";
+
+    public static @NotNull String SEEN = "smpcore.seen";
 }

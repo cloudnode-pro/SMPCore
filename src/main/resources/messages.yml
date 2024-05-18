@@ -33,6 +33,12 @@ alts:
   created: <green>(!) Created member profile for <gray><alt></gray> and added as an alt.</green>
   deleted: <green>(!) Deleted alt member profile for <gray><alt></gray>.</green>
 
+seen:
+  online: <green>(!) Player <gray><player></gray> is online.</green>
+  active: <aqua>(!) Member <white><player></white> is <green>active</green> and last seen on <white><last-seen:'dd MMM yyyy HH:mm'> UTC</white> <gray>(<last-seen-relative>)</aqua>
+  inactive: <aqua>(!) Member <white><player></white> is <red>inactive</red> and last seen on <white><last-seen:'dd MMM yyyy HH:mm'> UTC</white> <gray>(<last-seen-relative>)</aqua>
+  non-member: <aqua>(!) Player <white><player></white> was last seen on <white><last-seen:'dd MMM yyyy HH:mm'> UTC</white> <gray>(<last-seen-relative>)</aqua>
+
 error:
   no-permission: <red>(!) You don't have permission to use this command.</red>
   player-not-banned: <red>(!) Player <gray><player></gray> is not banned and is not a member.</red>
@@ -45,3 +51,4 @@ error:
   max-alts-reached: <red>(!) You cannot have more than <gray><max></gray> alts.</red>
   member-not-alt: <red>(!) Member <gray><player></gray> is not an alt.</red>
   remove-joined-alt: <red>(!) You cannot remove alt player <gray><alt></gray> because they have played the server.</red>
+  never-joined: <red>(!) Player <gray><player></gray> has never played on the server.</red>

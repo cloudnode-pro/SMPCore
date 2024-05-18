@@ -2,6 +2,7 @@ package pro.cloudnode.smp.smpcore;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import net.kyori.adventure.text.Component;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -9,6 +10,7 @@ import pro.cloudnode.smp.smpcore.command.AltsCommand;
 import pro.cloudnode.smp.smpcore.command.BanCommand;
 import pro.cloudnode.smp.smpcore.command.Command;
 import pro.cloudnode.smp.smpcore.command.MainCommand;
+import pro.cloudnode.smp.smpcore.command.SeenCommand;
 import pro.cloudnode.smp.smpcore.command.UnbanCommand;
 import pro.cloudnode.smp.smpcore.listener.NationTeamUpdaterListener;
 
@@ -17,6 +19,8 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -68,6 +72,7 @@ public final class SMPCore extends JavaPlugin {
             put("smpcore", new MainCommand());
             put("ban", new BanCommand());
             put("unban", new UnbanCommand());
+            put("seen", new SeenCommand());
         }};
         commands.put("alts", new AltsCommand(commands.get("smpcore")));
         for (final @NotNull Map.Entry<@NotNull String, @NotNull Command> entry : commands.entrySet())
@@ -161,5 +166,30 @@ public final class SMPCore extends JavaPlugin {
             return true;
         }
         return false;
+    }
+
+    public static @NotNull Component relativeTime(final @NotNull Date date1, final @NotNull Date date2) {
+        final long diff = date1.getTime() - date2.getTime();
+        final long abs = Math.abs(diff);
+        final double seconds = Math.floor(abs / 1000.0);
+        final double minutes = Math.floor(seconds / 60.0);
+        final double hours = Math.floor(minutes / 60.0);
+        final double days = Math.floor(hours / 24.0);
+        final double months = Math.floor(days / 30.0);
+        final double years = Math.floor(months / 12.0);
+
+        final @NotNull Component t;
+        if (years > 0) t = SMPCore.config().relativeTime((int) years, ChronoUnit.YEARS);
+        else if (months > 0) t = SMPCore.config().relativeTime((int) months, ChronoUnit.MONTHS);
+        else if (days > 0) t = SMPCore.config().relativeTime((int) days, ChronoUnit.DAYS);
+        else if (hours > 0) t = SMPCore.config().relativeTime((int) hours, ChronoUnit.HOURS);
+        else if (minutes > 0) t = SMPCore.config().relativeTime((int) minutes, ChronoUnit.MINUTES);
+        else t = SMPCore.config().relativeTime((int) seconds, ChronoUnit.SECONDS);
+
+        return diff < 0 ? SMPCore.config().relativeTimePast(t) : SMPCore.config().relativeTimeFuture(t);
+    }
+
+    public static @NotNull Component relativeTime(final @NotNull Date date) {
+        return relativeTime(date, new Date());
     }
 }
