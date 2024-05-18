@@ -96,7 +96,10 @@ public final class Nation {
         team.setCanSeeFriendlyInvisibles(true);
         team.displayName(Component.text(shortName).color(TextColor.color(Integer.decode("0x" + color))).hoverEvent(HoverEvent.showText(Component.text(name))));
         team.prefix(Component.text(shortName + " ").color(TextColor.color(Integer.decode("0x" + color))).hoverEvent(HoverEvent.showText(Component.text(name))));
-        for (final @NotNull Member member : members()) team.addPlayer(member.player());
+        for (final @NotNull Member member : members()) try {
+            team.addPlayer(member.player());
+        }
+        catch (final @NotNull IllegalArgumentException ignored) {}
         return team;
     }
 
@@ -144,6 +147,10 @@ public final class Nation {
         catch (final @NotNull SQLException e) {
             SMPCore.getInstance().getLogger().log(Level.SEVERE, "could not save nation " + id, e);
         }
+    }
+
+    public static @NotNull Optional<@NotNull Nation> get(final @NotNull Team team) {
+        return get(team.getName());
     }
 
     public static @NotNull Optional<@NotNull Nation> get(final @NotNull String id) {

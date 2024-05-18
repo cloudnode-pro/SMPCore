@@ -10,6 +10,7 @@ import pro.cloudnode.smp.smpcore.command.BanCommand;
 import pro.cloudnode.smp.smpcore.command.Command;
 import pro.cloudnode.smp.smpcore.command.MainCommand;
 import pro.cloudnode.smp.smpcore.command.UnbanCommand;
+import pro.cloudnode.smp.smpcore.listener.NationTeamUpdaterListener;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -60,7 +61,9 @@ public final class SMPCore extends JavaPlugin {
 
         reload();
         initDatabase();
-        
+
+        getServer().getPluginManager().registerEvents(new NationTeamUpdaterListener(), this);
+
         final @NotNull HashMap<@NotNull String, @NotNull Command> commands = new HashMap<>() {{
             put("smpcore", new MainCommand());
             put("ban", new BanCommand());
