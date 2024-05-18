@@ -5,7 +5,9 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pro.cloudnode.smp.smpcore.command.AltsCommand;
 import pro.cloudnode.smp.smpcore.command.BanCommand;
+import pro.cloudnode.smp.smpcore.command.Command;
 import pro.cloudnode.smp.smpcore.command.MainCommand;
 import pro.cloudnode.smp.smpcore.command.UnbanCommand;
 import pro.cloudnode.smp.smpcore.listener.NationTeamUpdaterListener;
@@ -15,8 +17,14 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class SMPCore extends JavaPlugin {
     public static @NotNull SMPCore getInstance() {
@@ -56,9 +64,14 @@ public final class SMPCore extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new NationTeamUpdaterListener(), this);
 
-        Objects.requireNonNull(getServer().getPluginCommand("smpcore")).setExecutor(new MainCommand());
-        Objects.requireNonNull(getServer().getPluginCommand("ban")).setExecutor(new BanCommand());
-        Objects.requireNonNull(getServer().getPluginCommand("unban")).setExecutor(new UnbanCommand());
+        final @NotNull HashMap<@NotNull String, @NotNull Command> commands = new HashMap<>() {{
+            put("smpcore", new MainCommand());
+            put("ban", new BanCommand());
+            put("unban", new UnbanCommand());
+        }};
+        commands.put("alts", new AltsCommand(commands.get("smpcore")));
+        for (final @NotNull Map.Entry<@NotNull String, @NotNull Command> entry : commands.entrySet())
+            Objects.requireNonNull(getServer().getPluginCommand(entry.getKey())).setExecutor(entry.getValue());
     }
 
     @Override
@@ -130,5 +143,23 @@ public final class SMPCore extends JavaPlugin {
 
     public static void runMain(final @NotNull Runnable runnable) {
         getInstance().getServer().getScheduler().runTask(getInstance(), runnable);
+    }
+
+    public static @NotNull HashSet<@NotNull Character> getDisallowedCharacters(final @NotNull String source, final @NotNull Pattern pattern) {
+        final @NotNull Matcher matcher = pattern.matcher(source);
+        final @NotNull HashSet<@NotNull Character> chars = new HashSet<>();
+        while (matcher.find())
+            for (char c : matcher.group().toCharArray())
+                chars.add(c);
+        return chars;
+    }
+
+    public static boolean ifDisallowedCharacters(final @NotNull String source, final @NotNull Pattern pattern, final @NotNull Consumer<@NotNull HashSet<@NotNull Character>> consumer) {
+        final @NotNull HashSet<@NotNull Character> chars = getDisallowedCharacters(source, pattern);
+        if (!chars.isEmpty()) {
+            consumer.accept(chars);
+            return true;
+        }
+        return false;
     }
 }

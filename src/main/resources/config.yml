@@ -5,3 +5,7 @@ api:
 members:
   # Number of days since last seen after which player is considered inactive
   inactive-days: 30
+
+alts:
+  # Maximum number of alts you can have
+  max: 10

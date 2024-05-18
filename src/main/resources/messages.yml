@@ -3,11 +3,45 @@ usage: "<yellow>(!) Usage: <white>/<label> <args></white></yellow>"
 
 banned-player: <yellow>(!) Banned singular non-member player <gray><player></gray>.</yellow>
 banned-member: <green>(!) Banned member <gray><player></gray>. No alts found.</green>
-banned-member-chain: '<green>(!) Banned member <gray><player></gray> and <gray><n-alt></gray> alts: <gray><alts></gray>.</green>'
+banned-member-chain: "<green>(!) Banned member <gray><player></gray> and <gray><n-alt></gray> alts: <gray><alts></gray>.</green>"
 
 unbanned-player: <yellow>(!) Unbanned singular non-member player <gray><player></gray>.</yellow>
 unbanned-member: <green>(!) Unbanned member <gray><player></gray> and <gray><n-alts></gray> alts.</green>
 
+subcommands:
+  header: <green><name> Sub Commands:</green> <gray>(<usage>)</gray>
+  entry: <click:suggest_command:<command>><dark_gray>></dark_gray> <white><label></white><gray><args></gray></click>
+  entry-with-description: <click:suggest_command:<command>><dark_gray>></dark_gray> <white><label></white><gray><args></gray> <dark_gray>-</dark_gray> <gray><description></gray></click>
+  argument:
+    required: <dark_gray><</dark_gray><arg><dark_gray>></dark_gray>
+    optional: <dark_gray>[</dark_gray><arg><dark_gray>]</dark_gray>
+
+alts:
+  list:
+    header: <green>Alts of <white><player></white>:</green>
+    none: " <gray><italic>(none)</italic></gray>"
+    entry: <dark_gray>></dark_gray> <white><alt></white>
+  confirm-add: |-
+    <gold><bold>(!) WARNING (!)</bold></gold>
+    <white>You are about to add <gold><alt></gold> as an alt.</white>
+    
+    <white>Adding an alt grants automatic membership, enabling the alt to join the server.</white>
+    <red>You bear full responsibility for all actions taken by the alt.
+    In the event of a ban on either your main account or any of your alts, all associated accounts will be banned automatically.</red>
+    
+    <click:run_command:<confirm-command>><hover:show_text:'<green>Click to confirm adding the alt</green>'><green>[I CONFIRM]</green></hover></click>
+  created: <green>(!) Created member profile for <gray><alt></gray> and added as an alt.</green>
+  deleted: <green>(!) Deleted alt member profile for <gray><alt></gray>.</green>
+
 error:
   no-permission: <red>(!) You don't have permission to use this command.</red>
   player-not-banned: <red>(!) Player <gray><player></gray> is not banned and is not a member.</red>
+  not-member: <red>(!) Player <gray><player></gray> is not a member.</red>
+  not-member-you: <red>(!) You are not a member.</red>
+  alt-already-member: <red>(!) You cannot add <gray><player></gray> as an alt because they are either already a member, or an alt that has already played on the server.</red>
+  disallowed-characters: "<red>(!) You used the following disallowed characters: <gray><chars></gray></red>"
+  failed-delete-member: <red>(!) Failed to delete the member profile for <gray><player></gray>. Please contact staff.</red>
+  already-your-alt: <red>(!) Player <gray><alt></gray> is already your alt.</red>
+  max-alts-reached: <red>(!) You cannot have more than <gray><max></gray> alts.</red>
+  member-not-alt: <red>(!) Member <gray><player></gray> is not an alt.</red>
+  remove-joined-alt: <red>(!) You cannot remove alt player <gray><alt></gray> because they have played the server.</red>

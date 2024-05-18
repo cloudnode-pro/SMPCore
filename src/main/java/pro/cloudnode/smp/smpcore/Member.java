@@ -11,9 +11,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public final class Member {
     public final @NotNull UUID uuid;
@@ -28,6 +31,10 @@ public final class Member {
         this.staff = staff;
         this.altOwnerUUID = altOwnerUUID;
         this.added = added;
+    }
+
+    public Member(final @NotNull OfflinePlayer player, final @Nullable Member altOwner) {
+        this(player.getUniqueId(), null, false, altOwner == null ? null : altOwner.uuid, new Date());
     }
 
     private Member(final @NotNull ResultSet rs) throws @NotNull SQLException {
@@ -56,6 +63,10 @@ public final class Member {
 
     public @NotNull Token createToken() throws @NotNull SQLException {
         return Token.create(this);
+    }
+
+    public @NotNull HashSet<@NotNull Token> tokens() {
+        return Token.get(this);
     }
 
     public @NotNull HashSet<@NotNull Member> getAlts() {
@@ -96,7 +107,10 @@ public final class Member {
         }
     }
 
-    private void delete() {
+    /**
+     * Removes only from database
+     */
+    private void remove() {
         try (
                 final @NotNull Connection conn = SMPCore.getInstance().db()
                         .getConnection(); final @NotNull PreparedStatement stmt = conn.prepareStatement("DELETE FROM `members` WHERE `uuid` = ?")
@@ -107,6 +121,36 @@ public final class Member {
         catch (final @NotNull SQLException e) {
             SMPCore.getInstance().getLogger().log(Level.SEVERE, "could not delete member UUID " + uuid, e);
         }
+    }
+
+    /**
+     * Member deletion procedure, i.e. membership revocation
+     *
+     * <p>Will not be deleted if:</p>
+     * <ul>
+     *   <li>has alts (delete alts first)</li>
+     *   <li>is leader of a nation (change leader or delete nation)</li>
+     * </ul>
+     * <p>If vice leader of a nation, will set nation's leader to both leader and vice leader</p>
+     *
+     * @return whether the member was deleted
+     */
+    public boolean delete() {
+        if (!getAlts().isEmpty()) return false;
+        final @NotNull OfflinePlayer player = player();
+        SMPCore.runMain(() -> player.setWhitelisted(false));
+        final @NotNull Optional<@NotNull Nation> nation = nation();
+        if (nation.isPresent()) {
+            if (nation.get().leaderUUID.equals(player.getUniqueId())) return false;
+            if (nation.get().viceLeaderUUID.equals(player.getUniqueId())) {
+                nation.get().viceLeaderUUID = nation.get().leaderUUID;
+                nation.get().save();
+            }
+            SMPCore.runMain(() -> nation.get().getTeam().removePlayer(player));
+        }
+        tokens().forEach(Token::delete);
+        remove();
+        return true;
     }
 
     public static @NotNull Member create(final @NotNull OfflinePlayer player, final @Nullable Member altOwner) {
@@ -183,5 +227,13 @@ public final class Member {
             SMPCore.getInstance().getLogger().log(Level.SEVERE, "could not get members for nation " + nation.id, e);
         }
         return members;
+    }
+
+    public static @NotNull Set<@NotNull String> getNames() {
+        return get().stream().map(m -> m.player().getName()).filter(Objects::nonNull).collect(Collectors.toSet());
+    }
+
+    public static @NotNull Set<@NotNull String> getAltNames() {
+        return get().stream().filter(Member::isAlt).map(m -> m.player().getName()).filter(Objects::nonNull).collect(Collectors.toSet());
     }
 }
