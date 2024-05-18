@@ -40,6 +40,7 @@ public class Rest {
         obj.addProperty("altOwner", member.altOwnerUUID == null ? null : member.altOwnerUUID.toString());
         obj.addProperty("added", member.added.getTime());
         obj.addProperty("lastSeen", player.getLastSeen());
+        obj.addProperty("firstSeen", player.getFirstPlayed());
         obj.addProperty("active", member.isActive());
         return obj;
     }
