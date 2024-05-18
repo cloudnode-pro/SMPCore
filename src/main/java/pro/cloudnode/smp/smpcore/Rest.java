@@ -39,7 +39,7 @@ public class Rest {
         obj.addProperty("banned", player.isBanned());
         obj.addProperty("altOwner", member.altOwnerUUID == null ? null : member.altOwnerUUID.toString());
         obj.addProperty("added", member.added.getTime());
-        obj.addProperty("lastSeen", player.getLastSeen());
+        obj.addProperty("lastSeen", member.staff ? 0 : player.getLastSeen());
         obj.addProperty("firstSeen", player.getFirstPlayed());
         obj.addProperty("active", member.isActive());
         return obj;
@@ -148,7 +148,7 @@ public class Rest {
                 altObj.addProperty("name", player.getName());
                 altObj.addProperty("nation", alt.nationID);
                 altObj.addProperty("added", alt.added.getTime());
-                altObj.addProperty("lastSeen", player.getLastSeen());
+                altObj.addProperty("lastSeen", alt.staff ? 0 : player.getLastSeen());
                 altsArray.add(altObj);
             }
             obj.add("alts", altsArray);
