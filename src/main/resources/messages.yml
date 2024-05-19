@@ -52,3 +52,4 @@ error:
   member-not-alt: <red>(!) Member <gray><player></gray> is not an alt.</red>
   remove-joined-alt: <red>(!) You cannot remove alt player <gray><alt></gray> because they have played the server.</red>
   never-joined: <red>(!) Player <gray><player></gray> has never played on the server.</red>
+  command-on-staff: <red>(!) You cannot use <gray>/<command></gray> on staff.</red>

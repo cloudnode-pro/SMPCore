@@ -239,6 +239,11 @@ public class Messages extends BaseConfig {
                         .ofNullable(player.getName()).orElse(player.getUniqueId().toString())));
     }
 
+    public @NotNull Component errorCommandOnStaff(final @NotNull String label) {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("error.command-on-staff")), Placeholder.unparsed("command", label));
+    }
+
     public record SubCommandArgument(@NotNull String name, boolean required) {
         public @NotNull Component component() {
             return required ? SMPCore.messages().subCommandArgumentRequired(name) : SMPCore.messages()

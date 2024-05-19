@@ -46,4 +46,9 @@ public final class Permission {
     public static @NotNull String ALT_REMOVE_JOINED = "smpcore.alt.remove.joined";
 
     public static @NotNull String SEEN = "smpcore.seen";
+
+    /**
+     * Allow using `/seen` on staff
+     */
+    public static @NotNull String SEEN_STAFF = "smpcore.seen.staff";
 }

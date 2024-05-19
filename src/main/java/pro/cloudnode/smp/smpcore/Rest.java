@@ -34,12 +34,12 @@ public class Rest {
         obj.addProperty("name", player.getName());
         obj.addProperty("nation", member.nationID);
         obj.addProperty("staff", member.staff);
-        obj.addProperty("online", player.isOnline());
+        obj.addProperty("online", member.onlineNotVanished());
         obj.addProperty("whitelisted", player.isWhitelisted());
         obj.addProperty("banned", player.isBanned());
         obj.addProperty("altOwner", member.altOwnerUUID == null ? null : member.altOwnerUUID.toString());
         obj.addProperty("added", member.added.getTime());
-        obj.addProperty("lastSeen", player.getLastSeen());
+        obj.addProperty("lastSeen", member.staff ? 0 : player.getLastSeen());
         obj.addProperty("firstSeen", player.getFirstPlayed());
         obj.addProperty("active", member.isActive());
         return obj;
@@ -103,8 +103,8 @@ public class Rest {
             final @NotNull JsonArray arr = new JsonArray();
             for (final @NotNull Member member : members) {
                 if (filter != null) {
-                    if (filter.equals("online") && !member.player().isOnline()) continue;
-                    if (filter.equals("offline") && member.player().isOnline()) continue;
+                    if (filter.equals("online") && !member.onlineNotVanished()) continue;
+                    if (filter.equals("offline") && member.onlineNotVanished()) continue;
                     if (filter.equals("banned") && !member.player().isBanned()) continue;
                 }
                 final @NotNull JsonObject m = getMemberObject(member);
@@ -148,7 +148,7 @@ public class Rest {
                 altObj.addProperty("name", player.getName());
                 altObj.addProperty("nation", alt.nationID);
                 altObj.addProperty("added", alt.added.getTime());
-                altObj.addProperty("lastSeen", player.getLastSeen());
+                altObj.addProperty("lastSeen", alt.staff ? 0 : player.getLastSeen());
                 altsArray.add(altObj);
             }
             obj.add("alts", altsArray);
