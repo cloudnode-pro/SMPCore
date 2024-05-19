@@ -3,12 +3,15 @@ package pro.cloudnode.smp.smpcore;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.Formatter;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.ZoneOffset;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -141,6 +144,32 @@ public class Messages extends BaseConfig {
                         .ofNullable(alt.player().getName()).orElse(alt.player().getUniqueId().toString())));
     }
 
+    public @NotNull Component seen(final @NotNull Member member) {
+        if (member.player().isOnline()) return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("seen.online")), Placeholder.unparsed("player", Optional
+                        .ofNullable(member.player().getName()).orElse(member.uuid.toString())));
+        final @NotNull Date lastSeen = new Date(member.player().getLastSeen());
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString(member.isActive() ? "seen.active" : "seen.inactive")), Placeholder.unparsed("player", Optional
+                        .ofNullable(member.player().getName())
+                        .orElse(member.uuid.toString())), Formatter.date("last-seen", lastSeen.toInstant()
+                        .atZone(ZoneOffset.UTC)
+                        .toLocalDateTime()), Placeholder.component("last-seen-relative", SMPCore.relativeTime(lastSeen)));
+    }
+
+    public @NotNull Component seen(final @NotNull OfflinePlayer player) {
+        if (player.isOnline()) return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("seen.online")), Placeholder.unparsed("player", Optional
+                        .ofNullable(player.getName()).orElse(player.getUniqueId().toString())));
+        final @NotNull Date lastSeen = new Date(player.getLastSeen());
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("seen.non-member")), Placeholder.unparsed("player", Optional
+                        .ofNullable(player.getName())
+                        .orElse(player.getUniqueId().toString())), Formatter.date("last-seen", lastSeen.toInstant()
+                        .atZone(ZoneOffset.UTC)
+                        .toLocalDateTime()), Placeholder.component("last-seen-relative", SMPCore.relativeTime(lastSeen)));
+    }
+
     // errors
 
     public @NotNull Component errorNoPermission() {
@@ -202,6 +231,12 @@ public class Messages extends BaseConfig {
         return MiniMessage.miniMessage()
                 .deserialize(Objects.requireNonNull(config.getString("error.remove-joined-alt")), Placeholder.unparsed("player", Optional
                         .ofNullable(player.player().getName()).orElse(player.player().getUniqueId().toString())));
+    }
+
+    public @NotNull Component errorNeverJoined(final @NotNull OfflinePlayer player) {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("error.never-joined")), Placeholder.unparsed("player", Optional
+                        .ofNullable(player.getName()).orElse(player.getUniqueId().toString())));
     }
 
     public record SubCommandArgument(@NotNull String name, boolean required) {

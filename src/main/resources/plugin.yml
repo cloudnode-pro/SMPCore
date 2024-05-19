@@ -22,3 +22,8 @@ commands:
     description: Manage alternate accounts
     usage: /<command>
     aliases: [ alt ]
+  seen:
+    permission: smpcore.seen
+    description: Check when a player was last online
+    usage: /<command> <player>
+    aliases: [ lastseen ]
