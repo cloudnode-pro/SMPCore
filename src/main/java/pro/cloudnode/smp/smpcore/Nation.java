@@ -94,6 +94,7 @@ public final class Nation {
         final @NotNull Team team = SMPCore.getInstance().getServer().getScoreboardManager().getMainScoreboard().registerNewTeam(id);
         team.setAllowFriendlyFire(false);
         team.setCanSeeFriendlyInvisibles(true);
+        team.setOption(Team.Option.DEATH_MESSAGE_VISIBILITY, Team.OptionStatus.FOR_OWN_TEAM);
         team.displayName(Component.text(shortName).color(TextColor.color(Integer.decode("0x" + color))).hoverEvent(HoverEvent.showText(Component.text(name))));
         team.prefix(Component.text(shortName + " ").color(TextColor.color(Integer.decode("0x" + color))).hoverEvent(HoverEvent.showText(Component.text(name))));
         for (final @NotNull Member member : members()) try {
