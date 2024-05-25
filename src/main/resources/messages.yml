@@ -39,6 +39,8 @@ seen:
   inactive: <aqua>(!) Member <white><player></white> is <red>inactive</red> and last seen on <white><last-seen:'dd MMM yyyy HH:mm'> UTC</white> <gray>(<last-seen-relative>)</aqua>
   non-member: <aqua>(!) Player <white><player></white> was last seen on <white><last-seen:'dd MMM yyyy HH:mm'> UTC</white> <gray>(<last-seen-relative>)</aqua>
 
+time: <green>(!) It is currently <white><date:'EEEE, MMMM'> <day><day-format:'1#st|2#nd|3#rd|3<th|21#st|22#nd|23#rd|23<th|31#st'> <date:'yyyy'></white> and the time is <white><date:'HH:mm'> UTC</white>.</green>
+
 error:
   no-permission: <red>(!) You don't have permission to use this command.</red>
   player-not-banned: <red>(!) Player <gray><player></gray> is not banned and is not a member.</red>

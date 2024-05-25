@@ -11,11 +11,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.time.ZoneOffset;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 public class Messages extends BaseConfig {
@@ -168,6 +170,16 @@ public class Messages extends BaseConfig {
                         .orElse(player.getUniqueId().toString())), Formatter.date("last-seen", lastSeen.toInstant()
                         .atZone(ZoneOffset.UTC)
                         .toLocalDateTime()), Placeholder.component("last-seen-relative", SMPCore.relativeTime(lastSeen)));
+    }
+
+    public @NotNull Component time(final @NotNull Date date) {
+        final @NotNull Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        calendar.setTime(date);
+        final int day = calendar.get(Calendar.DAY_OF_MONTH);
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("time")), Formatter.date("date", calendar
+                        .toInstant().atZone(ZoneOffset.UTC)
+                        .toLocalDateTime()), Placeholder.unparsed("day", String.valueOf(day)), Placeholder.unparsed("day", String.valueOf(day)), Formatter.choice("day-format", day));
     }
 
     // errors

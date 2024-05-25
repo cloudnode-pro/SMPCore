@@ -69,6 +69,12 @@ public class Rest {
            ctx.header("Access-Control-Max-Age", "3600");
         });
 
+        javalin.get("/", ctx -> {
+            final @NotNull JsonObject obj = new JsonObject();
+            obj.addProperty("time", SMPCore.gameTime().getTime());
+            ctx.json(obj);
+        });
+
         javalin.get("/members", ctx -> {
             final @Nullable String filter = ctx.queryParam("filter");
             final @Nullable String limitString = ctx.queryParam("limit");

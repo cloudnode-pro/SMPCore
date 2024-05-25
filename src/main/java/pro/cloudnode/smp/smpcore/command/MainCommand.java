@@ -31,6 +31,7 @@ public final class MainCommand extends Command {
         return switch (args[0]) {
             case "reload" -> reload(sender);
             case "alt" -> alt(sender, argsSubset, label + " " + args[0]);
+            case "time", "date" -> time(sender, argsSubset, label + " " + args[0]);
             default -> sendMessage(sender, MiniMessage.miniMessage()
                     .deserialize("<red>(!) Unrecognised command <gray><command>", Placeholder.unparsed("command", args[0])));
         };
@@ -42,6 +43,7 @@ public final class MainCommand extends Command {
         if (args.length == 1) {
             if (sender.hasPermission(Permission.RELOAD)) suggestions.add("reload");
             if (sender.hasPermission(Permission.ALT)) suggestions.add("alt");
+            if (sender.hasPermission(Permission.TIME)) suggestions.addAll(List.of("time", "date"));
         }
         else if (args.length > 1) switch (args[0]) {
             case "alt" -> {
@@ -233,5 +235,11 @@ public final class MainCommand extends Command {
                 return sendMessage(sender, subCommandBuilder.build());
             }
         }
+    }
+
+    public static boolean time(final @NotNull CommandSender sender, final @NotNull String @NotNull [] args, final @NotNull String label) {
+        if (!sender.hasPermission(Permission.TIME))
+            return sendMessage(sender, SMPCore.messages().errorNoPermission());
+        return sendMessage(sender, SMPCore.messages().time(SMPCore.gameTime()));
     }
 }
