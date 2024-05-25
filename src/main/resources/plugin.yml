@@ -27,3 +27,8 @@ commands:
     description: Check when a player was last online
     usage: /<command> <player>
     aliases: [ lastseen ]
+  time:
+    permission: smpcore.time
+    description: See the current game time and date
+    usage: /<command>
+    aliases: [ date, today ]

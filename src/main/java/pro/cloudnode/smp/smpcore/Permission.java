@@ -51,4 +51,9 @@ public final class Permission {
      * Allow using `/seen` on staff
      */
     public static @NotNull String SEEN_STAFF = "smpcore.seen.staff";
+
+    /**
+     * Allow seeing the game time and date
+     */
+    public static @NotNull String TIME = "smpcore.time";
 }

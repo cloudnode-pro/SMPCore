@@ -3,6 +3,7 @@ package pro.cloudnode.smp.smpcore;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import net.kyori.adventure.text.Component;
+import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -11,6 +12,7 @@ import pro.cloudnode.smp.smpcore.command.BanCommand;
 import pro.cloudnode.smp.smpcore.command.Command;
 import pro.cloudnode.smp.smpcore.command.MainCommand;
 import pro.cloudnode.smp.smpcore.command.SeenCommand;
+import pro.cloudnode.smp.smpcore.command.TimeCommand;
 import pro.cloudnode.smp.smpcore.command.UnbanCommand;
 import pro.cloudnode.smp.smpcore.listener.NationTeamUpdaterListener;
 
@@ -73,6 +75,7 @@ public final class SMPCore extends JavaPlugin {
             put("ban", new BanCommand());
             put("unban", new UnbanCommand());
             put("seen", new SeenCommand());
+            put("time", new TimeCommand());
         }};
         commands.put("alts", new AltsCommand(commands.get("smpcore")));
         for (final @NotNull Map.Entry<@NotNull String, @NotNull Command> entry : commands.entrySet())
@@ -191,5 +194,14 @@ public final class SMPCore extends JavaPlugin {
 
     public static @NotNull Component relativeTime(final @NotNull Date date) {
         return relativeTime(date, new Date());
+    }
+
+    private static @NotNull World overworld() {
+        return Objects.requireNonNull(getInstance().getServer().getWorlds().stream()
+                .filter(w -> w.getEnvironment() == World.Environment.NORMAL).findFirst().orElse(null));
+    }
+
+    public static @NotNull Date gameTime() {
+        return new Date(overworld().getGameTime() * 72);
     }
 }
