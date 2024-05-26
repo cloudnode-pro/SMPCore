@@ -202,6 +202,6 @@ public final class SMPCore extends JavaPlugin {
     }
 
     public static @NotNull Date gameTime() {
-        return new Date(overworld().getGameTime() * 72);
+        return new Date(overworld().getFullTime() * 3600 + 21600000);
     }
 }
