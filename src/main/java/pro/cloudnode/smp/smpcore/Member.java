@@ -242,6 +242,21 @@ public final class Member {
         return members;
     }
 
+    public static int count() {
+        try (
+                final @NotNull Connection conn = SMPCore.getInstance().db()
+                        .getConnection(); final @NotNull PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) as `n` FROM `members`")
+        ) {
+            final @NotNull ResultSet rs = stmt.executeQuery();
+            rs.next();
+            return rs.getInt("n");
+        }
+        catch (final @NotNull SQLException e) {
+            SMPCore.getInstance().getLogger().log(Level.SEVERE, "could not count members", e);
+            return 0;
+        }
+    }
+
     public static @NotNull Set<@NotNull String> getNames() {
         return get().stream().map(m -> m.player().getName()).filter(Objects::nonNull).collect(Collectors.toSet());
     }
