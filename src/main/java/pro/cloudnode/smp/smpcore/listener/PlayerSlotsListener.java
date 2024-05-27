@@ -7,6 +7,8 @@ import org.bukkit.event.server.ServerListPingEvent;
 import org.jetbrains.annotations.NotNull;
 import pro.cloudnode.smp.smpcore.Member;
 
+import java.util.Optional;
+
 public final class PlayerSlotsListener implements Listener {
     /**
      * Change the max players number in server list ping
@@ -21,7 +23,9 @@ public final class PlayerSlotsListener implements Listener {
      */
     @EventHandler
     public void onPlayerLogin(final @NotNull PlayerLoginEvent event) {
-        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL)
-            event.allow();
+        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL) {
+            final @NotNull Optional<@NotNull Member> member = Member.get(event.getPlayer());
+            if (member.isPresent()) event.allow();
+        }
     }
 }
