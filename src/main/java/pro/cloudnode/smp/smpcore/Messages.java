@@ -256,6 +256,14 @@ public class Messages extends BaseConfig {
                 .deserialize(Objects.requireNonNull(config.getString("error.command-on-staff")), Placeholder.unparsed("command", label));
     }
 
+    public @NotNull Component errorNotInNation() {
+        return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.not-in-nation")));
+    }
+
+    public @NotNull Component errorNotPlayer() {
+        return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.not-player")));
+    }
+
     public record SubCommandArgument(@NotNull String name, boolean required) {
         public @NotNull Component component() {
             return required ? SMPCore.messages().subCommandArgumentRequired(name) : SMPCore.messages()

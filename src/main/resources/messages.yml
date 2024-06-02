@@ -76,3 +76,5 @@ error:
   remove-joined-alt: <red>(!) You cannot remove alt player <gray><alt></gray> because they have played the server.</red>
   never-joined: <red>(!) Player <gray><player></gray> has never played on the server.</red>
   command-on-staff: <red>(!) You cannot use <gray>/<command></gray> on staff.</red>
+  not-in-nation: <red>(!) You are not a member of any nation.</red>
+  not-player: <red>(!) You must be a player to use this command.</red>
