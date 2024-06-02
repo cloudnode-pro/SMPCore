@@ -56,4 +56,14 @@ public final class Permission {
      * Allow seeing the game time and date
      */
     public static @NotNull String TIME = "smpcore.time";
+
+    /**
+     * Access to the {@code /nation} command
+     */
+    public static @NotNull String NATION = "smpcore.nation";
+
+    /**
+     * List the members of your nation
+     */
+    public static @NotNull String NATION_MEMBERS_LIST = "smpcore.nation.members.list";
 }
