@@ -57,7 +57,7 @@ nation:
         inactive-citizen: <dark_gray> -</dark_gray> <hover:show_text:'<gray>Citizen</gray> <member-name><newline><member-status>'><gray><member-name></gray></hover><buttons>
       buttons:
         prefix: ' '
-        join: ' '
+        separator: ' '
         suffix: ''
         kick: <click:run_command:/nation kick <member-name>><hover:show_text:'Remove member from the nation'><dark_gray>[<red>Kick</red>]</dark_gray></hover></click>
         demote: <click:run_command:/nation vice-demote <member-name>><hover:show_text:'Demote vice-leader to citizen'><dark_gray>[<red>Demote</red>]</dark_gray></hover></click>

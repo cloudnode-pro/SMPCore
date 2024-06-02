@@ -6,10 +6,12 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Formatter;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.permissions.Permissible;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -187,7 +189,7 @@ public class Messages extends BaseConfig {
                 .deserialize(Objects.requireNonNull(config.getString(member.isActive() ? "nation.members.status.active" : "nation.members.status.inactive")));
     }
 
-    public @NotNull Component nationMembersList(final @NotNull Nation nation) {
+    public @NotNull Component nationMembersList(final @NotNull Nation nation, final @NotNull Permissible sender) {
         final @NotNull HashSet<@NotNull Member> members = nation.members();
         final @NotNull Component header = MiniMessage.miniMessage()
                 .deserialize(Objects.requireNonNull(config.getString("nation.members.list.header"))
@@ -198,7 +200,98 @@ public class Messages extends BaseConfig {
                         Placeholder.unparsed("nation-inactive-members", members.stream().filter(m -> !m.isActive()).count() + ""),
                         Placeholder.unparsed("nation-total-members", members.size() + "")
                 );
-        return header;
+
+        final @NotNull List<@NotNull Component> list = new ArrayList<>();
+
+        final @NotNull Member leader = members.stream().filter(m -> m.uuid.equals(nation.leaderUUID)).findFirst().orElseThrow(IllegalStateException::new);
+        list.add(nationMembersListEntry(nation, leader, sender));
+
+        final @NotNull Member vice = members.stream().filter(m -> m.uuid.equals(nation.viceLeaderUUID)).findFirst().orElseThrow(IllegalStateException::new);
+        if (!vice.uuid.equals(leader.uuid))
+            list.add(nationMembersListEntry(nation, vice, sender));
+
+        final @NotNull List<@NotNull Component> citizens = members.stream().filter(m -> !m.uuid.equals(leader.uuid) && !m.uuid.equals(vice.uuid) && m.isActive()).map(m -> nationMembersListEntry(nation, m, sender)).toList();
+        list.addAll(citizens);
+
+        final @NotNull List<@NotNull Component> inactive = members.stream().filter(m -> !m.uuid.equals(leader.uuid) && !m.uuid.equals(vice.uuid) && !m.isActive()).map(m -> nationMembersListEntry(nation, m, sender)).toList();
+        list.addAll(inactive);
+
+        final @NotNull TextComponent.Builder listComponent = Component.text();
+        for (int i = 0; i < list.size(); i++) {
+            listComponent.append(list.get(i));
+            if (i + 1 < list.size()) listComponent.append(Component.newline());
+        }
+
+        return Component.text().append(header).append(Component.newline()).append(listComponent.build()).build();
+    }
+
+    private @NotNull Component nationMembersListEntry(final @NotNull Nation nation, final @NotNull Member member, final @NotNull Permissible sender) {
+        if (member.uuid.equals(nation.leaderUUID)) {
+            return MiniMessage.miniMessage()
+                    .deserialize(Objects.requireNonNull(config.getString("nation.members.list.entry.leader"))
+                            .replaceAll("<color>", "<#" + nation.color + ">")
+                            .replaceAll("</color>", "</#" + nation.color + ">")
+                            .replaceAll("<member-name>", Optional.ofNullable(member.player().getName()).orElse(member.uuid.toString())),
+                            Placeholder.component("member-status", nationMembersStatus(member)),
+                            Placeholder.component("buttons", nationMembersListButtons(nation, member, sender))
+                    );
+        }
+        if (member.uuid.equals(nation.viceLeaderUUID)) {
+            return MiniMessage.miniMessage()
+                    .deserialize(Objects.requireNonNull(config.getString("nation.members.list.entry.vice"))
+                                    .replaceAll("<color>", "<#" + nation.color + ">")
+                                    .replaceAll("</color>", "</#" + nation.color + ">")
+                                    .replaceAll("<member-name>", Optional.ofNullable(member.player().getName()).orElse(member.uuid.toString())),
+                            Placeholder.component("member-status", nationMembersStatus(member)),
+                            Placeholder.component("buttons", nationMembersListButtons(nation, member, sender))
+                    );
+        }
+        if (member.isActive()) {
+            return MiniMessage.miniMessage()
+                    .deserialize(Objects.requireNonNull(config.getString("nation.members.list.entry.citizen"))
+                                    .replaceAll("<color>", "<#" + nation.color + ">")
+                                    .replaceAll("</color>", "</#" + nation.color + ">")
+                                    .replaceAll("<member-name>", Optional.ofNullable(member.player().getName()).orElse(member.uuid.toString())),
+                            Placeholder.component("member-status", nationMembersStatus(member)),
+                            Placeholder.component("buttons", nationMembersListButtons(nation, member, sender))
+                    );
+        }
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("nation.members.list.entry.inactive-citizen"))
+                                .replaceAll("<color>", "<#" + nation.color + ">")
+                                .replaceAll("</color>", "</#" + nation.color + ">")
+                                .replaceAll("<member-name>", Optional.ofNullable(member.player().getName()).orElse(member.uuid.toString())),
+                        Placeholder.component("member-status", nationMembersStatus(member)),
+                        Placeholder.component("buttons", nationMembersListButtons(nation, member, sender))
+                );
+    }
+
+    private @NotNull Component nationMembersListButtons(final @NotNull Nation nation, final @NotNull Member member, final @NotNull Permissible sender) {
+        final @NotNull List<@NotNull Component> buttons = new ArrayList<>();
+        if (sender.hasPermission(Permission.NATION_MEMBERS_KICK) && !(member.uuid.equals(nation.leaderUUID) || member.uuid.equals(nation.viceLeaderUUID)))
+            buttons.add(nationMembersListButton("kick", nation, member));
+        if (sender.hasPermission(Permission.NATION_VICE_DEMOTE) && member.uuid.equals(nation.viceLeaderUUID) && !member.uuid.equals(nation.leaderUUID))
+            buttons.add(nationMembersListButton("demote", nation, member));
+        if (sender.hasPermission(Permission.NATION_VICE_PROMOTE) && nation.viceLeaderUUID.equals(nation.leaderUUID) && !(member.uuid.equals(nation.leaderUUID) || member.uuid.equals(nation.viceLeaderUUID)) && member.isActive())
+            buttons.add(nationMembersListButton("promote", nation, member));
+
+        final @NotNull TextComponent.Builder buttonsComponent = Component.text();
+        if (!buttons.isEmpty()) buttonsComponent.append(MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("nation.members.list.buttons.prefix"))));
+        for (int i = 0; i < buttons.size(); i++) {
+            buttonsComponent.append(buttons.get(i));
+            if (i + 1 < buttons.size()) buttonsComponent.append(MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("nation.members.list.buttons.separator"))));
+        }
+        if (!buttons.isEmpty()) buttonsComponent.append(MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("nation.members.list.buttons.suffix"))));
+
+        return Component.text().append(buttonsComponent.build()).build();
+    }
+
+    private @NotNull Component nationMembersListButton(final @NotNull String button, final @NotNull Nation nation, final @NotNull Member member) {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("nation.members.list.buttons." + button))
+                                .replaceAll("<color>", "<#" + nation.color + ">")
+                                .replaceAll("</color>", "</#" + nation.color + ">")
+                                .replaceAll("<member-name>", Optional.ofNullable(member.player().getName()).orElse(member.uuid.toString())));
     }
 
     // errors
