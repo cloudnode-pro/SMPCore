@@ -98,9 +98,9 @@ public final class MainCommand extends Command {
     }
 
     /**
-     * <li>{@code alt} - show list of subcommands
-     * <li>{@code alt list [player]} - show list of alts
-     * <li>{@code alt add <username> [player]} - add an alt
+     * <li>{@code /command alt} - show list of subcommands
+     * <li>{@code /command alt list [player]} - show list of alts
+     * <li>{@code /command alt add <username> [player]} - add an alt
      */
     public static boolean alt(final @NotNull CommandSender sender, final @NotNull String @NotNull [] originalArgs, final @NotNull String label) {
         if (!sender.hasPermission(Permission.ALT)) return sendMessage(sender, SMPCore.messages().errorNoPermission());
@@ -237,6 +237,10 @@ public final class MainCommand extends Command {
         }
     }
 
+
+    /**
+     * Usage: {@code /<command> time}
+     */
     public static boolean time(final @NotNull CommandSender sender) {
         if (!sender.hasPermission(Permission.TIME))
             return sendMessage(sender, SMPCore.messages().errorNoPermission());
