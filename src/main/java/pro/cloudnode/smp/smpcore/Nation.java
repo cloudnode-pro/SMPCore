@@ -117,6 +117,12 @@ public final class Nation {
         getTeam().addPlayer(member.player());
     }
 
+    public void remove(final @NotNull Member member) {
+        member.nationID = null;
+        member.save();
+        getTeam().removePlayer(member.player());
+    }
+
     public Nation(final @NotNull ResultSet rs) throws @NotNull SQLException {
         this(
                 rs.getString("id"),

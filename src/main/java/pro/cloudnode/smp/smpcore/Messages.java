@@ -294,6 +294,12 @@ public class Messages extends BaseConfig {
                                 .replaceAll("<member-name>", Optional.ofNullable(member.player().getName()).orElse(member.uuid.toString())));
     }
 
+    public @NotNull Component nationMembersKicked(final @NotNull Member member) {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("nation.members.kicked")), Placeholder.unparsed("player", Optional
+                        .ofNullable(member.player().getName()).orElse(member.uuid.toString())));
+    }
+
     // errors
 
     public @NotNull Component errorNoPermission() {
@@ -372,8 +378,18 @@ public class Messages extends BaseConfig {
         return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.not-in-nation")));
     }
 
+    public @NotNull Component errorMemberNotYourNation(final @NotNull Member member) {
+        return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.member-not-your-nation")), Placeholder
+                .unparsed("player", Optional
+                        .ofNullable(member.player().getName()).orElse(member.player().getUniqueId().toString())));
+    }
+
     public @NotNull Component errorNotPlayer() {
         return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.not-player")));
+    }
+
+    public @NotNull Component errorKickLeadership() {
+        return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.kick-leadership")));
     }
 
     public record SubCommandArgument(@NotNull String name, boolean required) {
