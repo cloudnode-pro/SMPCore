@@ -31,7 +31,7 @@ public final class MainCommand extends Command {
         return switch (args[0]) {
             case "reload" -> reload(sender);
             case "alt" -> alt(sender, argsSubset, label + " " + args[0]);
-            case "time", "date" -> time(sender, argsSubset, label + " " + args[0]);
+            case "time", "date" -> time(sender);
             default -> sendMessage(sender, MiniMessage.miniMessage()
                     .deserialize("<red>(!) Unrecognised command <gray><command>", Placeholder.unparsed("command", args[0])));
         };
@@ -237,7 +237,7 @@ public final class MainCommand extends Command {
         }
     }
 
-    public static boolean time(final @NotNull CommandSender sender, final @NotNull String @NotNull [] args, final @NotNull String label) {
+    public static boolean time(final @NotNull CommandSender sender) {
         if (!sender.hasPermission(Permission.TIME))
             return sendMessage(sender, SMPCore.messages().errorNoPermission());
         return sendMessage(sender, SMPCore.messages().time(SMPCore.gameTime()));
