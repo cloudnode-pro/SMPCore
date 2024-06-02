@@ -51,10 +51,10 @@ nation:
         Members of <color><nation-name></color>
         <gray><nation-active-members> active <dark_gray>·</dark_gray> <nation-total-members> total</gray>
       entry:
-        leader: <dark_gray> -</dark_gray> <hover:show_text:'<color>Leader</color> <member-name>><newline><member-status>'><color>Leader</color> <white><member-name></white></hover>
-        vice: <dark_gray> -</dark_gray> <hover:show_text:'<color>Vice</color> <member-name>><newline><member-status>'><color>Vice</color> <white><member-name></white></hover><buttons>
-        citizen: <dark_gray> -</dark_gray> <hover:show_text:'<gray>Citizen</gray> <member-name>><newline><member-status>'><white><member-name></white></hover><buttons>
-        inactive-citizen: <dark_gray> -</dark_gray> <hover:show_text:'<gray>Citizen</gray> <member-name>><newline><member-status>'><gray><member-name></gray></hover><buttons>
+        leader: <dark_gray> -</dark_gray> <hover:show_text:'<color>Leader</color> <member-name><newline><member-status>'><color>Leader</color> <white><member-name></white></hover>
+        vice: <dark_gray> -</dark_gray> <hover:show_text:'<color>Vice</color> <member-name><newline><member-status>'><color>Vice</color> <white><member-name></white></hover><buttons>
+        citizen: <dark_gray> -</dark_gray> <hover:show_text:'<gray>Citizen</gray> <member-name><newline><member-status>'><white><member-name></white></hover><buttons>
+        inactive-citizen: <dark_gray> -</dark_gray> <hover:show_text:'<gray>Citizen</gray> <member-name><newline><member-status>'><gray><member-name></gray></hover><buttons>
       buttons:
         prefix: ' '
         join: ' '
