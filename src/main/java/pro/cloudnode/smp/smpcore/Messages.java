@@ -182,6 +182,25 @@ public class Messages extends BaseConfig {
                         .toLocalDateTime()), Placeholder.unparsed("day", String.valueOf(day)), Placeholder.unparsed("day", String.valueOf(day)), Formatter.choice("day-format", day));
     }
 
+    public @NotNull Component nationMembersStatus(final @NotNull Member member) {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString(member.isActive() ? "nation.members.status.active" : "nation.members.status.inactive")));
+    }
+
+    public @NotNull Component nationMembersList(final @NotNull Nation nation) {
+        final @NotNull HashSet<@NotNull Member> members = nation.members();
+        final @NotNull Component header = MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("nation.members.list.header"))
+                        .replaceAll("<color>", "<#" + nation.color + ">")
+                        .replaceAll("</color>", "</#" + nation.color + ">"),
+                        Placeholder.unparsed("nation-name", nation.name),
+                        Placeholder.unparsed("nation-active-members", members.stream().filter(Member::isActive).count() + ""),
+                        Placeholder.unparsed("nation-inactive-members", members.stream().filter(m -> !m.isActive()).count() + ""),
+                        Placeholder.unparsed("nation-total-members", members.size() + "")
+                );
+        return header;
+    }
+
     // errors
 
     public @NotNull Component errorNoPermission() {
