@@ -55,6 +55,8 @@ public class Rest {
         obj.addProperty("viceLeader", nation.viceLeaderUUID.toString());
         obj.addProperty("members", nation.members().size());
         obj.addProperty("founded", nation.founded.getTime());
+        obj.addProperty("foundedGameTicks", nation.foundedTicks);
+        obj.addProperty("foundedGameDate", SMPCore.gameTime(nation.foundedTicks).getTime());
         obj.addProperty("bank", nation.bank);
         return obj;
     }
