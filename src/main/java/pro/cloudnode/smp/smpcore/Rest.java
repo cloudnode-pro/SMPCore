@@ -73,6 +73,7 @@ public class Rest {
 
         javalin.get("/", ctx -> {
             final @NotNull JsonObject obj = new JsonObject();
+            obj.addProperty("version", SMPCore.getInstance().getPluginMeta().getVersion());
             obj.addProperty("time", SMPCore.gameTime().getTime());
             ctx.json(obj);
         });
