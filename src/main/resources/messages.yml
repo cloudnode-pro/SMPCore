@@ -41,6 +41,28 @@ seen:
 
 time: <green>(!) Today is <white><date:'EEEE, MMMM'> <day><day-format:'1#st|2#nd|3#rd|3<th|21#st|22#nd|23#rd|23<th|31#st'> <date:'yyyy'></white> and the time is <white><date:'HH:mm'> UTC</white>.</green>
 
+nation:
+  members:
+    status:
+      active: <green>Active</green>
+      inactive: <gold>Inactive</gold>
+    list:
+      header: |-
+        Members of <color><nation-name></color>
+        <gray><nation-active-members> active <dark_gray>·</dark_gray> <nation-total-members> total</gray>
+      entry:
+        leader: <dark_gray> -</dark_gray> <hover:show_text:'<color>Leader</color> <member-name><newline><member-status>'><color>Leader</color> <white><member-name></white></hover>
+        vice: <dark_gray> -</dark_gray> <hover:show_text:'<color>Vice</color> <member-name><newline><member-status>'><color>Vice</color> <white><member-name></white></hover><buttons>
+        citizen: <dark_gray> -</dark_gray> <hover:show_text:'<gray>Citizen</gray> <member-name><newline><member-status>'><white><member-name></white></hover><buttons>
+        inactive-citizen: <dark_gray> -</dark_gray> <hover:show_text:'<gray>Citizen</gray> <member-name><newline><member-status>'><gray><member-name></gray></hover><buttons>
+      buttons:
+        prefix: ' '
+        separator: ' '
+        suffix: ''
+        kick: <click:run_command:/nation kick <member-name>><hover:show_text:'Remove member from the nation'><dark_gray>[<red>Kick</red>]</dark_gray></hover></click>
+        demote: <click:run_command:/nation vice-demote <member-name>><hover:show_text:'Demote vice-leader to citizen'><dark_gray>[<red>Demote</red>]</dark_gray></hover></click>
+        promote: <click:run_command:/nation vice-promote <member-name>><hover:show_text:'Appoint citizen as vice-leader'><dark_gray>[<green>Promote</green>]</dark_gray></hover></click>
+    kicked: <green>(!) Player <gray><player></gray> is no longer a member of the nation.</green>
 error:
   no-permission: <red>(!) You don't have permission to use this command.</red>
   player-not-banned: <red>(!) Player <gray><player></gray> is not banned and is not a member.</red>
@@ -55,3 +77,7 @@ error:
   remove-joined-alt: <red>(!) You cannot remove alt player <gray><alt></gray> because they have played the server.</red>
   never-joined: <red>(!) Player <gray><player></gray> has never played on the server.</red>
   command-on-staff: <red>(!) You cannot use <gray>/<command></gray> on staff.</red>
+  not-in-nation: <red>(!) You are not a member of any nation.</red>
+  member-not-your-nation: <red>(!) Member <gray><player></gray> is not a member of your nation.</red>
+  not-player: <red>(!) You must be a player to use this command.</red>
+  nation-kick-leadership: <red>(!) You cannot kick a member of the nation's leadership.</red>
