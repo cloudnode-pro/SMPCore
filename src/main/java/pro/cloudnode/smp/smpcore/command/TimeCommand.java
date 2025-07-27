@@ -9,7 +9,7 @@ public final class TimeCommand extends Command {
 
     @Override
     public boolean run(@NotNull CommandSender sender, @NotNull String label, @NotNull String @NotNull [] args) {
-        return MainCommand.time(sender, args, label);
+        return MainCommand.time(sender);
     }
 
     @Override
