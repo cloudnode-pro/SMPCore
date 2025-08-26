@@ -55,6 +55,8 @@ public class Rest {
         obj.addProperty("viceLeader", nation.viceLeaderUUID.toString());
         obj.addProperty("members", nation.members().size());
         obj.addProperty("founded", nation.founded.getTime());
+        obj.addProperty("foundedGameTicks", nation.foundedTicks);
+        obj.addProperty("foundedGameDate", SMPCore.gameTime(nation.foundedTicks).getTime());
         obj.addProperty("bank", nation.bank);
         return obj;
     }
@@ -71,6 +73,7 @@ public class Rest {
 
         javalin.get("/", ctx -> {
             final @NotNull JsonObject obj = new JsonObject();
+            obj.addProperty("version", SMPCore.getInstance().getPluginMeta().getVersion());
             obj.addProperty("time", SMPCore.gameTime().getTime());
             ctx.json(obj);
         });

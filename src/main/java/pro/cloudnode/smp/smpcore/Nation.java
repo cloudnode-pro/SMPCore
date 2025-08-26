@@ -59,6 +59,11 @@ public final class Nation {
     public final @NotNull Date founded;
 
     /**
+     * In-game absolute ticks when this nation was founded (based on {@link org.bukkit.World#getFullTime()})
+     */
+    public final long foundedTicks;
+
+    /**
      * National bank account of the nation
      */
     public final @NotNull String bank;
@@ -71,9 +76,10 @@ public final class Nation {
      * @param leaderUUID     See {@link #leaderUUID}
      * @param viceLeaderUUID See {@link #viceLeaderUUID}
      * @param founded    See {@link #founded}
+     * @param foundedTicks See {@link #foundedTicks}
      * @param bank       See {@link #bank}
      */
-    public Nation(final @NotNull String id, final @NotNull String name, final @NotNull String shortName, final @NotNull String colour, final @NotNull UUID leaderUUID, final @NotNull UUID viceLeaderUUID, final @NotNull Date founded, final @NotNull String bank) {
+    public Nation(final @NotNull String id, final @NotNull String name, final @NotNull String shortName, final @NotNull String colour, final @NotNull UUID leaderUUID, final @NotNull UUID viceLeaderUUID, final @NotNull Date founded, final long foundedTicks, final @NotNull String bank) {
         this.id = id;
         this.name = name;
         this.shortName = shortName;
@@ -81,6 +87,7 @@ public final class Nation {
         this.leaderUUID = leaderUUID;
         this.viceLeaderUUID = viceLeaderUUID;
         this.founded = founded;
+        this.foundedTicks = foundedTicks;
         this.bank = bank;
     }
 
@@ -132,6 +139,7 @@ public final class Nation {
                 UUID.fromString(rs.getString("leader")),
                 UUID.fromString(rs.getString("vice")),
                 rs.getTimestamp("founded"),
+                rs.getLong("founded_ticks"),
                 rs.getString("bank")
         );
     }
@@ -139,7 +147,7 @@ public final class Nation {
     public void save() {
         try (
                 final @NotNull Connection conn = SMPCore.getInstance().db()
-                        .getConnection(); final @NotNull PreparedStatement stmt = conn.prepareStatement("INSERT OR REPLACE INTO `nations` (`id`, `name`, `short_name`, `color`, `leader`, `vice`, `founded`, `bank`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+                        .getConnection(); final @NotNull PreparedStatement stmt = conn.prepareStatement("INSERT OR REPLACE INTO `nations` (`id`, `name`, `short_name`, `color`, `leader`, `vice`, `founded`, `founded_ticks`, `bank`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
         ) {
             stmt.setString(1, id);
             stmt.setString(2, name);
@@ -148,7 +156,8 @@ public final class Nation {
             stmt.setString(5, leaderUUID.toString());
             stmt.setString(6, viceLeaderUUID.toString());
             stmt.setTimestamp(7, new java.sql.Timestamp(founded.getTime()));
-            stmt.setString(8, bank);
+            stmt.setLong(8, foundedTicks);
+            stmt.setString(9, bank);
             stmt.executeUpdate();
         }
         catch (final @NotNull SQLException e) {
