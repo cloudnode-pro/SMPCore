@@ -68,9 +68,19 @@ public final class Permission {
     public static @NotNull String NATION_MEMBERS_LIST = "smpcore.nation.members.list";
 
     /**
-     * Kick nation members
+     * List the member of any nation
+     */
+    public static @NotNull String NATION_MEMBERS_LIST_OTHER = "smpcore.nation.members.list.other";
+
+    /**
+     * Kick members of your nation
      */
     public static @NotNull String NATION_MEMBERS_KICK = "smpcore.nation.members.kick";
+
+    /**
+     * Kick members of any nation
+     */
+    public static @NotNull String NATION_MEMBERS_KICK_OTHER = "smpcore.nation.members.kick.other";
 
     /**
      * Appoint nation citizen as vice-leader

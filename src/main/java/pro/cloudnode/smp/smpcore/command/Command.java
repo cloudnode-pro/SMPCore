@@ -5,10 +5,12 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.permissions.Permissible;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pro.cloudnode.smp.smpcore.SMPCore;
 
+import java.util.Arrays;
 import java.util.List;
 
 public abstract class Command implements TabCompleter, CommandExecutor {
@@ -33,5 +35,15 @@ public abstract class Command implements TabCompleter, CommandExecutor {
         final @Nullable List<@NotNull String> tab = tab(sender, label, args);
         if (args.length > 0 && tab != null) return tab.stream().filter(e -> e.toLowerCase().startsWith(args[args.length - 1].toLowerCase())).toList();
         else return tab;
+    }
+
+    /**
+     * Check for the presence of any of the permissions (using OR).
+     *
+     * @param permissible Permissible to check
+     * @param permissions Permissions to check
+     */
+    public static boolean hasAnyPermission(final @NotNull Permissible permissible, final @NotNull String @NotNull ... permissions) {
+        return Arrays.stream(permissions).anyMatch(permissible::hasPermission);
     }
 }

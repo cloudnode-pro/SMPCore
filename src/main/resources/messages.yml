@@ -10,8 +10,8 @@ unbanned-member: <green>(!) Unbanned member <gray><player></gray> and <gray><n-a
 
 subcommands:
   header: <green><name> Sub Commands:</green> <gray>(<usage>)</gray>
-  entry: <click:suggest_command:<command>><dark_gray>></dark_gray> <white><label></white><gray><args></gray></click>
-  entry-with-description: <click:suggest_command:<command>><dark_gray>></dark_gray> <white><label></white><gray><args></gray> <dark_gray>-</dark_gray> <gray><description></gray></click>
+  entry: <click:suggest_command:"<command>"><dark_gray>></dark_gray> <white><label></white><gray><args></gray></click>
+  entry-with-description: <click:suggest_command:"<command>"><dark_gray>></dark_gray> <white><label></white><gray><args></gray> <dark_gray>-</dark_gray> <gray><description></gray></click>
   argument:
     required: <dark_gray><</dark_gray><arg><dark_gray>></dark_gray>
     optional: <dark_gray>[</dark_gray><arg><dark_gray>]</dark_gray>
@@ -80,4 +80,5 @@ error:
   not-in-nation: <red>(!) You are not a member of any nation.</red>
   member-not-your-nation: <red>(!) Member <gray><player></gray> is not a member of your nation.</red>
   not-player: <red>(!) You must be a player to use this command.</red>
-  nation-kick-leadership: <red>(!) You cannot kick a member of the nation's leadership.</red>
+  kick-leadership: <red>(!) You cannot kick a member of the nation's leadership.</red>
+  nation-not-found: <red>(!) Nation <gray><nation></gray> not found.</red>

@@ -392,6 +392,10 @@ public class Messages extends BaseConfig {
         return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.kick-leadership")));
     }
 
+    public @NotNull Component nationNotFound(final @NotNull String nation) {
+        return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.nation-not-found")), Placeholder.unparsed("nation", nation));
+    }
+
     public record SubCommandArgument(@NotNull String name, boolean required) {
         public @NotNull Component component() {
             return required ? SMPCore.messages().subCommandArgumentRequired(name) : SMPCore.messages()
