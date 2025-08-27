@@ -123,6 +123,7 @@ public final class NationCommand extends Command {
         return switch (args[0]) {
             case "list" -> listMembers(member, nation, sender);
             case "kick" -> kickMember(member, nation, sender, command, argsSubset);
+            case "invite" -> inviteMember(member, nation, sender, command, argsSubset);
             default -> citizensSubcommand(member, nation, sender, "/" + label);
         };
     }
@@ -155,6 +156,14 @@ public final class NationCommand extends Command {
                     label + " kick ", "kick", new Messages.SubCommandArgument[]{
                             new Messages.SubCommandArgument("citizen", true)
                     }, "Revoke citizenship."
+            ));
+
+        if ((!other && sender.hasPermission(Permission.NATION_INVITE))
+                || sender.hasPermission(Permission.NATION_INVITE_OTHER))
+            subCommandBuilder.append(Component.newline()).append(SMPCore.messages().subCommandEntry(
+                    label + " invite ", "invite", new Messages.SubCommandArgument[]{
+                            new Messages.SubCommandArgument("member", true)
+                    }, "Invite to join nation."
             ));
 
         return sendMessage(sender, subCommandBuilder.build());
@@ -256,11 +265,64 @@ public final class NationCommand extends Command {
                     Date.from(Instant.now().plusSeconds(SMPCore.config().joinRequestExpireMinutes() * 60L))
             );
             newRequest.save();
+            sendMessage(sender, SMPCore.messages().nationJoinRequestSent(nation.get()));
             return newRequest.send();
         }
 
         if (request.get().mode && (!sender.hasPermission(Permission.NATION_JOIN_FORCE) || !Arrays.asList(args).contains("--force")))
             return sendMessage(sender, SMPCore.messages().errorAlreadyRequestedJoin(nation.get()));
+
+        request.get().accept();
+        return true;
+    }
+
+    public boolean inviteMember(
+            final @Nullable Member member,
+            final @NotNull Nation nation,
+            final @NotNull CommandSender sender,
+            final @NotNull String label,
+            final @NotNull String @NotNull [] args
+    ) {
+        if (
+                !sender.hasPermission(Permission.NATION_INVITE)
+                || (
+                        (member == null || !nation.id.equals(member.nationID))
+                        && !sender.hasPermission(Permission.NATION_INVITE_OTHER)
+                )
+        )
+            return sendMessage(sender, SMPCore.messages().errorNoPermission());
+
+        if (args.length < 1)
+            return sendMessage(sender, SMPCore.messages().usage(label, "<member>"));
+
+        final var targetPlayer = sender.getServer().getOfflinePlayer(args[0]);
+        final @NotNull var target = Member.get(targetPlayer);
+
+        if (target.isEmpty())
+            return sendMessage(sender, SMPCore.messages().errorNotMember(targetPlayer));
+
+        if (nation.id.equals(target.get().nationID))
+            return sendMessage(sender, SMPCore.messages().errorAlreadyCitizen(target.get()));
+
+        final @NotNull var request = CitizenRequest.get(target.get(), nation);
+
+        if (request.isEmpty() || request.get().expired()) {
+            request.ifPresent(CitizenRequest::delete);
+
+            final var newRequest = new CitizenRequest(
+                    target.get().uuid,
+                    nation.id,
+                    false,
+                    new Date(),
+                    Date.from(Instant.now().plusSeconds(SMPCore.config().joinRequestExpireMinutes() * 60L))
+            );
+            newRequest.save();
+            sendMessage(sender, SMPCore.messages().nationJoinInviteSent(target.get()));
+            return newRequest.send();
+        }
+
+        if (!request.get().mode)
+            return sendMessage(sender, SMPCore.messages().errorAlreadyInvited(target.get()));
 
         request.get().accept();
         return true;

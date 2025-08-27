@@ -110,12 +110,12 @@ public final class Permission {
     /**
      * Send invitation to join your nation
      */
-    public static @NotNull String NATION_INVITE_SEND = "smpcore.nation.invite";
+    public static @NotNull String NATION_INVITE = "smpcore.nation.invite";
 
     /**
      * Send invitation to join any nation
      */
-    public static @NotNull String NATION_INVITE_SEND_OTHER = "smpcore.nation.invite.other";
+    public static @NotNull String NATION_INVITE_OTHER = "smpcore.nation.invite.other";
 
     /**
      * Accept request to join your nation

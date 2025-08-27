@@ -91,12 +91,19 @@ public final class CitizenRequest {
         final @NotNull Member member = member();
         final @Nullable Player player = member.player().getPlayer();
         final @NotNull Nation nation = nation();
-        if (player != null)
-            player.sendMessage(SMPCore.messages().nationJoinRequestSent(nation));
+
+        // invited
+        if (!mode) {
+            if (player != null)
+                player.sendMessage(SMPCore.messages().nationJoinInviteReceived(nation));
+            return true;
+        }
+
+        // requested
         return Command.sendMessage(
                 Audience.audience(
                         nation().onlinePlayers().stream()
-                                .filter(p -> p.hasPermission(Permission.NATION_JOIN_REQUEST_ACCEPT))
+                                .filter(p -> p.hasPermission(Permission.NATION_INVITE))
                                 .toList()
                 ),
                 SMPCore.messages().nationJoinRequestReceived(member)

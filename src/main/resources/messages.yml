@@ -66,8 +66,10 @@ nation:
   join:
     request-sent: <green>(!) Your request to join <gray><nation></gray> has been sent.</green>
     request-received: <green>(!) Member <gray><player></gray> requests to join your nation.</green>
-    joined: <green>(!) Member <gray><player></gray> has joined your nation!</green>
-    left: <gold>(!) Member <gray><player></gray> has left your nation!</gold>
+    invite-sent: <green>(!) You have invited <gray><player></gray> to join the nation.</green>
+    invite-received: <green>(!) You have been invited to join <gray><nation></gray>!</green>
+    joined: <green>(!) Member <gray><player></gray> has joined the nation!</green>
+    left: <gold>(!) Member <gray><player></gray> has left the nation!</gold>
 error:
   no-permission: <red>(!) You don't have permission to use this command.</red>
   player-not-banned: <red>(!) Player <gray><player></gray> is not banned and is not a member.</red>
@@ -90,5 +92,7 @@ error:
   nation-not-found: <red>(!) Nation <gray><nation></gray> not found.</red>
   already-citizen: <red>(!) You are already a citizen of a nation.</red>
   already-citizen-nation: <red>(!) You are already a citizen of <gray><nation></gray>.</red>
+  already-citizen-player: <red>(!) Citizen <gray><player></gray> is already in the nation.</red>
   not-invited: <red>(!) You were not invited to join <gray><nation></gray>.</red>
   already-requested-join: <red>(!) You have already requested to join <gray><nation></gray>.</red>
+  already-invited: <red>(!) You have already invited <gray><player></gray> to join the nation.</red>

@@ -311,6 +311,17 @@ public class Messages extends BaseConfig {
                         .ofNullable(member.player().getName()).orElse(member.uuid.toString())));
     }
 
+    public @NotNull Component nationJoinInviteSent(final @NotNull Member member) {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("nation.join.invite-sent")), Placeholder.unparsed("player", Optional
+                        .ofNullable(member.player().getName()).orElse(member.uuid.toString())));
+    }
+
+    public @NotNull Component nationJoinInviteReceived(final @NotNull Nation nation) {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("nation.join.invite-received")), Placeholder.unparsed("nation", nation.name));
+    }
+
     public @NotNull Component nationJoinJoined(final @NotNull Member member) {
         return MiniMessage.miniMessage()
                 .deserialize(Objects.requireNonNull(config.getString("nation.join.joined")), Placeholder.unparsed("player", Optional
@@ -415,6 +426,10 @@ public class Messages extends BaseConfig {
         return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.already-citizen-nation")), Placeholder.unparsed("nation", nation.name));
     }
 
+    public @NotNull Component errorAlreadyCitizen(final @NotNull Member member) {
+        return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.already-citizen-player")), Placeholder.unparsed("player", Optional.ofNullable(member.player().getName()).orElse(member.player().getUniqueId().toString())));
+    }
+
     public @NotNull Component errorNotPlayer() {
         return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.not-player")));
     }
@@ -437,6 +452,10 @@ public class Messages extends BaseConfig {
 
     public @NotNull Component errorAlreadyRequestedJoin(final @NotNull Nation nation) {
         return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.already-requested-join")), Placeholder.unparsed("nation", nation.name));
+    }
+
+    public @NotNull Component errorAlreadyInvited(final @NotNull Member member) {
+        return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.already-invited")), Placeholder.unparsed("player", Optional.ofNullable(member.player().getName()).orElse(member.player().getUniqueId().toString())));
     }
 
     public record SubCommandArgument(@NotNull String name, boolean required) {
