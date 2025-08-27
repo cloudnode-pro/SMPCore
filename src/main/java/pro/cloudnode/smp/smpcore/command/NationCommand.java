@@ -121,9 +121,9 @@ public final class NationCommand extends Command {
         final @NotNull String command = label + " " + args[0];
         final @NotNull String @NotNull [] argsSubset = Arrays.copyOfRange(args, 1, args.length);
         return switch (args[0]) {
-            case "list" -> listMembers(member, nation, sender);
-            case "kick" -> kickMember(member, nation, sender, command, argsSubset);
-            case "invite" -> inviteMember(member, nation, sender, command, argsSubset);
+            case "list" -> listCitizens(member, nation, sender);
+            case "kick" -> kickCitizen(member, nation, sender, command, argsSubset);
+            case "invite" -> inviteCitizen(member, nation, sender, command, argsSubset);
             default -> citizensSubcommand(member, nation, sender, "/" + label);
         };
     }
@@ -169,7 +169,7 @@ public final class NationCommand extends Command {
         return sendMessage(sender, subCommandBuilder.build());
     }
 
-    public boolean listMembers(
+    public boolean listCitizens(
             final @Nullable Member member,
             final @NotNull Nation nation,
             final @NotNull CommandSender sender
@@ -183,7 +183,7 @@ public final class NationCommand extends Command {
             return sendMessage(sender, SMPCore.messages().nationCitizensList(nation, sender));
     }
 
-    public boolean kickMember(
+    public boolean kickCitizen(
             final @Nullable Member member,
             final @NotNull Nation nation,
             final @NotNull CommandSender sender,
@@ -276,7 +276,7 @@ public final class NationCommand extends Command {
         return true;
     }
 
-    public boolean inviteMember(
+    public boolean inviteCitizen(
             final @Nullable Member member,
             final @NotNull Nation nation,
             final @NotNull CommandSender sender,
