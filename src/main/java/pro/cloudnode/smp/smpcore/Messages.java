@@ -378,8 +378,8 @@ public class Messages extends BaseConfig {
         return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.not-in-nation")));
     }
 
-    public @NotNull Component errorMemberNotYourNation(final @NotNull Member member) {
-        return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.member-not-your-nation")), Placeholder
+    public @NotNull Component errorMemberNotInNation(final @NotNull Member member) {
+        return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.member-not-in-nation")), Placeholder
                 .unparsed("player", Optional
                         .ofNullable(member.player().getName()).orElse(member.player().getUniqueId().toString())));
     }

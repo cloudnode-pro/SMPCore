@@ -176,7 +176,7 @@ public final class NationCommand extends Command {
 
         final @NotNull Member targetMember = targetMemberOptional.get();
         if (targetMember.nationID == null || !targetMember.nationID.equals(member.nationID))
-            return sendMessage(sender, SMPCore.messages().errorMemberNotYourNation(targetMember));
+            return sendMessage(sender, SMPCore.messages().errorMemberNotInNation(targetMember));
         if (targetMember.uuid.equals(nation.leaderUUID) || targetMember.uuid.equals(nation.viceLeaderUUID))
             return sendMessage(sender, SMPCore.messages().errorKickLeadership());
 
