@@ -423,6 +423,10 @@ public class Messages extends BaseConfig {
         return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.kick-leadership")));
     }
 
+    public @NotNull Component errorLeaderLeave() {
+        return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.leader-leave")));
+    }
+
     public @NotNull Component errorNationNotFound(final @NotNull String nation) {
         return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.nation-not-found")), Placeholder.unparsed("nation", nation));
     }

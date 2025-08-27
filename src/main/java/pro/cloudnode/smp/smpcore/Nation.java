@@ -139,6 +139,18 @@ public final class Nation {
     }
 
     public void remove(final @NotNull Member member) {
+        if (!id.equals(member.nationID))
+            throw new IllegalStateException("Member " + member.uuid + " is not in nation " + id);
+        if (member.uuid.equals(leaderUUID))
+            throw new IllegalStateException("Cannot remove leader " + member.uuid + " from nation " + id);
+
+        Audience.audience(onlinePlayers()).sendMessage(SMPCore.messages().nationJoinLeft(member));
+
+        if (member.uuid.equals(viceLeaderUUID)) {
+            this.viceLeaderUUID = this.leaderUUID;
+            save();
+        }
+
         member.nationID = null;
         member.save();
         getTeam().removePlayer(member.player());

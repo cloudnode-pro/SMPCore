@@ -215,13 +215,19 @@ public final class NationCommand extends Command {
         if (member == null)
             return sendMessage(sender, SMPCore.messages().errorNotMember());
 
-        if (!hasAnyPermission(sender, Permission.NATION_JOIN_REQUEST, Permission.NATION_INVITE_ACCEPT) || (
-                member.nationID != null && !hasAnyPermission(
-                        sender,
-                        Permission.NATION_JOIN_REQUEST_SWITCH,
-                        Permission.NATION_INVITE_ACCEPT_SWITCH
-                )
-        ))
+        if (member.nationID != null) {
+            if (!hasAnyPermission(
+                    sender,
+                    Permission.NATION_JOIN_REQUEST_SWITCH,
+                    Permission.NATION_INVITE_ACCEPT_SWITCH
+            ))
+                return sendMessage(sender, SMPCore.messages().errorAlreadyCitizen());
+            final @NotNull Nation nation = member.nation().orElseThrow(() -> new IllegalStateException("Could not find nation " + member.nationID + " of member " + member.uuid));
+            if (member.uuid.equals(nation.leaderUUID))
+                return sendMessage(sender, SMPCore.messages().errorLeaderLeave());
+        }
+
+        if (!hasAnyPermission(sender, Permission.NATION_JOIN_REQUEST, Permission.NATION_INVITE_ACCEPT))
             return sendMessage(sender, SMPCore.messages().errorNoPermission());
 
         if (args.length < 1)

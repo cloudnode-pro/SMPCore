@@ -86,6 +86,7 @@ error:
   not-citizen: <red>(!) Member <gray><player></gray> is not a citizen of the nation.</red>
   not-player: <red>(!) You must be a player to use this command.</red>
   kick-leadership: <red>(!) You cannot kick a member of the nation's leadership.</red>
+  leader-leave: <red>(!) You cannot leave your nation because you are the leader!</red>
   nation-not-found: <red>(!) Nation <gray><nation></gray> not found.</red>
   already-citizen: <red>(!) You are already a citizen of a nation.</red>
   already-citizen-nation: <red>(!) You are already a citizen of <gray><nation></gray>.</red>
