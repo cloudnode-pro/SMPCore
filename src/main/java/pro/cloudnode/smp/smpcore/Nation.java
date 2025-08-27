@@ -1,5 +1,6 @@
 package pro.cloudnode.smp.smpcore;
 
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextColor;
@@ -132,10 +133,15 @@ public final class Nation {
     }
 
     public void add(final @NotNull Member member) {
+        member.nation().ifPresent(nation -> nation.remove(member));
         member.nationID = id;
         member.save();
         getTeam().addPlayer(member.player());
+
+        Audience.audience(onlinePlayers()).sendMessage(SMPCore.messages().nationJoinJoined(member));
+
         CitizenRequest.get(member, this).ifPresent(CitizenRequest::delete);
+        CitizenRequest.delete(CitizenRequest.get(member, true));
     }
 
     public void remove(final @NotNull Member member) {

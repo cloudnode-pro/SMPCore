@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public final class CitizenRequest {
     /**
@@ -262,6 +263,39 @@ public final class CitizenRequest {
                            e
                    );
             return new ArrayList<>();
+        }
+    }
+
+    /**
+     * Deletes multiple requests
+     *
+     * @param requests Requests
+     */
+    public static void delete(final @NotNull List<@NotNull CitizenRequest> requests) {
+        try (
+                final @NotNull Connection conn = SMPCore.getInstance().db().getConnection();
+                final @NotNull PreparedStatement stmt = conn.prepareStatement(
+                        "DELETE FROM `citizen_requests` WHERE `member` = ? AND `nation` = ?")
+        ) {
+            conn.setAutoCommit(false);
+            for (final @NotNull CitizenRequest request : requests) {
+                stmt.setString(1, request.uuid.toString());
+                stmt.setString(2, request.nationID);
+                stmt.addBatch();
+            }
+
+            stmt.executeBatch();
+            conn.commit();
+        }
+        catch (final @NotNull SQLException e) {
+            SMPCore.getInstance().getLogger().log(
+                    Level.SEVERE,
+                    "could not delete citizen requests: "
+                            + requests.stream()
+                                      .map(r -> "(" + r.nationID + ", " + r.uuid + ")")
+                                      .collect(Collectors.joining(", ")),
+                    e
+            );
         }
     }
 }
