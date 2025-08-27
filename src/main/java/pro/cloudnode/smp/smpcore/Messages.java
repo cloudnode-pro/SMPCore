@@ -184,15 +184,15 @@ public class Messages extends BaseConfig {
                         .toLocalDateTime()), Placeholder.unparsed("day", String.valueOf(day)), Placeholder.unparsed("day", String.valueOf(day)), Formatter.choice("day-format", day));
     }
 
-    public @NotNull Component nationMembersStatus(final @NotNull Member member) {
+    public @NotNull Component nationCitizensStatus(final @NotNull Member member) {
         return MiniMessage.miniMessage()
-                .deserialize(Objects.requireNonNull(config.getString(member.isActive() ? "nation.members.status.active" : "nation.members.status.inactive")));
+                .deserialize(Objects.requireNonNull(config.getString(member.isActive() ? "nation.citizens.status.active" : "nation.citizens.status.inactive")));
     }
 
-    public @NotNull Component nationMembersList(final @NotNull Nation nation, final @NotNull Permissible sender) {
-        final @NotNull HashSet<@NotNull Member> members = nation.members();
+    public @NotNull Component nationCitizensList(final @NotNull Nation nation, final @NotNull Permissible sender) {
+        final @NotNull HashSet<@NotNull Member> members = nation.citizens();
         final @NotNull Component header = MiniMessage.miniMessage()
-                .deserialize(Objects.requireNonNull(config.getString("nation.members.list.header"))
+                .deserialize(Objects.requireNonNull(config.getString("nation.citizens.list.header"))
                         .replaceAll("<color>", "<#" + nation.color + ">")
                         .replaceAll("</color>", "</#" + nation.color + ">"),
                         Placeholder.unparsed("nation-name", nation.name),
@@ -204,16 +204,16 @@ public class Messages extends BaseConfig {
         final @NotNull List<@NotNull Component> list = new ArrayList<>();
 
         final @NotNull Member leader = members.stream().filter(m -> m.uuid.equals(nation.leaderUUID)).findFirst().orElseThrow(IllegalStateException::new);
-        list.add(nationMembersListEntry(nation, leader, sender));
+        list.add(nationCitizensListEntry(nation, leader, sender));
 
         final @NotNull Member vice = members.stream().filter(m -> m.uuid.equals(nation.viceLeaderUUID)).findFirst().orElseThrow(IllegalStateException::new);
         if (!vice.uuid.equals(leader.uuid))
-            list.add(nationMembersListEntry(nation, vice, sender));
+            list.add(nationCitizensListEntry(nation, vice, sender));
 
-        final @NotNull List<@NotNull Component> citizens = members.stream().filter(m -> !m.uuid.equals(leader.uuid) && !m.uuid.equals(vice.uuid) && m.isActive()).map(m -> nationMembersListEntry(nation, m, sender)).toList();
+        final @NotNull List<@NotNull Component> citizens = members.stream().filter(m -> !m.uuid.equals(leader.uuid) && !m.uuid.equals(vice.uuid) && m.isActive()).map(m -> nationCitizensListEntry(nation, m, sender)).toList();
         list.addAll(citizens);
 
-        final @NotNull List<@NotNull Component> inactive = members.stream().filter(m -> !m.uuid.equals(leader.uuid) && !m.uuid.equals(vice.uuid) && !m.isActive()).map(m -> nationMembersListEntry(nation, m, sender)).toList();
+        final @NotNull List<@NotNull Component> inactive = members.stream().filter(m -> !m.uuid.equals(leader.uuid) && !m.uuid.equals(vice.uuid) && !m.isActive()).map(m -> nationCitizensListEntry(nation, m, sender)).toList();
         list.addAll(inactive);
 
         final @NotNull TextComponent.Builder listComponent = Component.text();
@@ -225,78 +225,78 @@ public class Messages extends BaseConfig {
         return Component.text().append(header).append(Component.newline()).append(listComponent.build()).build();
     }
 
-    private @NotNull Component nationMembersListEntry(final @NotNull Nation nation, final @NotNull Member member, final @NotNull Permissible sender) {
+    private @NotNull Component nationCitizensListEntry(final @NotNull Nation nation, final @NotNull Member member, final @NotNull Permissible sender) {
         if (member.uuid.equals(nation.leaderUUID)) {
             return MiniMessage.miniMessage()
-                    .deserialize(Objects.requireNonNull(config.getString("nation.members.list.entry.leader"))
+                    .deserialize(Objects.requireNonNull(config.getString("nation.citizens.list.entry.leader"))
                             .replaceAll("<color>", "<#" + nation.color + ">")
                             .replaceAll("</color>", "</#" + nation.color + ">")
                             .replaceAll("<member-name>", Optional.ofNullable(member.player().getName()).orElse(member.uuid.toString())),
-                            Placeholder.component("member-status", nationMembersStatus(member)),
-                            Placeholder.component("buttons", nationMembersListButtons(nation, member, sender))
+                            Placeholder.component("member-status", nationCitizensStatus(member)),
+                            Placeholder.component("buttons", nationCitizensListButtons(nation, member, sender))
                     );
         }
         if (member.uuid.equals(nation.viceLeaderUUID)) {
             return MiniMessage.miniMessage()
-                    .deserialize(Objects.requireNonNull(config.getString("nation.members.list.entry.vice"))
+                    .deserialize(Objects.requireNonNull(config.getString("nation.citizens.list.entry.vice"))
                                     .replaceAll("<color>", "<#" + nation.color + ">")
                                     .replaceAll("</color>", "</#" + nation.color + ">")
                                     .replaceAll("<member-name>", Optional.ofNullable(member.player().getName()).orElse(member.uuid.toString())),
-                            Placeholder.component("member-status", nationMembersStatus(member)),
-                            Placeholder.component("buttons", nationMembersListButtons(nation, member, sender))
+                            Placeholder.component("member-status", nationCitizensStatus(member)),
+                            Placeholder.component("buttons", nationCitizensListButtons(nation, member, sender))
                     );
         }
         if (member.isActive()) {
             return MiniMessage.miniMessage()
-                    .deserialize(Objects.requireNonNull(config.getString("nation.members.list.entry.citizen"))
+                    .deserialize(Objects.requireNonNull(config.getString("nation.citizens.list.entry.citizen"))
                                     .replaceAll("<color>", "<#" + nation.color + ">")
                                     .replaceAll("</color>", "</#" + nation.color + ">")
                                     .replaceAll("<member-name>", Optional.ofNullable(member.player().getName()).orElse(member.uuid.toString())),
-                            Placeholder.component("member-status", nationMembersStatus(member)),
-                            Placeholder.component("buttons", nationMembersListButtons(nation, member, sender))
+                            Placeholder.component("member-status", nationCitizensStatus(member)),
+                            Placeholder.component("buttons", nationCitizensListButtons(nation, member, sender))
                     );
         }
         return MiniMessage.miniMessage()
-                .deserialize(Objects.requireNonNull(config.getString("nation.members.list.entry.inactive-citizen"))
+                .deserialize(Objects.requireNonNull(config.getString("nation.citizens.list.entry.inactive-citizen"))
                                 .replaceAll("<color>", "<#" + nation.color + ">")
                                 .replaceAll("</color>", "</#" + nation.color + ">")
                                 .replaceAll("<member-name>", Optional.ofNullable(member.player().getName()).orElse(member.uuid.toString())),
-                        Placeholder.component("member-status", nationMembersStatus(member)),
-                        Placeholder.component("buttons", nationMembersListButtons(nation, member, sender))
+                        Placeholder.component("member-status", nationCitizensStatus(member)),
+                        Placeholder.component("buttons", nationCitizensListButtons(nation, member, sender))
                 );
     }
 
-    private @NotNull Component nationMembersListButtons(final @NotNull Nation nation, final @NotNull Member member, final @NotNull Permissible sender) {
+    private @NotNull Component nationCitizensListButtons(final @NotNull Nation nation, final @NotNull Member member, final @NotNull Permissible sender) {
         final @NotNull List<@NotNull Component> buttons = new ArrayList<>();
-        if (sender.hasPermission(Permission.NATION_MEMBERS_KICK) && !(member.uuid.equals(nation.leaderUUID) || member.uuid.equals(nation.viceLeaderUUID)))
-            buttons.add(nationMembersListButton("kick", nation, member));
+        if (sender.hasPermission(Permission.NATION_CITIZENS_KICK) && !(member.uuid.equals(nation.leaderUUID) || member.uuid.equals(nation.viceLeaderUUID)))
+            buttons.add(nationCitizensListButton("kick", nation, member));
         if (sender.hasPermission(Permission.NATION_VICE_DEMOTE) && member.uuid.equals(nation.viceLeaderUUID) && !member.uuid.equals(nation.leaderUUID))
-            buttons.add(nationMembersListButton("demote", nation, member));
+            buttons.add(nationCitizensListButton("demote", nation, member));
         if (sender.hasPermission(Permission.NATION_VICE_PROMOTE) && nation.viceLeaderUUID.equals(nation.leaderUUID) && !(member.uuid.equals(nation.leaderUUID) || member.uuid.equals(nation.viceLeaderUUID)) && member.isActive())
-            buttons.add(nationMembersListButton("promote", nation, member));
+            buttons.add(nationCitizensListButton("promote", nation, member));
 
         final @NotNull TextComponent.Builder buttonsComponent = Component.text();
-        if (!buttons.isEmpty()) buttonsComponent.append(MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("nation.members.list.buttons.prefix"))));
+        if (!buttons.isEmpty()) buttonsComponent.append(MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("nation.citizens.list.buttons.prefix"))));
         for (int i = 0; i < buttons.size(); i++) {
             buttonsComponent.append(buttons.get(i));
-            if (i + 1 < buttons.size()) buttonsComponent.append(MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("nation.members.list.buttons.separator"))));
+            if (i + 1 < buttons.size()) buttonsComponent.append(MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("nation.citizens.list.buttons.separator"))));
         }
-        if (!buttons.isEmpty()) buttonsComponent.append(MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("nation.members.list.buttons.suffix"))));
+        if (!buttons.isEmpty()) buttonsComponent.append(MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("nation.citizens.list.buttons.suffix"))));
 
         return Component.text().append(buttonsComponent.build()).build();
     }
 
-    private @NotNull Component nationMembersListButton(final @NotNull String button, final @NotNull Nation nation, final @NotNull Member member) {
+    private @NotNull Component nationCitizensListButton(final @NotNull String button, final @NotNull Nation nation, final @NotNull Member member) {
         return MiniMessage.miniMessage()
-                .deserialize(Objects.requireNonNull(config.getString("nation.members.list.buttons." + button))
+                .deserialize(Objects.requireNonNull(config.getString("nation.citizens.list.buttons." + button))
                                 .replaceAll("<color>", "<#" + nation.color + ">")
                                 .replaceAll("</color>", "</#" + nation.color + ">")
                                 .replaceAll("<member-name>", Optional.ofNullable(member.player().getName()).orElse(member.uuid.toString())));
     }
 
-    public @NotNull Component nationMembersKicked(final @NotNull Member member) {
+    public @NotNull Component nationCitizensKicked(final @NotNull Member member) {
         return MiniMessage.miniMessage()
-                .deserialize(Objects.requireNonNull(config.getString("nation.members.kicked")), Placeholder.unparsed("player", Optional
+                .deserialize(Objects.requireNonNull(config.getString("nation.citizens.kicked")), Placeholder.unparsed("player", Optional
                         .ofNullable(member.player().getName()).orElse(member.uuid.toString())));
     }
 
@@ -374,12 +374,12 @@ public class Messages extends BaseConfig {
                 .deserialize(Objects.requireNonNull(config.getString("error.command-on-staff")), Placeholder.unparsed("command", label));
     }
 
-    public @NotNull Component errorNotInNation() {
-        return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.not-in-nation")));
+    public @NotNull Component errorNotCitizenYou() {
+        return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.not-citizen-you")));
     }
 
-    public @NotNull Component errorMemberNotInNation(final @NotNull Member member) {
-        return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.member-not-in-nation")), Placeholder
+    public @NotNull Component errorNotCitizen(final @NotNull Member member) {
+        return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.not-citizen")), Placeholder
                 .unparsed("player", Optional
                         .ofNullable(member.player().getName()).orElse(member.player().getUniqueId().toString())));
     }

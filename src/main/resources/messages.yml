@@ -42,7 +42,7 @@ seen:
 time: <green>(!) Today is <white><date:'EEEE, MMMM'> <day><day-format:'1#st|2#nd|3#rd|3<th|21#st|22#nd|23#rd|23<th|31#st'> <date:'yyyy'></white> and the time is <white><date:'HH:mm'> UTC</white>.</green>
 
 nation:
-  members:
+  citizens:
     status:
       active: <green>Active</green>
       inactive: <gold>Inactive</gold>
@@ -77,8 +77,8 @@ error:
   remove-joined-alt: <red>(!) You cannot remove alt player <gray><alt></gray> because they have played the server.</red>
   never-joined: <red>(!) Player <gray><player></gray> has never played on the server.</red>
   command-on-staff: <red>(!) You cannot use <gray>/<command></gray> on staff.</red>
-  not-in-nation: <red>(!) You are not a member of any nation.</red>
-  member-not-in-nation: <red>(!) Member <gray><player></gray> is not a member of the nation.</red>
+  not-citizen-you: <red>(!) You are not a citizen of any nation.</red>
+  not-citizen: <red>(!) Member <gray><player></gray> is not a citizen of the nation.</red>
   not-player: <red>(!) You must be a player to use this command.</red>
   kick-leadership: <red>(!) You cannot kick a member of the nation's leadership.</red>
   nation-not-found: <red>(!) Nation <gray><nation></gray> not found.</red>

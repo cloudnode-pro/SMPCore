@@ -91,7 +91,7 @@ public final class Nation {
         this.bank = bank;
     }
 
-    public @NotNull HashSet<@NotNull Member> members() {
+    public @NotNull HashSet<@NotNull Member> citizens() {
         return Member.get(this);
     }
 
@@ -104,7 +104,7 @@ public final class Nation {
         team.setOption(Team.Option.DEATH_MESSAGE_VISIBILITY, Team.OptionStatus.FOR_OWN_TEAM);
         team.displayName(Component.text(shortName).color(TextColor.color(Integer.decode("0x" + color))).hoverEvent(HoverEvent.showText(Component.text(name))));
         team.prefix(Component.text(shortName + " ").color(TextColor.color(Integer.decode("0x" + color))).hoverEvent(HoverEvent.showText(Component.text(name))));
-        for (final @NotNull Member member : members()) try {
+        for (final @NotNull Member member : citizens()) try {
             team.addPlayer(member.player());
         }
         catch (final @NotNull IllegalArgumentException ignored) {}

@@ -50,8 +50,8 @@ public final class NationCommand extends Command {
                 + args[0];
         final @NotNull String @NotNull [] argsSubset = Arrays.copyOfRange(args, 1, args.length);
         switch (args[0]) {
-            case "members":
-                return members(member.orElse(null), nation.orElse(null), sender, command, argsSubset);
+            case "citizens":
+                return citizens(member.orElse(null), nation.orElse(null), sender, command, argsSubset);
             default:
                 return helpSubCommands(member.orElse(null), nation.orElse(null), sender, label);
         }
@@ -81,16 +81,16 @@ public final class NationCommand extends Command {
 
         if (nation != null) {
             if ((
-                    !other && hasAnyPermission(sender, Permission.NATION_MEMBERS_LIST, Permission.NATION_MEMBERS_KICK)
-            ) || hasAnyPermission(sender, Permission.NATION_MEMBERS_LIST_OTHER, Permission.NATION_MEMBERS_KICK_OTHER))
+                    !other && hasAnyPermission(sender, Permission.NATION_CITIZENS_LIST, Permission.NATION_CITIZENS_KICK)
+            ) || hasAnyPermission(sender, Permission.NATION_CITIZENS_LIST_OTHER, Permission.NATION_CITIZENS_KICK_OTHER))
                 subCommandBuilder.append(Component.newline())
-                        .append(SMPCore.messages().subCommandEntry(command + " members ", "members"));
+                        .append(SMPCore.messages().subCommandEntry(command + " citizens ", "citizens"));
         }
 
         return sendMessage(sender, subCommandBuilder.build());
     }
 
-    public boolean members(
+    public boolean citizens(
             final @Nullable Member member,
             final @Nullable Nation nation,
             final @NotNull CommandSender sender,
@@ -98,20 +98,20 @@ public final class NationCommand extends Command {
             final @NotNull String @NotNull [] args
     ) {
         if (nation == null)
-            return sendMessage(sender, SMPCore.messages().errorNotInNation());
+            return sendMessage(sender, SMPCore.messages().errorNotCitizenYou());
 
         if (args.length == 0)
-            return membersSubcommand(member, nation, sender, "/" + label);
+            return citizensSubcommand(member, nation, sender, "/" + label);
         final @NotNull String command = label + " " + args[0];
         final @NotNull String @NotNull [] argsSubset = Arrays.copyOfRange(args, 1, args.length);
         return switch (args[0]) {
             case "list" -> listMembers(member, nation, sender);
             case "kick" -> kickMember(member, nation, sender, command, argsSubset);
-            default -> membersSubcommand(member, nation, sender, "/" + label);
+            default -> citizensSubcommand(member, nation, sender, "/" + label);
         };
     }
 
-    public boolean membersSubcommand(
+    public boolean citizensSubcommand(
             final @Nullable Member member,
             final @NotNull Nation nation,
             final @NotNull CommandSender sender,
@@ -120,20 +120,20 @@ public final class NationCommand extends Command {
         final boolean other = member == null || !nation.id.equals(member.nationID);
 
         final @NotNull TextComponent.Builder subCommandBuilder = Component.text()
-                .append(SMPCore.messages().subCommandHeader("Nation Members", label + " ..."))
+                .append(SMPCore.messages().subCommandHeader("Nation Citizens", label + " ..."))
                 .append(Component.newline());
 
-        if ((!other && sender.hasPermission(Permission.NATION_MEMBERS_LIST))
-                || sender.hasPermission(Permission.NATION_MEMBERS_LIST_OTHER))
+        if ((!other && sender.hasPermission(Permission.NATION_CITIZENS_LIST))
+                || sender.hasPermission(Permission.NATION_CITIZENS_LIST_OTHER))
             subCommandBuilder.append(Component.newline())
-                    .append(SMPCore.messages().subCommandEntry(label + " list ", "list", "List nation members."));
+                    .append(SMPCore.messages().subCommandEntry(label + " list ", "list", "List nation citizens."));
 
-        if ((!other && sender.hasPermission(Permission.NATION_MEMBERS_KICK))
-                || sender.hasPermission(Permission.NATION_MEMBERS_KICK_OTHER))
+        if ((!other && sender.hasPermission(Permission.NATION_CITIZENS_KICK))
+                || sender.hasPermission(Permission.NATION_CITIZENS_KICK_OTHER))
             subCommandBuilder.append(Component.newline()).append(SMPCore.messages().subCommandEntry(
                     label + " kick ", "kick", new Messages.SubCommandArgument[]{
-                            new Messages.SubCommandArgument("member", true)
-                    }, "Kick a member from the nation."
+                            new Messages.SubCommandArgument("citizen", true)
+                    }, "Revoke citizenship."
             ));
 
         return sendMessage(sender, subCommandBuilder.build());
@@ -144,13 +144,13 @@ public final class NationCommand extends Command {
             final @NotNull Nation nation,
             final @NotNull CommandSender sender
     ) {
-        if (!sender.hasPermission(Permission.NATION_MEMBERS_LIST_OTHER) && (
+        if (!sender.hasPermission(Permission.NATION_CITIZENS_LIST_OTHER) && (
                 member == null || !nation.id.equals(member.nationID)
-                        || !sender.hasPermission(Permission.NATION_MEMBERS_LIST)
+                        || !sender.hasPermission(Permission.NATION_CITIZENS_LIST)
         ))
             return sendMessage(sender, SMPCore.messages().errorNoPermission());
         else
-            return sendMessage(sender, SMPCore.messages().nationMembersList(nation, sender));
+            return sendMessage(sender, SMPCore.messages().nationCitizensList(nation, sender));
     }
 
     public boolean kickMember(
@@ -160,14 +160,14 @@ public final class NationCommand extends Command {
             final @NotNull String label,
             final @NotNull String @NotNull [] args
     ) {
-        if (!sender.hasPermission(Permission.NATION_MEMBERS_KICK_OTHER) && (
+        if (!sender.hasPermission(Permission.NATION_CITIZENS_KICK_OTHER) && (
                 member == null || !nation.id.equals(member.nationID)
-                        || !sender.hasPermission(Permission.NATION_MEMBERS_KICK)
+                        || !sender.hasPermission(Permission.NATION_CITIZENS_KICK)
         ))
             return sendMessage(sender, SMPCore.messages().errorNoPermission());
 
         if (args.length == 0)
-            return sendMessage(sender, SMPCore.messages().usage(label, "kick <member>"));
+            return sendMessage(sender, SMPCore.messages().usage(label, "kick <citizen>"));
 
         final @NotNull OfflinePlayer target = sender.getServer().getOfflinePlayer(args[0]);
         final @NotNull Optional<@NotNull Member> targetMemberOptional = Member.get(target);
@@ -176,11 +176,11 @@ public final class NationCommand extends Command {
 
         final @NotNull Member targetMember = targetMemberOptional.get();
         if (targetMember.nationID == null || !targetMember.nationID.equals(member.nationID))
-            return sendMessage(sender, SMPCore.messages().errorMemberNotInNation(targetMember));
+            return sendMessage(sender, SMPCore.messages().errorNotCitizen(targetMember));
         if (targetMember.uuid.equals(nation.leaderUUID) || targetMember.uuid.equals(nation.viceLeaderUUID))
             return sendMessage(sender, SMPCore.messages().errorKickLeadership());
 
         nation.remove(targetMember);
-        return sendMessage(sender, SMPCore.messages().nationMembersKicked(targetMember));
+        return sendMessage(sender, SMPCore.messages().nationCitizensKicked(targetMember));
     }
 }
