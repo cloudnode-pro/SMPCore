@@ -3,6 +3,8 @@ package pro.cloudnode.smp.smpcore;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextColor;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,9 +14,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.stream.Stream;
 
 public final class Nation {
     /**
@@ -95,6 +100,14 @@ public final class Nation {
         return Member.get(this);
     }
 
+    public @NotNull List<@NotNull Player> onlinePlayers() {
+        final Stream<@NotNull Player> stream = citizens().stream()
+                                                                .map(Member::player)
+                                                                .map(OfflinePlayer::getPlayer)
+                                                                .filter(Objects::nonNull);
+        return stream.toList();
+    }
+
     public @NotNull Team createTeam() {
         final @NotNull Optional<@NotNull Team> optionalTeam = Optional.ofNullable(SMPCore.getInstance().getServer().getScoreboardManager().getMainScoreboard().getTeam(id));
         optionalTeam.ifPresent(Team::unregister);
@@ -122,6 +135,7 @@ public final class Nation {
         member.nationID = id;
         member.save();
         getTeam().addPlayer(member.player());
+        CitizenRequest.get(member, this).ifPresent(CitizenRequest::delete);
     }
 
     public void remove(final @NotNull Member member) {

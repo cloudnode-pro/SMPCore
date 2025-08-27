@@ -24,3 +24,14 @@ CREATE TABLE IF NOT EXISTS `nations` (
     `founded_ticks` INTEGER NOT NULL,
     `bank` CHAR(16) NOT NULL COLLATE BINARY
 );
+
+CREATE TABLE IF NOT EXISTS `citizen_requests` (
+    `member` CHAR(36) NOT NULL COLLATE NOCASE,
+    `nation` CHAR(2) NOT NULL COLLATE NOCASE,
+    `mode` TINYINT(1) NOT NULL, -- 0 = nation invites, 1 = member requests
+    `created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `expires` DATETIME NOT NULL,
+    PRIMARY KEY (`member`, `nation`)
+);
+
+DELETE from `citizen_requests` WHERE `expires` >= CURRENT_TIMESTAMP;

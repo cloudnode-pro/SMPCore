@@ -10,6 +10,10 @@ alts:
   # Maximum number of alts you can have
   max: 10
 
+join:
+  # The number of minutes after which requests/invitations to join a nation expire
+  request-expire-minutes: 1440
+
 relative-time:
   seconds: <t> <format:'0#seconds|1#second|1<seconds'>
   minutes: <t> <format:'0#minutes|1#minute|1<minutes'>

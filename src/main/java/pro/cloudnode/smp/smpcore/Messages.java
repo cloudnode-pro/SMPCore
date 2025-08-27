@@ -300,6 +300,29 @@ public class Messages extends BaseConfig {
                         .ofNullable(member.player().getName()).orElse(member.uuid.toString())));
     }
 
+    public @NotNull Component nationJoinRequestSent(final @NotNull Nation nation) {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("nation.join.request-sent")), Placeholder.unparsed("nation", nation.name));
+    }
+
+    public @NotNull Component nationJoinRequestReceived(final @NotNull Member member) {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("nation.join.request-received")), Placeholder.unparsed("player", Optional
+                        .ofNullable(member.player().getName()).orElse(member.uuid.toString())));
+    }
+
+    public @NotNull Component nationJoinJoined(final @NotNull Member member) {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("nation.join.joined")), Placeholder.unparsed("player", Optional
+                        .ofNullable(member.player().getName()).orElse(member.uuid.toString())));
+    }
+
+    public @NotNull Component nationJoinLeft(final @NotNull Member member) {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("nation.join.left")), Placeholder.unparsed("player", Optional
+                        .ofNullable(member.player().getName()).orElse(member.uuid.toString())));
+    }
+
     // errors
 
     public @NotNull Component errorNoPermission() {
@@ -374,7 +397,7 @@ public class Messages extends BaseConfig {
                 .deserialize(Objects.requireNonNull(config.getString("error.command-on-staff")), Placeholder.unparsed("command", label));
     }
 
-    public @NotNull Component errorNotCitizenYou() {
+    public @NotNull Component errorNotCitizen() {
         return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.not-citizen-you")));
     }
 
@@ -382,6 +405,14 @@ public class Messages extends BaseConfig {
         return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.not-citizen")), Placeholder
                 .unparsed("player", Optional
                         .ofNullable(member.player().getName()).orElse(member.player().getUniqueId().toString())));
+    }
+
+    public @NotNull Component errorAlreadyCitizen() {
+        return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.already-citizen")));
+    }
+
+    public @NotNull Component errorAlreadyCitizen(final @NotNull Nation nation) {
+        return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.already-citizen-nation")), Placeholder.unparsed("nation", nation.name));
     }
 
     public @NotNull Component errorNotPlayer() {
@@ -392,8 +423,16 @@ public class Messages extends BaseConfig {
         return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.kick-leadership")));
     }
 
-    public @NotNull Component nationNotFound(final @NotNull String nation) {
+    public @NotNull Component errorNationNotFound(final @NotNull String nation) {
         return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.nation-not-found")), Placeholder.unparsed("nation", nation));
+    }
+
+    public @NotNull Component errorNotInvited(final @NotNull Nation nation) {
+        return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.not-invited")), Placeholder.unparsed("nation", nation.name));
+    }
+
+    public @NotNull Component errorAlreadyRequestedJoin(final @NotNull Nation nation) {
+        return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.already-requested-join")), Placeholder.unparsed("nation", nation.name));
     }
 
     public record SubCommandArgument(@NotNull String name, boolean required) {

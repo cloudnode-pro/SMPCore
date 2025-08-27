@@ -83,6 +83,46 @@ public final class Permission {
     public static @NotNull String NATION_CITIZENS_KICK_OTHER = "smpcore.nation.citizens.kick.other";
 
     /**
+     * Request to join a nation
+     */
+    public static @NotNull String NATION_JOIN_REQUEST = "smpcore.nation.join.request";
+
+    /**
+     * Request to join a nation while already in a nation
+     */
+    public static @NotNull String NATION_JOIN_REQUEST_SWITCH = "smpcore.nation.join.request.switch";
+
+    /**
+     * Join a nation without requesting
+     */
+    public static @NotNull String NATION_JOIN_FORCE = "smpcore.nation.join.force";
+
+    /**
+     * Accept invitation to join nation
+     */
+    public static @NotNull String NATION_INVITE_ACCEPT = "smpcore.nation.invite.accept";
+
+    /**
+     * Accept invitation to join nation while already in a nation
+     */
+    public static @NotNull String NATION_INVITE_ACCEPT_SWITCH = "smpcore.nation.invite.accept.switch";
+
+    /**
+     * Send invitation to join your nation
+     */
+    public static @NotNull String NATION_INVITE_SEND = "smpcore.nation.invite";
+
+    /**
+     * Send invitation to join any nation
+     */
+    public static @NotNull String NATION_INVITE_SEND_OTHER = "smpcore.nation.invite.other";
+
+    /**
+     * Accept request to join your nation
+     */
+    public static @NotNull String NATION_JOIN_REQUEST_ACCEPT = "smpcore.nation.join.request.accept";
+
+    /**
      * Appoint nation citizen as vice-leader
      */
     public static @NotNull String NATION_VICE_PROMOTE = "smpcore.nation.vice-promote";

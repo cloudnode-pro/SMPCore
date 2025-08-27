@@ -63,6 +63,11 @@ nation:
         demote: <click:run_command:/nation vice-demote <member-name>><hover:show_text:'Demote vice-leader to citizen'><dark_gray>[<red>Demote</red>]</dark_gray></hover></click>
         promote: <click:run_command:/nation vice-promote <member-name>><hover:show_text:'Appoint citizen as vice-leader'><dark_gray>[<green>Promote</green>]</dark_gray></hover></click>
     kicked: <green>(!) Player <gray><player></gray> is no longer a member of the nation.</green>
+  join:
+    request-sent: <green>(!) Your request to join <gray><nation></gray> has been sent.</green>
+    request-received: <green>(!) Member <gray><player></gray> requests to join your nation.</green>
+    joined: <green>(!) Member <gray><player></gray> has joined your nation!</green>
+    left: <gold>(!) Member <gray><player></gray> has left your nation!</gold>
 error:
   no-permission: <red>(!) You don't have permission to use this command.</red>
   player-not-banned: <red>(!) Player <gray><player></gray> is not banned and is not a member.</red>
@@ -82,3 +87,7 @@ error:
   not-player: <red>(!) You must be a player to use this command.</red>
   kick-leadership: <red>(!) You cannot kick a member of the nation's leadership.</red>
   nation-not-found: <red>(!) Nation <gray><nation></gray> not found.</red>
+  already-citizen: <red>(!) You are already a citizen of a nation.</red>
+  already-citizen-nation: <red>(!) You are already a citizen of <gray><nation></gray>.</red>
+  not-invited: <red>(!) You were not invited to join <gray><nation></gray>.</red>
+  already-requested-join: <red>(!) You have already requested to join <gray><nation></gray>.</red>
