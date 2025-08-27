@@ -1,6 +1,5 @@
 package pro.cloudnode.smp.smpcore.command;
 
-import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import org.bukkit.OfflinePlayer;
@@ -248,7 +247,7 @@ public final class NationCommand extends Command {
 
             if (sender.hasPermission(Permission.NATION_JOIN_FORCE) && Arrays.asList(args).contains("--force")) {
                 nation.get().add(member);
-                return sendMessage(Audience.audience(nation.get().onlinePlayers()), SMPCore.messages().nationJoinJoined(member));
+                return true;
             }
             if (!sender.hasPermission(Permission.NATION_JOIN_REQUEST))
                 return sendMessage(sender, SMPCore.messages().errorNotInvited(nation.get()));
@@ -267,6 +266,6 @@ public final class NationCommand extends Command {
             return sendMessage(sender, SMPCore.messages().errorAlreadyRequestedJoin(nation.get()));
 
         request.get().accept();
-        return sendMessage(Audience.audience(nation.get().onlinePlayers()), SMPCore.messages().nationJoinJoined(member));
+        return true;
     }
 }
