@@ -181,10 +181,7 @@ public final class NationCommand extends Command {
             final @NotNull String label,
             final @NotNull String @NotNull [] args
     ) {
-        if (!sender.hasPermission(Permission.NATION_CITIZENS_KICK_OTHER) && (
-                member == null || !nation.id.equals(member.nationID)
-                        || !sender.hasPermission(Permission.NATION_CITIZENS_KICK)
-        ))
+        if (!sender.hasPermission(Permission.NATION_CITIZENS_KICK))
             return sendMessage(sender, SMPCore.messages().errorNoPermission());
 
         if (args.length == 0)
@@ -196,7 +193,7 @@ public final class NationCommand extends Command {
             return sendMessage(sender, SMPCore.messages().errorNotMember(target));
 
         final @NotNull Member targetMember = targetMemberOptional.get();
-        if (targetMember.nationID == null || !targetMember.nationID.equals(member.nationID))
+        if (targetMember.nationID == null || !targetMember.nationID.equals(nation.id) || (member != null && !nation.id.equals(member.nationID)))
             return sendMessage(sender, SMPCore.messages().errorNotCitizen(targetMember));
         if (targetMember.uuid.equals(nation.leaderUUID) || targetMember.uuid.equals(nation.viceLeaderUUID))
             return sendMessage(sender, SMPCore.messages().errorKickLeadership());
