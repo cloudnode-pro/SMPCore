@@ -129,6 +129,7 @@ public final class NationCommand extends Command {
             case "list" -> listCitizens(member, nation, sender);
             case "kick" -> kickCitizen(member, nation, sender, command, argsSubset);
             case "invite" -> inviteCitizen(member, nation, sender, command, argsSubset);
+            case "add" -> addCitizen(member, nation, sender, command, argsSubset);
             default -> citizensSubcommand(member, nation, sender, "/" + label);
         };
     }
@@ -169,6 +170,14 @@ public final class NationCommand extends Command {
                     label + " invite ", "invite", new Messages.SubCommandArgument[]{
                             new Messages.SubCommandArgument("member", true)
                     }, "Invite to join nation."
+            ));
+
+        if ((!other && sender.hasPermission(Permission.NATION_CITIZEN_ADD))
+        || sender.hasPermission(Permission.NATION_CITIZEN_ADD_OTHER))
+            subCommandBuilder.append(Component.newline()).append(SMPCore.messages().subCommandEntry(
+                    label + " add ", "add", new Messages.SubCommandArgument[]{
+                            new Messages.SubCommandArgument("member", true)
+                    }, "Add member to nation."
             ));
 
         return sendMessage(sender, subCommandBuilder.build());
@@ -265,6 +274,45 @@ public final class NationCommand extends Command {
             return sendMessage(sender, SMPCore.messages().errorAlreadyInvited(target.get()));
 
         request.get().accept();
+        return true;
+    }
+
+    public boolean addCitizen(
+            final @Nullable Member member,
+            final @NotNull Nation nation,
+            final @NotNull CommandSender sender,
+            final @NotNull String label,
+            final @NotNull String @NotNull [] args
+    ) {
+        if (
+                !sender.hasPermission(Permission.NATION_CITIZEN_ADD)
+                        || (
+                        (member == null || !nation.id.equals(member.nationID))
+                                && !sender.hasPermission(Permission.NATION_CITIZEN_ADD_OTHER)
+                )
+        )
+            return sendMessage(sender, SMPCore.messages().errorNoPermission());
+
+        if (args.length < 1)
+            return sendMessage(sender, SMPCore.messages().usage(label, "<member>"));
+
+        final @NotNull var targetPlayer = sender.getServer().getOfflinePlayer(args[0]);
+        final @NotNull var target = Member.get(targetPlayer);
+
+        if (target.isEmpty())
+            return sendMessage(sender, SMPCore.messages().errorNotMember(targetPlayer));
+
+        if (nation.id.equals(target.get().nationID))
+            return sendMessage(sender, SMPCore.messages().errorAlreadyCitizen(target.get()));
+
+        if (target.get().nationID != null && !sender.hasPermission(Permission.NATION_CITIZEN_ADD_SWITCH))
+            return sendMessage(sender, SMPCore.messages().errorOtherCitizen(target.get()));
+
+        final var currentNation = target.get().nation().orElseThrow(() -> new IllegalStateException("Could not find nation " + target.get().nationID + " of member " + target.get().uuid));
+        if (currentNation.leaderUUID.equals(targetPlayer.getUniqueId()))
+            return sendMessage(sender, SMPCore.messages().errorKickLeadership());
+
+        nation.add(target.get());
         return true;
     }
 

@@ -93,6 +93,7 @@ error:
   already-citizen: <red>(!) You are already a citizen of a nation.</red>
   already-citizen-nation: <red>(!) You are already a citizen of <gray><nation></gray>.</red>
   already-citizen-player: <red>(!) Citizen <gray><player></gray> is already in the nation.</red>
+  other-citizen: <red>(!) Member <gray><player></gray> is a citizen of another nation.</red>
   not-invited: <red>(!) You were not invited to join <gray><nation></gray>.</red>
   already-requested-join: <red>(!) You have already requested to join <gray><nation></gray>.</red>
   already-invited: <red>(!) You have already invited <gray><player></gray> to join the nation.</red>

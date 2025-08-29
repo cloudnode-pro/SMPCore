@@ -123,6 +123,21 @@ public final class Permission {
     public static @NotNull String NATION_LEAVE = "smpcore.nation.leave";
 
     /**
+     * Add member to your nation
+     */
+    public static @NotNull String NATION_CITIZEN_ADD = "smpcore.nation.citizens.add";
+
+    /**
+     * Add member to any nation
+     */
+    public static @NotNull String NATION_CITIZEN_ADD_OTHER = "smpcore.nation.citizens.add.other";
+
+    /**
+     * Add member to nation even if they are already in another
+     */
+    public static @NotNull String NATION_CITIZEN_ADD_SWITCH = "smpcore.nation.citizens.add.switch";
+
+    /**
      * Appoint nation citizen as vice-leader
      */
     public static @NotNull String NATION_VICE_PROMOTE = "smpcore.nation.vice-promote";

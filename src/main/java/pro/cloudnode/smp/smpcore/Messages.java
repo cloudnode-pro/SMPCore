@@ -430,6 +430,10 @@ public class Messages extends BaseConfig {
         return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.already-citizen-player")), Placeholder.unparsed("player", Optional.ofNullable(member.player().getName()).orElse(member.player().getUniqueId().toString())));
     }
 
+    public @NotNull Component errorOtherCitizen(final @NotNull Member member) {
+        return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.other-citizen")), Placeholder.unparsed("player", Optional.ofNullable(member.player().getName()).orElse(member.player().getUniqueId().toString())));
+    }
+
     public @NotNull Component errorNotPlayer() {
         return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.not-player")));
     }
