@@ -55,6 +55,7 @@ public final class NationCommand extends Command {
         return switch (args[0]) {
             case "citizens" -> citizens(member.orElse(null), nation.orElse(null), sender, command, argsSubset);
             case "join" -> join(member.orElse(null), sender, command, argsSubset);
+            case "leave" -> leave(member.orElse(null), nation.orElse(null), sender);
             default -> helpSubCommands(member.orElse(null), nation.orElse(null), sender, label);
         };
     }
@@ -91,6 +92,10 @@ public final class NationCommand extends Command {
             ) || hasAnyPermission(sender, Permission.NATION_CITIZENS_LIST_OTHER, Permission.NATION_CITIZENS_KICK_OTHER))
                 subCommandBuilder.append(Component.newline())
                                  .append(SMPCore.messages().subCommandEntry(command + " citizens ", "citizens"));
+
+            if (sender.hasPermission(Permission.NATION_LEAVE) && member != null && nation.id.equals(member.nationID) && !nation.leaderUUID.equals(member.uuid))
+                subCommandBuilder.append(Component.newline())
+                                 .append(SMPCore.messages().subCommandEntry(command + " leave ", "leave", "Leave the nation."));
         }
 
         if (hasAnyPermission(sender, Permission.NATION_JOIN_REQUEST) && (
@@ -325,6 +330,25 @@ public final class NationCommand extends Command {
             return sendMessage(sender, SMPCore.messages().errorAlreadyRequestedJoin(nation.get()));
 
         request.get().accept();
+        return true;
+    }
+
+    public boolean leave(
+            final @Nullable Member member,
+            final @Nullable Nation nation,
+            final @NotNull CommandSender sender
+    ) {
+        if (!sender.hasPermission(Permission.NATION_LEAVE))
+            return sendMessage(sender, SMPCore.messages().errorNoPermission());
+        if (member == null)
+            return sendMessage(sender, SMPCore.messages().errorNotMember());
+        if (nation == null)
+            return sendMessage(sender, SMPCore.messages().errorNotCitizen());
+        if (!nation.id.equals(member.nationID))
+            return sendMessage(sender, SMPCore.messages().errorNoPermission());
+        if (nation.leaderUUID.equals(member.uuid))
+            return sendMessage(sender, SMPCore.messages().errorLeaderLeave());
+        nation.remove(member);
         return true;
     }
 }

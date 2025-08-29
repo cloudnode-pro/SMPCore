@@ -118,6 +118,11 @@ public final class Permission {
     public static @NotNull String NATION_INVITE_OTHER = "smpcore.nation.invite.other";
 
     /**
+     * Leave your nation
+     */
+    public static @NotNull String NATION_LEAVE = "smpcore.nation.leave";
+
+    /**
      * Appoint nation citizen as vice-leader
      */
     public static @NotNull String NATION_VICE_PROMOTE = "smpcore.nation.vice-promote";
