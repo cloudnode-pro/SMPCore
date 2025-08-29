@@ -53,9 +53,9 @@ public final class NationCommand extends Command {
                 + args[0];
         final @NotNull String @NotNull [] argsSubset = Arrays.copyOfRange(args, 1, args.length);
         return switch (args[0]) {
-            case "citizens" -> citizens(member.orElse(null), nation.orElse(null), sender, command, argsSubset);
-            case "join" -> join(member.orElse(null), sender, command, argsSubset);
-            case "leave" -> leave(member.orElse(null), nation.orElse(null), sender);
+            case "citizens", "members", "subjects", "nationals", "people", "residents", "population", "cits", "pop" -> citizens(member.orElse(null), nation.orElse(null), sender, command, argsSubset);
+            case "join", "request", "req" -> join(member.orElse(null), sender, command, argsSubset);
+            case "leave", "abandon", "renounce" -> leave(member.orElse(null), nation.orElse(null), sender);
             default -> helpSubCommands(member.orElse(null), nation.orElse(null), sender, label);
         };
     }
@@ -126,9 +126,9 @@ public final class NationCommand extends Command {
         final @NotNull String command = label + " " + args[0];
         final @NotNull String @NotNull [] argsSubset = Arrays.copyOfRange(args, 1, args.length);
         return switch (args[0]) {
-            case "list" -> listCitizens(member, nation, sender);
-            case "kick" -> kickCitizen(member, nation, sender, command, argsSubset);
-            case "invite" -> inviteCitizen(member, nation, sender, command, argsSubset);
+            case "list", "show", "get" -> listCitizens(member, nation, sender);
+            case "kick", "remove", "delete", "rm", "del" -> kickCitizen(member, nation, sender, command, argsSubset);
+            case "invite", "request", "req" -> inviteCitizen(member, nation, sender, command, argsSubset);
             case "add" -> addCitizen(member, nation, sender, command, argsSubset);
             default -> citizensSubcommand(member, nation, sender, "/" + label);
         };
