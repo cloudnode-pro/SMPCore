@@ -118,11 +118,6 @@ public final class Permission {
     public static @NotNull String NATION_INVITE_OTHER = "smpcore.nation.invite.other";
 
     /**
-     * Accept request to join your nation
-     */
-    public static @NotNull String NATION_JOIN_REQUEST_ACCEPT = "smpcore.nation.join.request.accept";
-
-    /**
      * Appoint nation citizen as vice-leader
      */
     public static @NotNull String NATION_VICE_PROMOTE = "smpcore.nation.vice-promote";
