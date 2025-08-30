@@ -122,7 +122,7 @@ public final class NationCommand extends Command {
             return sendMessage(sender, SMPCore.messages().errorNotCitizen());
 
         if (args.length == 0)
-            return citizensSubcommand(member, nation, sender, "/" + label);
+            return citizensSubcommands(member, nation, sender, "/" + label);
         final @NotNull String command = label + " " + args[0];
         final @NotNull String @NotNull [] argsSubset = Arrays.copyOfRange(args, 1, args.length);
         return switch (args[0]) {
@@ -130,11 +130,11 @@ public final class NationCommand extends Command {
             case "kick", "remove", "delete", "rm", "del" -> kickCitizen(member, nation, sender, command, argsSubset);
             case "invite", "request", "req" -> inviteCitizen(member, nation, sender, command, argsSubset);
             case "add" -> addCitizen(member, nation, sender, command, argsSubset);
-            default -> citizensSubcommand(member, nation, sender, "/" + label);
+            default -> citizensSubcommands(member, nation, sender, "/" + label);
         };
     }
 
-    public static boolean citizensSubcommand(
+    public static boolean citizensSubcommands(
             final @Nullable Member member,
             final @NotNull Nation nation,
             final @NotNull CommandSender sender,
