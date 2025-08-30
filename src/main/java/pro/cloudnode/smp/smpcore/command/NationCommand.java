@@ -69,7 +69,7 @@ public final class NationCommand extends Command {
         return List.of();
     }
 
-    public boolean helpSubCommands(
+    public static boolean helpSubCommands(
             final @Nullable Member member,
             final @Nullable Nation nation,
             final @NotNull CommandSender sender,
@@ -111,7 +111,7 @@ public final class NationCommand extends Command {
         return sendMessage(sender, subCommandBuilder.build());
     }
 
-    public boolean citizens(
+    public static boolean citizens(
             final @Nullable Member member,
             final @Nullable Nation nation,
             final @NotNull CommandSender sender,
@@ -134,7 +134,7 @@ public final class NationCommand extends Command {
         };
     }
 
-    public boolean citizensSubcommand(
+    public static boolean citizensSubcommand(
             final @Nullable Member member,
             final @NotNull Nation nation,
             final @NotNull CommandSender sender,
@@ -183,7 +183,7 @@ public final class NationCommand extends Command {
         return sendMessage(sender, subCommandBuilder.build());
     }
 
-    public boolean listCitizens(
+    public static boolean listCitizens(
             final @Nullable Member member,
             final @NotNull Nation nation,
             final @NotNull CommandSender sender
@@ -197,7 +197,7 @@ public final class NationCommand extends Command {
             return sendMessage(sender, SMPCore.messages().nationCitizensList(nation, sender));
     }
 
-    public boolean kickCitizen(
+    public static boolean kickCitizen(
             final @Nullable Member member,
             final @NotNull Nation nation,
             final @NotNull CommandSender sender,
@@ -225,7 +225,7 @@ public final class NationCommand extends Command {
         return sendMessage(sender, SMPCore.messages().nationCitizensKicked(targetMember));
     }
 
-    public boolean inviteCitizen(
+    public static boolean inviteCitizen(
             final @Nullable Member member,
             final @NotNull Nation nation,
             final @NotNull CommandSender sender,
@@ -277,7 +277,7 @@ public final class NationCommand extends Command {
         return true;
     }
 
-    public boolean addCitizen(
+    public static boolean addCitizen(
             final @Nullable Member member,
             final @NotNull Nation nation,
             final @NotNull CommandSender sender,
@@ -316,7 +316,7 @@ public final class NationCommand extends Command {
         return true;
     }
 
-    public boolean join(
+    public static boolean join(
             final @Nullable Member member,
             final @NotNull CommandSender sender,
             final @NotNull String label,
@@ -381,7 +381,7 @@ public final class NationCommand extends Command {
         return true;
     }
 
-    public boolean leave(
+    public static boolean leave(
             final @Nullable Member member,
             final @Nullable Nation nation,
             final @NotNull CommandSender sender
