@@ -9,9 +9,9 @@ unbanned-player: <yellow>(!) Unbanned singular non-member player <gray><player><
 unbanned-member: <green>(!) Unbanned member <gray><player></gray> and <gray><n-alts></gray> alts.</green>
 
 subcommands:
-  header: <green><name> Sub Commands:</green> <gray>(<usage>)</gray>
-  entry: <click:suggest_command:"<command>"><dark_gray>></dark_gray> <white><label></white><gray><args></gray></click>
-  entry-with-description: <click:suggest_command:"<command>"><dark_gray>></dark_gray> <white><label></white><gray><args></gray> <dark_gray>-</dark_gray> <gray><description></gray></click>
+  header: <green><name> Sub Commands:</green> <gray>(/<usage>)</gray>
+  entry: <click:suggest_command:"/<command>"><dark_gray>></dark_gray> <white><label></white><gray><args></gray></click>
+  entry-with-description: <click:suggest_command:"/<command>"><dark_gray>></dark_gray> <white><label></white><gray><args></gray> <dark_gray>-</dark_gray> <gray><description></gray></click>
   argument:
     required: <dark_gray><</dark_gray><arg><dark_gray>></dark_gray>
     optional: <dark_gray>[</dark_gray><arg><dark_gray>]</dark_gray>

@@ -105,7 +105,7 @@ public final class MainCommand extends Command {
     public static boolean alt(final @NotNull CommandSender sender, final @NotNull String @NotNull [] originalArgs, final @NotNull String label) {
         if (!sender.hasPermission(Permission.ALT)) return sendMessage(sender, SMPCore.messages().errorNoPermission());
 
-        final @NotNull String command = "/" + label;
+        final @NotNull String command = label;
 
         final @NotNull TextComponent.Builder subCommandBuilder = Component.text()
                 .append(SMPCore.messages().subCommandHeader("Alt", command + " ...")).append(Component.newline())

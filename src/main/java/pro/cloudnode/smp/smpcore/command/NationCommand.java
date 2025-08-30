@@ -77,7 +77,7 @@ public final class NationCommand extends Command {
     ) {
         final boolean other = member == null || nation == null || !nation.id.equals(member.nationID);
 
-        final @NotNull String command = "/" + label + (other && nation != null ? " id:" + nation.id : "");
+        final @NotNull String command = label + (other && nation != null ? " id:" + nation.id : "");
         final @NotNull TextComponent.Builder subCommandBuilder = Component.text()
                                                                           .append(SMPCore.messages()
                                                                                          .subCommandHeader(
@@ -122,7 +122,7 @@ public final class NationCommand extends Command {
             return sendMessage(sender, SMPCore.messages().errorNotCitizen());
 
         if (args.length == 0)
-            return citizensSubcommands(member, nation, sender, "/" + label);
+            return citizensSubcommands(member, nation, sender, label);
         final @NotNull String command = label + " " + args[0];
         final @NotNull String @NotNull [] argsSubset = Arrays.copyOfRange(args, 1, args.length);
         return switch (args[0]) {
@@ -130,7 +130,7 @@ public final class NationCommand extends Command {
             case "kick", "remove", "delete", "rm", "del" -> kickCitizen(member, nation, sender, command, argsSubset);
             case "invite", "request", "req" -> inviteCitizen(member, nation, sender, command, argsSubset);
             case "add" -> addCitizen(member, nation, sender, command, argsSubset);
-            default -> citizensSubcommands(member, nation, sender, "/" + label);
+            default -> citizensSubcommands(member, nation, sender, label);
         };
     }
 
