@@ -302,24 +302,36 @@ public class Messages extends BaseConfig {
 
     public @NotNull Component nationJoinRequestSent(final @NotNull Nation nation) {
         return MiniMessage.miniMessage()
-                .deserialize(Objects.requireNonNull(config.getString("nation.join.request-sent")), Placeholder.unparsed("nation", nation.name));
+                .deserialize(
+                        Objects.requireNonNull(config.getString("nation.join.request-sent"))
+                                .replaceAll("<nation-id>", nation.id),
+                        Placeholder.unparsed("nation", nation.name)
+                );
     }
 
     public @NotNull Component nationJoinRequestReceived(final @NotNull Member member) {
         return MiniMessage.miniMessage()
-                .deserialize(Objects.requireNonNull(config.getString("nation.join.request-received")), Placeholder.unparsed("player", Optional
-                        .ofNullable(member.player().getName()).orElse(member.uuid.toString())));
+                .deserialize(
+                        Objects.requireNonNull(config.getString("nation.join.request-received"))
+                                .replaceAll("<player>", Optional.ofNullable(member.player().getName()).orElse(member.uuid.toString()))
+                );
     }
 
     public @NotNull Component nationJoinInviteSent(final @NotNull Member member) {
         return MiniMessage.miniMessage()
-                .deserialize(Objects.requireNonNull(config.getString("nation.join.invite-sent")), Placeholder.unparsed("player", Optional
-                        .ofNullable(member.player().getName()).orElse(member.uuid.toString())));
+                .deserialize(
+                        Objects.requireNonNull(config.getString("nation.join.invite-sent"))
+                                .replaceAll("<player>", Optional.ofNullable(member.player().getName()).orElse(member.uuid.toString()))
+                );
     }
 
     public @NotNull Component nationJoinInviteReceived(final @NotNull Nation nation) {
         return MiniMessage.miniMessage()
-                .deserialize(Objects.requireNonNull(config.getString("nation.join.invite-received")), Placeholder.unparsed("nation", nation.name));
+                .deserialize(
+                        Objects.requireNonNull(config.getString("nation.join.invite-received"))
+                                .replaceAll("<nation-id>", nation.id),
+                        Placeholder.unparsed("nation", nation.name)
+                );
     }
 
     public @NotNull Component nationJoinJoined(final @NotNull Member member) {

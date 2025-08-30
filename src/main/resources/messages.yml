@@ -64,10 +64,14 @@ nation:
         promote: <click:run_command:/nation vice-promote <member-name>><hover:show_text:'Appoint citizen as vice-leader'><dark_gray>[<green>Promote</green>]</dark_gray></hover></click>
     kicked: <green>(!) Player <gray><player></gray> is no longer a citizen of the nation.</green>
   join:
-    request-sent: <green>(!) Your request to join <gray><nation></gray> has been sent.</green>
-    request-received: <green>(!) Member <gray><player></gray> requests to join your nation.</green>
-    invite-sent: <green>(!) You have invited <gray><player></gray> to join the nation.</green>
-    invite-received: <green>(!) You have been invited to join <gray><nation></gray>!</green>
+    request-sent: <green>(!) Your request to join <gray><nation></gray> has been sent.</green> <click:run_command:"/nation cancel <nation-id>"><hover:show_text:"<red>Click to cancel.</red>"><white>[Cancel]</white></hover></click>
+    request-received: |-
+      <green>(!) Member <gray><player></gray> requests to join your nation.</green>
+      <dark_gray>></dark_gray> <click:run_command:"/nation citizens invite <player>"><hover:show_text:"<green>Click to accept.</green>"><bold><green>[ACCEPT]</green></bold></hover></click> <click:run_command:"/nation citizens reject <player>"><hover:show_text:"<red>Click to reject.</red>"><bold><red>[REJECT]</red></bold></hover></click>
+    invite-sent: <green>(!) You have invited <gray><player></gray> to join the nation.</green> <click:run_command:"/nation citizens cancel <player>"><hover:show_text:"<red>Click to cancel.</red>"><white>[Cancel]</white></hover></click>
+    invite-received: |-
+      <green>(!) You have been invited to join <gray><nation></gray>!</green>
+      <dark_gray>></dark_gray> <click:run_command:"/nation join <nation-id>"><hover:show_text:"<green>Click to accept.</green>"><bold><green>[ACCEPT]</green></bold></hover></click> <click:run_command:"/nation reject <nation-id>"><hover:show_text:"<red>Click to reject.</red>"><bold><red>[REJECT]</red></bold></hover></click>
     joined: <green>(!) Member <gray><player></gray> has joined the nation!</green>
     left: <gold>(!) Member <gray><player></gray> has left the nation!</gold>
     request-cancelled: <green>(!) You have withdrawn your request to join <gray><nation></gray>.</green>
