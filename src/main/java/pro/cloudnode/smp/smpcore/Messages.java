@@ -334,6 +334,41 @@ public class Messages extends BaseConfig {
                         .ofNullable(member.player().getName()).orElse(member.uuid.toString())));
     }
 
+    public @NotNull Component nationJoinRequestCancelled(final @NotNull Nation nation) {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("nation.join.request-cancelled")), Placeholder.unparsed("nation", nation.name));
+    }
+
+    public @NotNull Component nationJoinRequestRejected(final @NotNull Member member, final @NotNull Nation nation) {
+        return MiniMessage.miniMessage()
+                .deserialize(
+                        Objects.requireNonNull(config.getString("nation.join.request-rejected")),
+                        Placeholder.unparsed("player", Optional.ofNullable(
+                                member.player().getName()).orElse(member.uuid.toString())
+                        ),
+                        Placeholder.unparsed("nation", nation.name)
+                );
+    }
+
+    public @NotNull Component nationJoinInviteCancelled(final @NotNull Member member, final @NotNull Nation nation) {
+        return MiniMessage.miniMessage()
+                .deserialize(
+                        Objects.requireNonNull(config.getString("nation.join.invite-cancelled")),
+                        Placeholder.unparsed("player", Optional.ofNullable(
+                                member.player().getName()).orElse(member.uuid.toString())
+                        ),
+                        Placeholder.unparsed("nation", nation.name)
+                );
+    }
+
+    public @NotNull Component nationJoinInviteRejected(final @NotNull Nation nation) {
+        return MiniMessage.miniMessage()
+                .deserialize(
+                        Objects.requireNonNull(config.getString("nation.join.invite-rejected")),
+                        Placeholder.unparsed("nation", nation.name)
+                );
+    }
+
     // errors
 
     public @NotNull Component errorNoPermission() {
@@ -460,6 +495,14 @@ public class Messages extends BaseConfig {
 
     public @NotNull Component errorAlreadyInvited(final @NotNull Member member) {
         return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.already-invited")), Placeholder.unparsed("player", Optional.ofNullable(member.player().getName()).orElse(member.player().getUniqueId().toString())));
+    }
+
+    public @NotNull Component errorNoRequest(final @NotNull Nation nation) {
+        return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.no-request-nation")), Placeholder.unparsed("nation", nation.name));
+    }
+
+    public @NotNull Component errorNoRequest(final @NotNull Member member) {
+        return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.no-request-player")), Placeholder.unparsed("player", Optional.ofNullable(member.player().getName()).orElse(member.player().getUniqueId().toString())));
     }
 
     public record SubCommandArgument(@NotNull String name, boolean required) {

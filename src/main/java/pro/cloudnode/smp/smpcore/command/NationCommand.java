@@ -55,6 +55,7 @@ public final class NationCommand extends Command {
         return switch (args[0]) {
             case "citizens", "members", "subjects", "nationals", "people", "residents", "population", "cits", "pop" -> citizens(member.orElse(null), nation.orElse(null), sender, command, argsSubset);
             case "join", "request", "req" -> join(member.orElse(null), sender, command, argsSubset);
+            case "cancel", "reject", "decline", "withdraw", "refuse", "deny" -> memberCancel(member.orElse(null), sender, command, argsSubset);
             case "leave", "abandon", "renounce" -> leave(member.orElse(null), nation.orElse(null), sender);
             default -> helpSubCommands(member.orElse(null), nation.orElse(null), sender, label);
         };
@@ -106,6 +107,19 @@ public final class NationCommand extends Command {
                             new Messages.SubCommandArgument("nation", true)
                     }, "Request to join a nation."
             ));
+            if (member != null && !CitizenRequest.get(member, true).isEmpty())
+                subCommandBuilder.append(Component.newline()).append(SMPCore.messages().subCommandEntry(
+                        command + " cancel ", "cancel", new Messages.SubCommandArgument[]{
+                                new Messages.SubCommandArgument("nation", true)
+                        }, "Cancel request to join nation."
+                ));
+
+            if (member != null && !CitizenRequest.get(member, false).isEmpty())
+                subCommandBuilder.append(Component.newline()).append(SMPCore.messages().subCommandEntry(
+                        command + " reject ", "reject", new Messages.SubCommandArgument[]{
+                                new Messages.SubCommandArgument("nation", true)
+                        }, "Reject invitation to join nation."
+                ));
         }
 
         return sendMessage(sender, subCommandBuilder.build());
@@ -129,6 +143,7 @@ public final class NationCommand extends Command {
             case "list", "show", "get" -> listCitizens(member, nation, sender);
             case "kick", "remove", "delete", "rm", "del" -> kickCitizen(member, nation, sender, command, argsSubset);
             case "invite", "request", "req" -> inviteCitizen(member, nation, sender, command, argsSubset);
+            case "cancel", "reject", "decline", "withdraw", "refuse", "deny" -> nationCancel(member, nation, sender, command, argsSubset);
             case "add" -> addCitizen(member, nation, sender, command, argsSubset);
             default -> citizensSubcommands(member, nation, sender, label);
         };
@@ -165,12 +180,27 @@ public final class NationCommand extends Command {
             ));
 
         if ((!other && sender.hasPermission(Permission.NATION_INVITE))
-                || sender.hasPermission(Permission.NATION_INVITE_OTHER))
+                || sender.hasPermission(Permission.NATION_INVITE_OTHER)) {
             subCommandBuilder.append(Component.newline()).append(SMPCore.messages().subCommandEntry(
                     label + " invite ", "invite", new Messages.SubCommandArgument[]{
                             new Messages.SubCommandArgument("member", true)
                     }, "Invite to join nation."
             ));
+
+            if (!CitizenRequest.get(nation, true).isEmpty())
+                subCommandBuilder.append(Component.newline()).append(SMPCore.messages().subCommandEntry(
+                        label + " reject ", "reject", new Messages.SubCommandArgument[]{
+                                new Messages.SubCommandArgument("member", true)
+                        }, "Reject request to join nation."
+                ));
+
+            if (!CitizenRequest.get(nation, false).isEmpty())
+                subCommandBuilder.append(Component.newline()).append(SMPCore.messages().subCommandEntry(
+                        label + " cancel ", "cancel", new Messages.SubCommandArgument[]{
+                                new Messages.SubCommandArgument("member", true)
+                        }, "Cancel invitation to join nation."
+                ));
+        }
 
         if ((!other && sender.hasPermission(Permission.NATION_CITIZEN_ADD))
         || sender.hasPermission(Permission.NATION_CITIZEN_ADD_OTHER))
@@ -379,6 +409,70 @@ public final class NationCommand extends Command {
 
         request.get().accept();
         return true;
+    }
+
+    public static boolean memberCancel(
+            final @Nullable Member member,
+            final @NotNull CommandSender sender,
+            final @NotNull String label,
+            final @NotNull String @NotNull [] args
+    ) {
+        if (member == null)
+            return sendMessage(sender, SMPCore.messages().errorNotMember());
+
+        if (!hasAnyPermission(sender, Permission.NATION_JOIN_REQUEST, Permission.NATION_INVITE_ACCEPT))
+            return sendMessage(sender, SMPCore.messages().errorNoPermission());
+
+        if (args.length < 1)
+            return sendMessage(sender, SMPCore.messages().usage(label, "<nation>"));
+
+        final var nation = Nation.get(args[0]);
+        if (nation.isEmpty())
+            return sendMessage(sender, SMPCore.messages().errorNationNotFound(args[0]));
+
+        final var request = CitizenRequest.get(member, nation.get());
+        if (request.isEmpty())
+            return sendMessage(sender, SMPCore.messages().errorNoRequest(nation.get()));
+
+        request.get().delete();
+        if (request.get().mode)
+            return sendMessage(sender, SMPCore.messages().nationJoinRequestCancelled(nation.get()));
+        return sendMessage(sender, SMPCore.messages().nationJoinInviteRejected(nation.get()));
+    }
+
+    public static boolean nationCancel(
+            final @Nullable Member member,
+            final @NotNull Nation nation,
+            final @NotNull CommandSender sender,
+            final @NotNull String label,
+            final @NotNull String @NotNull [] args
+    ) {
+        if (
+                !sender.hasPermission(Permission.NATION_INVITE)
+                        || (
+                        (member == null || !nation.id.equals(member.nationID))
+                                && !sender.hasPermission(Permission.NATION_INVITE_OTHER)
+                )
+        )
+            return sendMessage(sender, SMPCore.messages().errorNoPermission());
+
+        if (args.length < 1)
+            return sendMessage(sender, SMPCore.messages().usage(label, "<member>"));
+
+        final var targetPlayer = sender.getServer().getOfflinePlayer(args[0]);
+        final @NotNull var target = Member.get(targetPlayer);
+
+        if (target.isEmpty())
+            return sendMessage(sender, SMPCore.messages().errorNotMember(targetPlayer));
+
+        final var request = CitizenRequest.get(target.get(), nation);
+        if (request.isEmpty())
+            return sendMessage(sender, SMPCore.messages().errorNoRequest(target.get()));
+
+        request.get().delete();
+        if (request.get().mode)
+            return sendMessage(sender, SMPCore.messages().nationJoinRequestRejected(target.get(), nation));
+        return sendMessage(sender, SMPCore.messages().nationJoinInviteCancelled(target.get(), nation));
     }
 
     public static boolean leave(

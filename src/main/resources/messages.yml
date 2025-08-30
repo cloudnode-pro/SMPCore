@@ -70,6 +70,10 @@ nation:
     invite-received: <green>(!) You have been invited to join <gray><nation></gray>!</green>
     joined: <green>(!) Member <gray><player></gray> has joined the nation!</green>
     left: <gold>(!) Member <gray><player></gray> has left the nation!</gold>
+    request-cancelled: <green>(!) You have withdrawn your request to join <gray><nation></gray>.</green>
+    request-rejected: <green>(!) You have rejected the request of <gray><player></gray> to join <gray><nation></gray>.</green>
+    invite-cancelled: <green>(!) You have cancelled the invitation to <gray><player></gray> to join <gray><nation></gray>.</green>
+    invite-rejected: <green>(!) You have rejected the invitation to join <gray><nation></gray>.</green>
 error:
   no-permission: <red>(!) You don't have permission to use this command.</red>
   player-not-banned: <red>(!) Player <gray><player></gray> is not banned and is not a member.</red>
@@ -97,3 +101,5 @@ error:
   not-invited: <red>(!) You were not invited to join <gray><nation></gray>.</red>
   already-requested-join: <red>(!) You have already requested to join <gray><nation></gray>.</red>
   already-invited: <red>(!) You have already invited <gray><player></gray> to join the nation.</red>
+  no-request-nation: <red>(!) No invitation or request to join <gray><nation></gray> found.</red>
+  no-request-player: <red>(!) No request to join or invitation to <gray><player></gray> found.</red>
