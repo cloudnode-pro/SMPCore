@@ -63,6 +63,11 @@ nation:
         demote: <click:run_command:/nation citizens demote <member-name>><hover:show_text:'Demote vice-leader to citizen'><dark_gray>[<red>Demote</red>]</dark_gray></hover></click>
         promote: <click:run_command:/nation citizens promote <member-name>><hover:show_text:'Appoint citizen as vice-leader'><dark_gray>[<green>Promote</green>]</dark_gray></hover></click>
     kicked: <green>(!) Player <gray><player></gray> is no longer a citizen of the nation.</green>
+    vice:
+      promoted: <green>(!) Promoted <gray><player></gray> to vice-leader.</green>
+      promoted-you: <green>(!) You have been promoted to vice-leader.</green>
+      demoted: <green>(!) Demoted <gray><player></gray> to citizen.</green>
+      demoted-you: <gold>(!) You have been demoted to citizen.</gold>
   join:
     request-sent: <green>(!) Your request to join <gray><nation></gray> has been sent.</green> <click:run_command:"/nation cancel <nation-id>"><hover:show_text:"<red>Click to cancel.</red>"><white>[Cancel]</white></hover></click>
     request-received: |-
@@ -107,3 +112,7 @@ error:
   already-invited: <red>(!) You have already invited <gray><player></gray> to join the nation.</red>
   no-request-nation: <red>(!) No invitation or request to join <gray><nation></gray> found.</red>
   no-request-player: <red>(!) No request to join or invitation to <gray><player></gray> found.</red>
+  vice-conflict: <red>(!) The nation already has a vice leader.</red>
+  already-vice: <red>(!) The vice-leader is already <gray><player></gray>.</red>
+  demote-leader: <red>(!) You cannot demote the nation leader.</red>
+  demote-citizen: <red>(!) Don't make this <i>citizen</i> unworthy of the nation! (To remove from nation, use <click:suggest_command:/nation citizens kick ><gray>/nation citizens kick</gray></click>.)</red>

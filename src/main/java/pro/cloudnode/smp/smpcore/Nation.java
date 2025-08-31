@@ -101,6 +101,10 @@ public final class Nation {
         return Member.get(this);
     }
 
+    public @NotNull Member vice() {
+        return Member.get(viceLeaderUUID).orElseThrow(() -> new IllegalStateException("vice leader uuid " + viceLeaderUUID + " of nation " + id + " not found"));
+    }
+
     public @NotNull List<@NotNull Player> onlinePlayers() {
         final Stream<@NotNull Player> stream = citizens().stream()
                                                                 .map(Member::player)

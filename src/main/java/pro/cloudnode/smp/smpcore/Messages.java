@@ -315,6 +315,26 @@ public class Messages extends BaseConfig {
                         .ofNullable(member.player().getName()).orElse(member.uuid.toString())));
     }
 
+    public @NotNull Component nationCitizensVicePromoted(final @NotNull Member member) {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("nation.citizens.vice.promoted")), Placeholder.unparsed("player", Optional.ofNullable(member.player().getName()).orElse(member.uuid.toString())));
+    }
+
+    public @NotNull Component nationCitizensVicePromoted() {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("nation.citizens.vice.promoted-you")));
+    }
+
+    public @NotNull Component nationCitizensViceDemoted(final @NotNull Member member) {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("nation.citizens.vice.demoted")), Placeholder.unparsed("player", Optional.ofNullable(member.player().getName()).orElse(member.uuid.toString())));
+    }
+
+    public @NotNull Component nationCitizensViceDemoted() {
+        return MiniMessage.miniMessage()
+                .deserialize(Objects.requireNonNull(config.getString("nation.citizens.vice.demoted-you")));
+    }
+
     public @NotNull Component nationJoinRequestSent(final @NotNull Nation nation) {
         return MiniMessage.miniMessage()
                 .deserialize(
@@ -530,6 +550,22 @@ public class Messages extends BaseConfig {
 
     public @NotNull Component errorNoRequest(final @NotNull Member member) {
         return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.no-request-player")), Placeholder.unparsed("player", Optional.ofNullable(member.player().getName()).orElse(member.player().getUniqueId().toString())));
+    }
+
+    public @NotNull Component errorViceConflict() {
+        return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.vice-conflict")));
+    }
+
+    public @NotNull Component errorAlreadyVice(final @NotNull Member member) {
+        return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.already-vice")), Placeholder.unparsed("player", Optional.ofNullable(member.player().getName()).orElse(member.player().getUniqueId().toString())));
+    }
+
+    public @NotNull Component errorDemoteLeader() {
+        return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.demote-leader")));
+    }
+
+    public @NotNull Component errorDemoteCitizen() {
+        return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.demote-citizen")));
     }
 
     public record SubCommandArgument(@NotNull String name, boolean required) {

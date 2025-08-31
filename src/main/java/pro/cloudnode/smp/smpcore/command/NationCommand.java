@@ -132,6 +132,14 @@ public final class NationCommand extends Command {
                                 || sender.hasPermission(Permission.NATION_CITIZENS_KICK_OTHER))
                             Collections.addAll(list, "kick", "remove", "delete", "rm", "del");
 
+                        if ((!other && sender.hasPermission(Permission.NATION_PROMOTE))
+                                || sender.hasPermission(Permission.NATION_PROMOTE_OTHER))
+                            Collections.addAll(list, "promote");
+
+                        if ((!other && sender.hasPermission(Permission.NATION_DEMOTE))
+                                || sender.hasPermission(Permission.NATION_DEMOTE_OTHER))
+                            Collections.addAll(list, "demote");
+
                         if ((!other && sender.hasPermission(Permission.NATION_INVITE))
                                 || sender.hasPermission(Permission.NATION_INVITE_OTHER))
                             Collections.addAll(list, "invite", "request", "req", "cancel", "reject", "decline", "withdraw", "refuse", "deny");
@@ -153,6 +161,28 @@ public final class NationCommand extends Command {
                                                   .filter(c -> !c.uuid.equals(nation.get().leaderUUID))
                                                   .map(c -> c.player().getName())
                                                   .filter(Objects::nonNull).toList());
+                            }
+                            case "promote" -> {
+                                if (other && !sender.hasPermission(Permission.NATION_PROMOTE_OTHER))
+                                    break;
+                                if (!sender.hasPermission(Permission.NATION_PROMOTE))
+                                    break;
+                                list.addAll((List<@NotNull String>) nation.get().citizens().stream()
+                                                  .filter(c -> !(c.uuid.equals(nation.get().leaderUUID) || c.uuid.equals(nation.get().viceLeaderUUID)))
+                                                  .map(c -> c.player().getName())
+                                                  .filter(Objects::nonNull).toList());
+                            }
+                            case "demote" -> {
+                                if (other && !sender.hasPermission(Permission.NATION_DEMOTE_OTHER))
+                                    break;
+                                if (!sender.hasPermission(Permission.NATION_DEMOTE))
+                                    break;
+                                final @NotNull Member vice = nation.get().vice();
+                                if (vice.uuid.equals(nation.get().leaderUUID))
+                                    break;
+                                final var name = vice.player().getName();
+                                if (name != null)
+                                    list.add(name);
                             }
                             case "invite", "request", "req" -> {
                                 if (other && !sender.hasPermission(Permission.NATION_INVITE_OTHER))
@@ -284,6 +314,8 @@ public final class NationCommand extends Command {
         return switch (args[0]) {
             case "list", "show", "get" -> listCitizens(member, nation, sender);
             case "kick", "remove", "delete", "rm", "del" -> kickCitizen(member, nation, sender, command, argsSubset);
+            case "promote" -> promoteCitizen(member, nation, sender, command, argsSubset);
+            case "demote" -> demoteViceLeader(member, nation, sender, command, argsSubset);
             case "invite", "request", "req" -> inviteCitizen(member, nation, sender, command, argsSubset);
             case "cancel", "reject", "decline", "withdraw", "refuse", "deny" -> nationCancel(member, nation, sender, command, argsSubset);
             case "add" -> addCitizen(member, nation, sender, command, argsSubset);
@@ -319,6 +351,22 @@ public final class NationCommand extends Command {
                     label + " kick ", "kick", new Messages.SubCommandArgument[]{
                             new Messages.SubCommandArgument("citizen", true)
                     }, "Revoke citizenship."
+            ));
+
+        if ((!other && sender.hasPermission(Permission.NATION_PROMOTE))
+                || sender.hasPermission(Permission.NATION_PROMOTE_OTHER))
+            subCommandBuilder.append(Component.newline()).append(SMPCore.messages().subCommandEntry(
+                    label + " promote ", "promote", new Messages.SubCommandArgument[]{
+                            new Messages.SubCommandArgument("citizen", true)
+                    }, "Promote citizen to vice-leader."
+            ));
+
+        if ((!other && sender.hasPermission(Permission.NATION_DEMOTE))
+                || sender.hasPermission(Permission.NATION_DEMOTE_OTHER))
+            subCommandBuilder.append(Component.newline()).append(SMPCore.messages().subCommandEntry(
+                    label + " demote ", "demote", new Messages.SubCommandArgument[]{
+                            new Messages.SubCommandArgument("citizen", true)
+                    }, "Demote vice-leader to citizen."
             ));
 
         if ((!other && sender.hasPermission(Permission.NATION_INVITE))
@@ -397,6 +445,91 @@ public final class NationCommand extends Command {
 
         nation.remove(targetMember);
         return sendMessage(sender, SMPCore.messages().nationCitizensKicked(targetMember));
+    }
+
+    public static boolean promoteCitizen(
+            final @Nullable Member member,
+            final @NotNull Nation nation,
+            final @NotNull CommandSender sender,
+            final @NotNull String label,
+            final  @NotNull String @NotNull [] args
+    ) {
+        if (!sender.hasPermission(Permission.NATION_PROMOTE))
+            return sendMessage(sender, SMPCore.messages().errorNoPermission());
+
+        if ((member == null || !nation.id.equals(member.nationID)) && !sender.hasPermission(Permission.NATION_PROMOTE_OTHER))
+            return sendMessage(sender, SMPCore.messages().errorNoPermission());
+
+        if (args.length == 0)
+            return sendMessage(sender, SMPCore.messages().usage(label, "<citizen>"));
+
+        final @NotNull OfflinePlayer target = sender.getServer().getOfflinePlayer(args[0]);
+        final @NotNull Optional<@NotNull Member> targetMember = Member.get(target);
+        if (targetMember.isEmpty())
+            return sendMessage(sender, SMPCore.messages().errorNotMember(target));
+        if (!nation.id.equals(targetMember.get().nationID))
+            return sendMessage(sender, SMPCore.messages().errorNotCitizen(targetMember.get()));
+
+        if (targetMember.get().uuid.equals(nation.viceLeaderUUID))
+            return sendMessage(sender, SMPCore.messages().errorAlreadyVice(targetMember.get()));
+
+        if (targetMember.get().uuid.equals(nation.leaderUUID))
+            return sendMessage(sender, SMPCore.messages().errorDemoteLeader());
+
+        if (!nation.viceLeaderUUID.equals(nation.leaderUUID)) {
+            if (!sender.hasPermission(Permission.NATION_CITIZENS_KICK))
+                return sendMessage(sender, SMPCore.messages().errorViceConflict());
+            if ((member == null || !nation.id.equals(member.nationID)) && !sender.hasPermission(Permission.NATION_CITIZENS_KICK_OTHER))
+                return sendMessage(sender, SMPCore.messages().errorNoPermission());
+        }
+
+        nation.viceLeaderUUID = targetMember.get().uuid;
+        nation.save();
+
+        final var player = target.getPlayer();
+        if (player != null)
+            sendMessage(player, SMPCore.messages().nationCitizensVicePromoted());
+        return sendMessage(sender, SMPCore.messages().nationCitizensVicePromoted(targetMember.get()));
+    }
+
+    public static boolean demoteViceLeader(
+            final @Nullable Member member,
+            final @NotNull Nation nation,
+            final @NotNull CommandSender sender,
+            final @NotNull String label,
+            final @NotNull String @NotNull [] args
+    ) {
+        if (!sender.hasPermission(Permission.NATION_DEMOTE))
+            return sendMessage(sender, SMPCore.messages().errorNoPermission());
+
+        if ((member == null || !nation.id.equals(member.nationID)) && !sender.hasPermission(Permission.NATION_DEMOTE_OTHER))
+            return sendMessage(sender, SMPCore.messages().errorNoPermission());
+
+        if (args.length == 0)
+            return sendMessage(sender, SMPCore.messages().usage(label, "<citizen>"));
+
+        final @NotNull OfflinePlayer target = sender.getServer().getOfflinePlayer(args[0]);
+        final @NotNull Optional<@NotNull Member> targetMemberOptional = Member.get(target);
+        if (targetMemberOptional.isEmpty())
+            return sendMessage(sender, SMPCore.messages().errorNotMember(target));
+
+        final @NotNull Member targetMember = targetMemberOptional.get();
+        if (!nation.id.equals(targetMember.nationID))
+            return sendMessage(sender, SMPCore.messages().errorNotCitizen(targetMember));
+
+        if (targetMember.uuid.equals(nation.leaderUUID))
+            return sendMessage(sender, SMPCore.messages().errorDemoteLeader());
+
+        if (!targetMember.uuid.equals(nation.viceLeaderUUID))
+            return sendMessage(sender, SMPCore.messages().errorDemoteCitizen());
+
+        nation.viceLeaderUUID = nation.leaderUUID;
+        nation.save();
+
+        final var player = target.getPlayer();
+        if (player != null)
+            sendMessage(player, SMPCore.messages().nationCitizensViceDemoted());
+        return sendMessage(sender, SMPCore.messages().nationCitizensViceDemoted(targetMember));
     }
 
     public static boolean inviteCitizen(
