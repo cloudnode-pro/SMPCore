@@ -378,6 +378,9 @@ public final class NationCommand extends Command {
         if (!sender.hasPermission(Permission.NATION_CITIZENS_KICK))
             return sendMessage(sender, SMPCore.messages().errorNoPermission());
 
+        if ((member == null || !nation.id.equals(member.nationID)) && !sender.hasPermission(Permission.NATION_CITIZENS_KICK_OTHER))
+            return sendMessage(sender, SMPCore.messages().errorNoPermission());
+
         if (args.length == 0)
             return sendMessage(sender, SMPCore.messages().usage(label, "<citizen>"));
 
