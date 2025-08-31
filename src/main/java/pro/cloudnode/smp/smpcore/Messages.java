@@ -277,8 +277,7 @@ public class Messages extends BaseConfig {
         if (
                 ((!other && sender.hasPermission(Permission.NATION_DEMOTE))
                         || sender.hasPermission(Permission.NATION_DEMOTE_OTHER))
-                        && member.uuid.equals(nation.leaderUUID)
-                        && !member.uuid.equals(nation.viceLeaderUUID)
+                        && member.uuid.equals(nation.viceLeaderUUID)
         )
             buttons.add(nationCitizensListButton("demote", nation, member));
 
