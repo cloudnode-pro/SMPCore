@@ -12,6 +12,7 @@ import pro.cloudnode.smp.smpcore.SMPCore;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public class CitizensCommand extends Command {
     @Override
@@ -52,6 +53,6 @@ public class CitizensCommand extends Command {
             final @NotNull String label,
             final @NotNull String @NotNull [] args
     ) {
-        return List.of();
+        return NationCommand.tabComplete(sender, label, Stream.concat(Stream.of("citizens"), Arrays.stream(args)).toArray(String[]::new));
     }
 }

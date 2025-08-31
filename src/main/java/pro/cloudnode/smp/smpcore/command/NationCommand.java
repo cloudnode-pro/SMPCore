@@ -15,10 +15,14 @@ import pro.cloudnode.smp.smpcore.Permission;
 import pro.cloudnode.smp.smpcore.SMPCore;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public final class NationCommand extends Command {
 
@@ -65,9 +69,145 @@ public final class NationCommand extends Command {
     public @Nullable List<@NotNull String> tab(
             final @NotNull CommandSender sender,
             final @NotNull String label,
-            final @NotNull String @NotNull [] args
+            @NotNull String @NotNull [] args
     ) {
-        return List.of();
+        return tabComplete(sender, label, args);
+    }
+
+    public static @Nullable List<@NotNull String> tabComplete(
+            final @NotNull CommandSender sender,
+            final @NotNull String label,
+            @NotNull String @NotNull [] args
+    ) {
+        final var list = new ArrayList<@NotNull String>();
+
+        if (!sender.hasPermission(Permission.NATION))
+            return list;
+
+        final @NotNull Optional<@NotNull Member> member = sender instanceof final @NotNull Player player ? Member.get(
+                player) : Optional.empty();
+
+        final @NotNull Optional<@NotNull Nation> nation;
+        if (args.length > 0 && args[0].startsWith("id:")) {
+            if (args.length == 1) {
+                list.addAll(Nation.get().stream().map(n -> "id:" + n.id).sorted().toList());
+                return list;
+            }
+            final @NotNull String id = args[0].substring(3);
+            nation = Nation.get(id);
+            args = Arrays.copyOfRange(args, 1, args.length);
+            if (nation.isEmpty())
+                return list;
+        }
+        else
+            nation = member.flatMap(Member::nation);
+
+        final boolean other = member.isEmpty() || nation.isEmpty() || !nation.get().id.equals(member.get().nationID);
+
+        if (args.length == 1) {
+            if (nation.isPresent()) {
+                if (
+                        (!other && hasAnyPermission(sender, Permission.NATION_CITIZENS_LIST, Permission.NATION_CITIZENS_KICK))
+                                || hasAnyPermission(sender, Permission.NATION_CITIZENS_LIST_OTHER, Permission.NATION_CITIZENS_KICK_OTHER)
+                )
+                    Collections.addAll(list, "citizens", "members", "subjects", "nationals", "people", "residents", "population", "cits", "pop");
+                if (sender.hasPermission(Permission.NATION_LEAVE) && member.isPresent() && !other && !nation.get().leaderUUID.equals(member.get().uuid))
+                    Collections.addAll(list, "leave", "abandon", "renounce");
+            }
+
+            else if (hasAnyPermission(sender, Permission.NATION_JOIN_REQUEST) && (
+                    member.isEmpty() || member.get().nationID == null || sender.hasPermission(Permission.NATION_JOIN_REQUEST_SWITCH)
+            ))
+                Collections.addAll(list, "join", "request", "req", "cancel", "reject", "decline", "withdraw", "refuse", "deny");
+        }
+        else switch (args[0]) {
+            case "citizens", "members", "subjects", "nationals", "people", "residents", "population", "cits", "pop" -> {
+                switch (args.length) {
+                    case 2 -> {
+                        if ((!other && sender.hasPermission(Permission.NATION_CITIZENS_LIST))
+                                || sender.hasPermission(Permission.NATION_CITIZENS_LIST_OTHER))
+                            Collections.addAll(list, "list", "show", "get");
+
+                        if ((!other && sender.hasPermission(Permission.NATION_CITIZENS_KICK))
+                                || sender.hasPermission(Permission.NATION_CITIZENS_KICK_OTHER))
+                            Collections.addAll(list, "kick", "remove", "delete", "rm", "del");
+
+                        if ((!other && sender.hasPermission(Permission.NATION_INVITE))
+                                || sender.hasPermission(Permission.NATION_INVITE_OTHER))
+                            Collections.addAll(list, "invite", "request", "req", "cancel", "reject", "decline", "withdraw", "refuse", "deny");
+
+                        if ((!other && sender.hasPermission(Permission.NATION_CITIZEN_ADD))
+                                || sender.hasPermission(Permission.NATION_CITIZEN_ADD_OTHER))
+                            Collections.addAll(list, "add");
+                    }
+                    case 3 -> {
+                        switch (args[1]) {
+                            case "kick", "remove", "delete", "rm", "del" -> {
+                                if (other && !sender.hasPermission(Permission.NATION_CITIZENS_KICK_OTHER))
+                                    break;
+                                if (!sender.hasPermission(Permission.NATION_CITIZENS_KICK))
+                                    break;
+                                list.addAll((List<@NotNull String>) nation.get().citizens().stream()
+                                                  .filter(c -> !c.uuid.equals(nation.get().leaderUUID))
+                                                  .map(c -> c.player().getName())
+                                                  .filter(Objects::nonNull).toList());
+                            }
+                            case "invite", "request", "req" -> {
+                                if (other && !sender.hasPermission(Permission.NATION_INVITE_OTHER))
+                                    break;
+                                if (!sender.hasPermission(Permission.NATION_INVITE))
+                                    break;
+                                list.addAll((List<@NotNull String>) Member.get().stream()
+                                    .filter(m -> !nation.get().id.equals(m.nationID))
+                                    .map(c -> c.player().getName())
+                                    .filter(Objects::nonNull).toList());
+                            }
+                            case "cancel", "reject", "decline", "withdraw", "refuse", "deny" -> {
+                                if (other && !sender.hasPermission(Permission.NATION_INVITE_OTHER))
+                                    break;
+                                if (!sender.hasPermission(Permission.NATION_INVITE))
+                                    break;
+                                list.addAll((List<@NotNull String>) Stream.concat(
+                                        CitizenRequest.get(nation.get(), true).stream(),
+                                        CitizenRequest.get(nation.get(), false).stream()
+                                ).map(req -> req.member().player().getName()).filter(Objects::nonNull).sorted().toList());
+                            }
+                            case "add" -> {
+                                if (other && !sender.hasPermission(Permission.NATION_CITIZEN_ADD_OTHER))
+                                    break;
+                                if (!sender.hasPermission(Permission.NATION_CITIZEN_ADD))
+                                    break;
+                                list.addAll((List<@NotNull String>) Member.get().stream()
+                                                                          .filter(m -> !nation.get().id.equals(m.nationID))
+                                                                          .map(c -> c.player().getName())
+                                                                          .filter(Objects::nonNull).toList());
+                            }
+                        }
+                    }
+                }
+            }
+            case "join", "request", "req" -> {
+                if (args.length > 2 || member.isEmpty())
+                    break;
+                if (member.get().nationID != null && !sender.hasPermission(Permission.NATION_JOIN_REQUEST_SWITCH))
+                    break;
+                if (sender.hasPermission(Permission.NATION_JOIN_REQUEST))
+                    list.addAll(Nation.get().stream().map(n -> n.id).filter(n -> !n.equals(member.get().nationID)).sorted().toList());
+                else if (sender.hasPermission(Permission.NATION_INVITE_ACCEPT))
+                    list.addAll(CitizenRequest.get(member.get(), false).stream().map(req -> req.nationID).sorted().toList());
+            }
+            case "cancel", "reject", "decline", "withdraw", "refuse", "deny" -> {
+                if (args.length > 2 || member.isEmpty())
+                    break;
+                if (sender.hasPermission(Permission.NATION_INVITE_ACCEPT))
+                    list.addAll(Stream.concat(CitizenRequest.get(member.get(), true).stream(), CitizenRequest.get(member.get(), false).stream())
+                                      .map(req -> req.nationID).sorted().toList());
+                if (sender.hasPermission(Permission.NATION_JOIN_REQUEST))
+                    list.addAll(CitizenRequest.get(member.get(), true).stream().map(req -> req.nationID).sorted().toList());
+            }
+        }
+
+        return list;
     }
 
     public static boolean helpSubCommands(
