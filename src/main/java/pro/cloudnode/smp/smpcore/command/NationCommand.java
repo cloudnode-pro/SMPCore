@@ -358,13 +358,12 @@ public final class NationCommand extends Command {
             final @NotNull Nation nation,
             final @NotNull CommandSender sender
     ) {
-        if (!sender.hasPermission(Permission.NATION_CITIZENS_LIST_OTHER) && (
-                member == null || !nation.id.equals(member.nationID)
-                        || !sender.hasPermission(Permission.NATION_CITIZENS_LIST)
-        ))
+        final boolean other = member == null || !nation.id.equals(member.nationID);
+        if (!sender.hasPermission(Permission.NATION_CITIZENS_LIST)
+                || (other && !sender.hasPermission(Permission.NATION_CITIZENS_LIST_OTHER)))
             return sendMessage(sender, SMPCore.messages().errorNoPermission());
         else
-            return sendMessage(sender, SMPCore.messages().nationCitizensList(nation, sender));
+            return sendMessage(sender, SMPCore.messages().nationCitizensList(nation, sender, other));
     }
 
     public static boolean kickCitizen(

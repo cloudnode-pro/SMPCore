@@ -189,7 +189,7 @@ public class Messages extends BaseConfig {
                 .deserialize(Objects.requireNonNull(config.getString(member.isActive() ? "nation.citizens.status.active" : "nation.citizens.status.inactive")));
     }
 
-    public @NotNull Component nationCitizensList(final @NotNull Nation nation, final @NotNull Permissible sender) {
+    public @NotNull Component nationCitizensList(final @NotNull Nation nation, final @NotNull Permissible sender, final boolean other) {
         final @NotNull HashSet<@NotNull Member> members = nation.citizens();
         final @NotNull Component header = MiniMessage.miniMessage()
                 .deserialize(Objects.requireNonNull(config.getString("nation.citizens.list.header"))
@@ -204,16 +204,16 @@ public class Messages extends BaseConfig {
         final @NotNull List<@NotNull Component> list = new ArrayList<>();
 
         final @NotNull Member leader = members.stream().filter(m -> m.uuid.equals(nation.leaderUUID)).findFirst().orElseThrow(IllegalStateException::new);
-        list.add(nationCitizensListEntry(nation, leader, sender));
+        list.add(nationCitizensListEntry(nation, leader, sender, other));
 
         final @NotNull Member vice = members.stream().filter(m -> m.uuid.equals(nation.viceLeaderUUID)).findFirst().orElseThrow(IllegalStateException::new);
         if (!vice.uuid.equals(leader.uuid))
-            list.add(nationCitizensListEntry(nation, vice, sender));
+            list.add(nationCitizensListEntry(nation, vice, sender, other));
 
-        final @NotNull List<@NotNull Component> citizens = members.stream().filter(m -> !m.uuid.equals(leader.uuid) && !m.uuid.equals(vice.uuid) && m.isActive()).map(m -> nationCitizensListEntry(nation, m, sender)).toList();
+        final @NotNull List<@NotNull Component> citizens = members.stream().filter(m -> !m.uuid.equals(leader.uuid) && !m.uuid.equals(vice.uuid) && m.isActive()).map(m -> nationCitizensListEntry(nation, m, sender, other)).toList();
         list.addAll(citizens);
 
-        final @NotNull List<@NotNull Component> inactive = members.stream().filter(m -> !m.uuid.equals(leader.uuid) && !m.uuid.equals(vice.uuid) && !m.isActive()).map(m -> nationCitizensListEntry(nation, m, sender)).toList();
+        final @NotNull List<@NotNull Component> inactive = members.stream().filter(m -> !m.uuid.equals(leader.uuid) && !m.uuid.equals(vice.uuid) && !m.isActive()).map(m -> nationCitizensListEntry(nation, m, sender, other)).toList();
         list.addAll(inactive);
 
         final @NotNull TextComponent.Builder listComponent = Component.text();
@@ -225,7 +225,7 @@ public class Messages extends BaseConfig {
         return Component.text().append(header).append(Component.newline()).append(listComponent.build()).build();
     }
 
-    private @NotNull Component nationCitizensListEntry(final @NotNull Nation nation, final @NotNull Member member, final @NotNull Permissible sender) {
+    private @NotNull Component nationCitizensListEntry(final @NotNull Nation nation, final @NotNull Member member, final @NotNull Permissible sender, final boolean other) {
         if (member.uuid.equals(nation.leaderUUID)) {
             return MiniMessage.miniMessage()
                     .deserialize(Objects.requireNonNull(config.getString("nation.citizens.list.entry.leader"))
@@ -233,7 +233,7 @@ public class Messages extends BaseConfig {
                             .replaceAll("</color>", "</#" + nation.color + ">")
                             .replaceAll("<member-name>", Optional.ofNullable(member.player().getName()).orElse(member.uuid.toString())),
                             Placeholder.component("member-status", nationCitizensStatus(member)),
-                            Placeholder.component("buttons", nationCitizensListButtons(nation, member, sender))
+                            Placeholder.component("buttons", nationCitizensListButtons(nation, member, sender, other))
                     );
         }
         if (member.uuid.equals(nation.viceLeaderUUID)) {
@@ -243,7 +243,7 @@ public class Messages extends BaseConfig {
                                     .replaceAll("</color>", "</#" + nation.color + ">")
                                     .replaceAll("<member-name>", Optional.ofNullable(member.player().getName()).orElse(member.uuid.toString())),
                             Placeholder.component("member-status", nationCitizensStatus(member)),
-                            Placeholder.component("buttons", nationCitizensListButtons(nation, member, sender))
+                            Placeholder.component("buttons", nationCitizensListButtons(nation, member, sender, other))
                     );
         }
         if (member.isActive()) {
@@ -253,7 +253,7 @@ public class Messages extends BaseConfig {
                                     .replaceAll("</color>", "</#" + nation.color + ">")
                                     .replaceAll("<member-name>", Optional.ofNullable(member.player().getName()).orElse(member.uuid.toString())),
                             Placeholder.component("member-status", nationCitizensStatus(member)),
-                            Placeholder.component("buttons", nationCitizensListButtons(nation, member, sender))
+                            Placeholder.component("buttons", nationCitizensListButtons(nation, member, sender, other))
                     );
         }
         return MiniMessage.miniMessage()
@@ -262,17 +262,33 @@ public class Messages extends BaseConfig {
                                 .replaceAll("</color>", "</#" + nation.color + ">")
                                 .replaceAll("<member-name>", Optional.ofNullable(member.player().getName()).orElse(member.uuid.toString())),
                         Placeholder.component("member-status", nationCitizensStatus(member)),
-                        Placeholder.component("buttons", nationCitizensListButtons(nation, member, sender))
+                        Placeholder.component("buttons", nationCitizensListButtons(nation, member, sender, other))
                 );
     }
 
-    private @NotNull Component nationCitizensListButtons(final @NotNull Nation nation, final @NotNull Member member, final @NotNull Permissible sender) {
+    private @NotNull Component nationCitizensListButtons(final @NotNull Nation nation, final @NotNull Member member, final @NotNull Permissible sender, final boolean other) {
         final @NotNull List<@NotNull Component> buttons = new ArrayList<>();
-        if (sender.hasPermission(Permission.NATION_CITIZENS_KICK) && !(member.uuid.equals(nation.leaderUUID) || member.uuid.equals(nation.viceLeaderUUID)))
+        if (
+                ((!other && sender.hasPermission(Permission.NATION_CITIZENS_KICK))
+                        || sender.hasPermission(Permission.NATION_CITIZENS_KICK_OTHER))
+                        && !(member.uuid.equals(nation.leaderUUID) || member.uuid.equals(nation.viceLeaderUUID))
+        )
             buttons.add(nationCitizensListButton("kick", nation, member));
-        if (sender.hasPermission(Permission.NATION_VICE_DEMOTE) && member.uuid.equals(nation.viceLeaderUUID) && !member.uuid.equals(nation.leaderUUID))
+        if (
+                ((!other && sender.hasPermission(Permission.NATION_DEMOTE))
+                        || sender.hasPermission(Permission.NATION_DEMOTE_OTHER))
+                        && member.uuid.equals(nation.leaderUUID)
+                        && !member.uuid.equals(nation.viceLeaderUUID)
+        )
             buttons.add(nationCitizensListButton("demote", nation, member));
-        if (sender.hasPermission(Permission.NATION_VICE_PROMOTE) && nation.viceLeaderUUID.equals(nation.leaderUUID) && !(member.uuid.equals(nation.leaderUUID) || member.uuid.equals(nation.viceLeaderUUID)) && member.isActive())
+
+        if (
+                ((!other && sender.hasPermission(Permission.NATION_PROMOTE))
+                        || sender.hasPermission(Permission.NATION_PROMOTE_OTHER))
+                        && nation.viceLeaderUUID.equals(nation.leaderUUID)
+                        && !member.uuid.equals(nation.leaderUUID)
+                        && member.isActive()
+        )
             buttons.add(nationCitizensListButton("promote", nation, member));
 
         final @NotNull TextComponent.Builder buttonsComponent = Component.text();

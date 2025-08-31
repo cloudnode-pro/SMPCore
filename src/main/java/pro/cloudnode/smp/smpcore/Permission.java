@@ -138,12 +138,22 @@ public final class Permission {
     public static @NotNull String NATION_CITIZEN_ADD_SWITCH = "smpcore.nation.citizens.add.switch";
 
     /**
-     * Appoint nation citizen as vice-leader
+     * Appoint nation citizen as vice-leader of your nation
      */
-    public static @NotNull String NATION_VICE_PROMOTE = "smpcore.nation.vice-promote";
+    public static @NotNull String NATION_PROMOTE = "smpcore.nation.citizens.promote";
 
     /**
-     * Relieve vice-leader of duties
+     * Appoint nation citizen as vice-leader of any nation
      */
-    public static @NotNull String NATION_VICE_DEMOTE = "smpcore.nation.vice-demote";
+    public static @NotNull String NATION_PROMOTE_OTHER = "smpcore.nation.citizens.promote.other";
+
+    /**
+     * Relieve vice-leader of your nation of their duties
+     */
+    public static @NotNull String NATION_DEMOTE = "smpcore.nation.citizens.demote";
+
+    /**
+     * Relieve vice-leader of any nation of their duties
+     */
+    public static @NotNull String NATION_DEMOTE_OTHER = "smpcore.nation.citizens.demote.other";
 }
