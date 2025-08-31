@@ -615,8 +615,8 @@ public final class NationCommand extends Command {
         if (target.get().nationID != null && !sender.hasPermission(Permission.NATION_CITIZEN_ADD_SWITCH))
             return sendMessage(sender, SMPCore.messages().errorOtherCitizen(target.get()));
 
-        final var currentNation = target.get().nation().orElseThrow(() -> new IllegalStateException("Could not find nation " + target.get().nationID + " of member " + target.get().uuid));
-        if (currentNation.leaderUUID.equals(targetPlayer.getUniqueId()))
+        final var currentNation = target.get().nation();
+        if (currentNation.isPresent() && currentNation.get().leaderUUID.equals(targetPlayer.getUniqueId()))
             return sendMessage(sender, SMPCore.messages().errorKickLeadership());
 
         nation.add(target.get());
