@@ -32,3 +32,13 @@ commands:
     description: See the current game time and date
     usage: /<command>
     aliases: [ date, today ]
+  nation:
+    permission: smpcore.nation
+    description: Manage nations
+    usage: /<command>
+    aliases: [ nations, country, countries ]
+  citizens:
+    permission: smpcore.nation
+    description: Manage nation citizens
+    usage: /<command>
+    aliases: [ members, subjects, nationals, people, residents, population, cits, pop ]

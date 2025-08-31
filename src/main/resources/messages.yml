@@ -9,9 +9,9 @@ unbanned-player: <yellow>(!) Unbanned singular non-member player <gray><player><
 unbanned-member: <green>(!) Unbanned member <gray><player></gray> and <gray><n-alts></gray> alts.</green>
 
 subcommands:
-  header: <green><name> Sub Commands:</green> <gray>(<usage>)</gray>
-  entry: <click:suggest_command:<command>><dark_gray>></dark_gray> <white><label></white><gray><args></gray></click>
-  entry-with-description: <click:suggest_command:<command>><dark_gray>></dark_gray> <white><label></white><gray><args></gray> <dark_gray>-</dark_gray> <gray><description></gray></click>
+  header: <green><name> Sub Commands:</green> <gray>(/<usage>)</gray>
+  entry: <click:suggest_command:"/<command>"><dark_gray>></dark_gray> <white><label></white><gray><args></gray></click>
+  entry-with-description: <click:suggest_command:"/<command>"><dark_gray>></dark_gray> <white><label></white><gray><args></gray> <dark_gray>-</dark_gray> <gray><description></gray></click>
   argument:
     required: <dark_gray><</dark_gray><arg><dark_gray>></dark_gray>
     optional: <dark_gray>[</dark_gray><arg><dark_gray>]</dark_gray>
@@ -41,6 +41,48 @@ seen:
 
 time: <green>(!) Today is <white><date:'EEEE, MMMM'> <day><day-format:'1#st|2#nd|3#rd|3<th|21#st|22#nd|23#rd|23<th|31#st'> <date:'yyyy'></white> and the time is <white><date:'HH:mm'> UTC</white>.</green>
 
+nation:
+  citizens:
+    status:
+      active: <green>Active</green>
+      inactive: <gold>Inactive</gold>
+    list:
+      header: |-
+        Members of <color><nation-name></color>
+        <gray><nation-active-members> active <dark_gray>·</dark_gray> <nation-total-members> total</gray>
+      entry:
+        leader: <dark_gray> -</dark_gray> <hover:show_text:'<color>Leader</color> <member-name><newline><member-status>'><color>Leader</color> <white><member-name></white></hover>
+        vice: <dark_gray> -</dark_gray> <hover:show_text:'<color>Vice</color> <member-name><newline><member-status>'><color>Vice</color> <white><member-name></white></hover><buttons>
+        citizen: <dark_gray> -</dark_gray> <hover:show_text:'<gray>Citizen</gray> <member-name><newline><member-status>'><white><member-name></white></hover><buttons>
+        inactive-citizen: <dark_gray> -</dark_gray> <hover:show_text:'<gray>Citizen</gray> <member-name><newline><member-status>'><gray><member-name></gray></hover><buttons>
+      buttons:
+        prefix: ' '
+        separator: ' '
+        suffix: ''
+        kick: <click:run_command:/nation citizens kick <member-name>><hover:show_text:'Remove citizen from the nation'><dark_gray>[<red>Kick</red>]</dark_gray></hover></click>
+        demote: <click:run_command:/nation citizens demote <member-name>><hover:show_text:'Demote vice-leader to citizen'><dark_gray>[<red>Demote</red>]</dark_gray></hover></click>
+        promote: <click:run_command:/nation citizens promote <member-name>><hover:show_text:'Appoint citizen as vice-leader'><dark_gray>[<green>Promote</green>]</dark_gray></hover></click>
+    kicked: <green>(!) Player <gray><player></gray> is no longer a citizen of the nation.</green>
+    vice:
+      promoted: <green>(!) Promoted <gray><player></gray> to vice-leader.</green>
+      promoted-you: <green>(!) You have been promoted to vice-leader.</green>
+      demoted: <green>(!) Demoted <gray><player></gray> to citizen.</green>
+      demoted-you: <gold>(!) You have been demoted to citizen.</gold>
+  join:
+    request-sent: <green>(!) Your request to join <gray><nation></gray> has been sent.</green> <click:run_command:"/nation cancel <nation-id>"><hover:show_text:"<red>Click to cancel.</red>"><white>[Cancel]</white></hover></click>
+    request-received: |-
+      <green>(!) Member <gray><player></gray> requests to join your nation.</green>
+      <dark_gray>></dark_gray> <click:run_command:"/nation citizens invite <player>"><hover:show_text:"<green>Click to accept.</green>"><bold><green>[ACCEPT]</green></bold></hover></click> <click:run_command:"/nation citizens reject <player>"><hover:show_text:"<red>Click to reject.</red>"><bold><red>[REJECT]</red></bold></hover></click>
+    invite-sent: <green>(!) You have invited <gray><player></gray> to join the nation.</green> <click:run_command:"/nation citizens cancel <player>"><hover:show_text:"<red>Click to cancel.</red>"><white>[Cancel]</white></hover></click>
+    invite-received: |-
+      <green>(!) You have been invited to join <gray><nation></gray>!</green>
+      <dark_gray>></dark_gray> <click:run_command:"/nation join <nation-id>"><hover:show_text:"<green>Click to accept.</green>"><bold><green>[ACCEPT]</green></bold></hover></click> <click:run_command:"/nation reject <nation-id>"><hover:show_text:"<red>Click to reject.</red>"><bold><red>[REJECT]</red></bold></hover></click>
+    joined: <green>(!) Member <gray><player></gray> has joined the nation!</green>
+    left: <gold>(!) Member <gray><player></gray> has left the nation!</gold>
+    request-cancelled: <green>(!) You have withdrawn your request to join <gray><nation></gray>.</green>
+    request-rejected: <green>(!) You have rejected the request of <gray><player></gray> to join <gray><nation></gray>.</green>
+    invite-cancelled: <green>(!) You have cancelled the invitation to <gray><player></gray> to join <gray><nation></gray>.</green>
+    invite-rejected: <green>(!) You have rejected the invitation to join <gray><nation></gray>.</green>
 error:
   no-permission: <red>(!) You don't have permission to use this command.</red>
   player-not-banned: <red>(!) Player <gray><player></gray> is not banned and is not a member.</red>
@@ -55,3 +97,22 @@ error:
   remove-joined-alt: <red>(!) You cannot remove alt player <gray><alt></gray> because they have played the server.</red>
   never-joined: <red>(!) Player <gray><player></gray> has never played on the server.</red>
   command-on-staff: <red>(!) You cannot use <gray>/<command></gray> on staff.</red>
+  not-citizen-you: <red>(!) You are not a citizen of any nation.</red>
+  not-citizen: <red>(!) Member <gray><player></gray> is not a citizen of the nation.</red>
+  not-player: <red>(!) You must be a player to use this command.</red>
+  kick-leadership: <red>(!) You cannot kick a member of the nation's leadership.</red>
+  leader-leave: <red>(!) You cannot leave your nation because you are the leader!</red>
+  nation-not-found: <red>(!) Nation <gray><nation></gray> not found.</red>
+  already-citizen: <red>(!) You are already a citizen of a nation.</red>
+  already-citizen-nation: <red>(!) You are already a citizen of <gray><nation></gray>.</red>
+  already-citizen-player: <red>(!) Citizen <gray><player></gray> is already in the nation.</red>
+  other-citizen: <red>(!) Member <gray><player></gray> is a citizen of another nation.</red>
+  not-invited: <red>(!) You were not invited to join <gray><nation></gray>.</red>
+  already-requested-join: <red>(!) You have already requested to join <gray><nation></gray>.</red>
+  already-invited: <red>(!) You have already invited <gray><player></gray> to join the nation.</red>
+  no-request-nation: <red>(!) No invitation or request to join <gray><nation></gray> found.</red>
+  no-request-player: <red>(!) No request to join or invitation to <gray><player></gray> found.</red>
+  vice-conflict: <red>(!) The nation already has a vice leader.</red>
+  already-vice: <red>(!) The vice-leader is already <gray><player></gray>.</red>
+  demote-leader: <red>(!) You cannot demote the nation leader.</red>
+  demote-citizen: <red>(!) Don't make this <i>citizen</i> unworthy of the nation! (To remove from nation, use <click:suggest_command:/nation citizens kick ><gray>/nation citizens kick</gray></click>.)</red>

@@ -31,7 +31,7 @@ public final class MainCommand extends Command {
         return switch (args[0]) {
             case "reload" -> reload(sender);
             case "alt" -> alt(sender, argsSubset, label + " " + args[0]);
-            case "time", "date" -> time(sender, argsSubset, label + " " + args[0]);
+            case "time", "date" -> time(sender);
             default -> sendMessage(sender, MiniMessage.miniMessage()
                     .deserialize("<red>(!) Unrecognised command <gray><command>", Placeholder.unparsed("command", args[0])));
         };
@@ -98,14 +98,14 @@ public final class MainCommand extends Command {
     }
 
     /**
-     * <li>{@code alt} - show list of subcommands
-     * <li>{@code alt list [player]} - show list of alts
-     * <li>{@code alt add <username> [player]} - add an alt
+     * <li>{@code /command alt} - show list of subcommands
+     * <li>{@code /command alt list [player]} - show list of alts
+     * <li>{@code /command alt add <username> [player]} - add an alt
      */
     public static boolean alt(final @NotNull CommandSender sender, final @NotNull String @NotNull [] originalArgs, final @NotNull String label) {
         if (!sender.hasPermission(Permission.ALT)) return sendMessage(sender, SMPCore.messages().errorNoPermission());
 
-        final @NotNull String command = "/" + label;
+        final @NotNull String command = label;
 
         final @NotNull TextComponent.Builder subCommandBuilder = Component.text()
                 .append(SMPCore.messages().subCommandHeader("Alt", command + " ...")).append(Component.newline())
@@ -237,7 +237,11 @@ public final class MainCommand extends Command {
         }
     }
 
-    public static boolean time(final @NotNull CommandSender sender, final @NotNull String @NotNull [] args, final @NotNull String label) {
+
+    /**
+     * Usage: {@code /<command> time}
+     */
+    public static boolean time(final @NotNull CommandSender sender) {
         if (!sender.hasPermission(Permission.TIME))
             return sendMessage(sender, SMPCore.messages().errorNoPermission());
         return sendMessage(sender, SMPCore.messages().time(SMPCore.gameTime()));

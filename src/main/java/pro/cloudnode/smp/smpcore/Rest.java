@@ -53,7 +53,7 @@ public class Rest {
         obj.addProperty("color", nation.color);
         obj.addProperty("leader", nation.leaderUUID.toString());
         obj.addProperty("viceLeader", nation.viceLeaderUUID.toString());
-        obj.addProperty("members", nation.members().size());
+        obj.addProperty("members", nation.citizens().size());
         obj.addProperty("founded", nation.founded.getTime());
         obj.addProperty("foundedGameTicks", nation.foundedTicks);
         obj.addProperty("foundedGameDate", SMPCore.gameTime(nation.foundedTicks).getTime());
@@ -186,7 +186,7 @@ public class Rest {
                 switch (include) {
                     case "members" -> {
                         final @NotNull JsonArray arr = new JsonArray();
-                        final @NotNull HashSet<@NotNull Member> members = nation.get().members();
+                        final @NotNull HashSet<@NotNull Member> members = nation.get().citizens();
                         for (final @NotNull Member member : members)
                             arr.add(getMemberObject(member));
                         obj.add("members", arr);

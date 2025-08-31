@@ -1,8 +1,11 @@
 package pro.cloudnode.smp.smpcore;
 
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextColor;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.NotNull;
 
@@ -12,9 +15,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.stream.Stream;
 
 public final class Nation {
     /**
@@ -91,8 +97,20 @@ public final class Nation {
         this.bank = bank;
     }
 
-    public @NotNull HashSet<@NotNull Member> members() {
+    public @NotNull HashSet<@NotNull Member> citizens() {
         return Member.get(this);
+    }
+
+    public @NotNull Member vice() {
+        return Member.get(viceLeaderUUID).orElseThrow(() -> new IllegalStateException("vice leader uuid " + viceLeaderUUID + " of nation " + id + " not found"));
+    }
+
+    public @NotNull List<@NotNull Player> onlinePlayers() {
+        final Stream<@NotNull Player> stream = citizens().stream()
+                                                                .map(Member::player)
+                                                                .map(OfflinePlayer::getPlayer)
+                                                                .filter(Objects::nonNull);
+        return stream.toList();
     }
 
     public @NotNull Team createTeam() {
@@ -104,7 +122,7 @@ public final class Nation {
         team.setOption(Team.Option.DEATH_MESSAGE_VISIBILITY, Team.OptionStatus.FOR_OWN_TEAM);
         team.displayName(Component.text(shortName).color(TextColor.color(Integer.decode("0x" + color))).hoverEvent(HoverEvent.showText(Component.text(name))));
         team.prefix(Component.text(shortName + " ").color(TextColor.color(Integer.decode("0x" + color))).hoverEvent(HoverEvent.showText(Component.text(name))));
-        for (final @NotNull Member member : members()) try {
+        for (final @NotNull Member member : citizens()) try {
             team.addPlayer(member.player());
         }
         catch (final @NotNull IllegalArgumentException ignored) {}
@@ -119,9 +137,33 @@ public final class Nation {
     }
 
     public void add(final @NotNull Member member) {
+        member.nation().ifPresent(nation -> nation.remove(member));
         member.nationID = id;
         member.save();
         getTeam().addPlayer(member.player());
+
+        Audience.audience(onlinePlayers()).sendMessage(SMPCore.messages().nationJoinJoined(member));
+
+        CitizenRequest.get(member, this).ifPresent(CitizenRequest::delete);
+        CitizenRequest.delete(CitizenRequest.get(member, true));
+    }
+
+    public void remove(final @NotNull Member member) {
+        if (!id.equals(member.nationID))
+            throw new IllegalStateException("Member " + member.uuid + " is not in nation " + id);
+        if (member.uuid.equals(leaderUUID))
+            throw new IllegalStateException("Cannot remove leader " + member.uuid + " from nation " + id);
+
+        Audience.audience(onlinePlayers()).sendMessage(SMPCore.messages().nationJoinLeft(member));
+
+        if (member.uuid.equals(viceLeaderUUID)) {
+            this.viceLeaderUUID = this.leaderUUID;
+            save();
+        }
+
+        member.nationID = null;
+        member.save();
+        getTeam().removePlayer(member.player());
     }
 
     public Nation(final @NotNull ResultSet rs) throws @NotNull SQLException {
