@@ -141,6 +141,8 @@ public final class NationCommand extends Command {
                             Collections.addAll(list, "add");
                     }
                     case 3 -> {
+                        if (nation.isEmpty())
+                            break;
                         switch (args[1]) {
                             case "kick", "remove", "delete", "rm", "del" -> {
                                 if (other && !sender.hasPermission(Permission.NATION_CITIZENS_KICK_OTHER))
