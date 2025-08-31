@@ -35,6 +35,13 @@ public final class Configuration extends BaseConfig {
         return config.getInt("alts.max");
     }
 
+    /**
+     * The number of minutes after which requests/invitations to join a nation expire
+     */
+    public int joinRequestExpireMinutes() {
+        return config.getInt("join.request-expire-minutes");
+    }
+
     public @NotNull Component relativeTime(final int t, final @NotNull ChronoUnit unit) {
         final @NotNull String formatString = Objects.requireNonNull(config.getString("relative-time." + switch (unit) {
             case SECONDS -> "seconds";

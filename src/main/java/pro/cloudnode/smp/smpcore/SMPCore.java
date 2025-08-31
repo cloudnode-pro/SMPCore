@@ -9,8 +9,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pro.cloudnode.smp.smpcore.command.AltsCommand;
 import pro.cloudnode.smp.smpcore.command.BanCommand;
+import pro.cloudnode.smp.smpcore.command.CitizensCommand;
 import pro.cloudnode.smp.smpcore.command.Command;
 import pro.cloudnode.smp.smpcore.command.MainCommand;
+import pro.cloudnode.smp.smpcore.command.NationCommand;
 import pro.cloudnode.smp.smpcore.command.SeenCommand;
 import pro.cloudnode.smp.smpcore.command.TimeCommand;
 import pro.cloudnode.smp.smpcore.command.UnbanCommand;
@@ -78,6 +80,8 @@ public final class SMPCore extends JavaPlugin {
             put("unban", new UnbanCommand());
             put("seen", new SeenCommand());
             put("time", new TimeCommand());
+            put("nation", new NationCommand());
+            put("citizens", new CitizensCommand());
         }};
         commands.put("alts", new AltsCommand(commands.get("smpcore")));
         for (final @NotNull Map.Entry<@NotNull String, @NotNull Command> entry : commands.entrySet())
