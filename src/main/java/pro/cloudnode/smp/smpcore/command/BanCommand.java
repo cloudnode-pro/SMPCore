@@ -28,7 +28,8 @@ public final class BanCommand extends Command {
     public boolean run(@NotNull CommandSender sender, @NotNull String label, @NotNull String @NotNull [] args) {
         if (!sender.hasPermission(Permission.BAN))
             return sendMessage(sender, SMPCore.messages().errorNoPermission());
-        if (args.length < 1) return sendMessage(sender, SMPCore.messages().usage(label, "<username> [duration] [reason]"));
+        if (args.length < 1)
+            return sendMessage(sender, SMPCore.messages().usage(label, "<username> [duration] [reason]"));
 
         final @Nullable String durationArg = args.length > 1 ? args[1] : null;
         @Nullable Duration duration = null;
@@ -42,7 +43,9 @@ public final class BanCommand extends Command {
 
         final @Nullable Date banExpiry = duration == null ? null : Date.from(Instant.now().plus(duration));
 
-        final @Nullable String reason = args.length > 1 ? String.join(" ", Arrays.copyOfRange(args, duration == null ? 1 : 2, args.length)) : null;
+        final @Nullable String reason = args.length > 1
+                ? String.join(" ", Arrays.copyOfRange(args, duration == null ? 1 : 2, args.length))
+                : null;
         final @NotNull NamespacedKey banSource;
         if (sender instanceof final @NotNull Player player)
             banSource = new NamespacedKey(SMPCore.getInstance(), "player/" + player.getUniqueId());

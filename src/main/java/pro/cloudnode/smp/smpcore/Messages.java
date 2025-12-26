@@ -25,7 +25,7 @@ import java.util.Optional;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 
-public class Messages extends BaseConfig {
+public final class Messages extends BaseConfig {
 
     public Messages() {
         super("messages.yml");
@@ -65,7 +65,10 @@ public class Messages extends BaseConfig {
         return MiniMessage.miniMessage()
                 .deserialize(
                         Objects.requireNonNull(config.getString("banned-player")),
-                        Placeholder.unparsed("player", Optional.ofNullable(player.getName()).orElse(player.getUniqueId().toString())),
+                        Placeholder.unparsed("player",
+                                Optional.ofNullable(player.getName())
+                                        .orElse(player.getUniqueId().toString())
+                        ),
                         Placeholder.component("duration", formatDuration(duration))
                 );
     }
@@ -74,7 +77,10 @@ public class Messages extends BaseConfig {
         return MiniMessage.miniMessage()
                 .deserialize(
                         Objects.requireNonNull(config.getString("banned-member")),
-                        Placeholder.unparsed("player", Optional.ofNullable(member.player().getName()).orElse(member.player().getUniqueId().toString())),
+                        Placeholder.unparsed("player",
+                                Optional.ofNullable(member.player().getName())
+                                        .orElse(member.player().getUniqueId().toString())
+                        ),
                         Placeholder.component("duration", formatDuration(duration))
                 );
     }
@@ -86,7 +92,10 @@ public class Messages extends BaseConfig {
         return MiniMessage.miniMessage()
                 .deserialize(
                         Objects.requireNonNull(config.getString("banned-member-chain")),
-                        Placeholder.unparsed("player", Optional.ofNullable(member.player().getName()).orElse(member.player().getUniqueId().toString())),
+                        Placeholder.unparsed("player",
+                                Optional.ofNullable(member.player().getName())
+                                        .orElse(member.player().getUniqueId().toString())
+                        ),
                         Placeholder.unparsed("n-alt", String.valueOf(alts.size())),
                         Placeholder.unparsed("alts", altsString),
                         Placeholder.component("duration", formatDuration(duration))

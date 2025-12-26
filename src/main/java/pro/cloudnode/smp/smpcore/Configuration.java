@@ -54,8 +54,10 @@ public final class Configuration extends BaseConfig {
                 throw new IllegalStateException("No relative time format for ChronoUnit " + unit);
             }
         }));
-        return MiniMessage.miniMessage()
-                .deserialize(formatString, Formatter.number("t", t), Formatter.choice("format", Math.abs(t.doubleValue())));
+        return MiniMessage.miniMessage().deserialize(formatString,
+                Formatter.number("t", t),
+                Formatter.choice("format", Math.abs(t.doubleValue()))
+        );
     }
 
     public @NotNull Component relativeTimeFuture(final @NotNull Component relativeTime) {
@@ -70,10 +72,15 @@ public final class Configuration extends BaseConfig {
 
     public @NotNull Component relativeTimeDuration(final @NotNull Component duration) {
         return MiniMessage.miniMessage()
-                .deserialize(Objects.requireNonNull(config.getString("relative-time.duration")), Placeholder.component("t", duration));
+                .deserialize(
+                        Objects.requireNonNull(config.getString("relative-time.duration")),
+                        Placeholder.component("t", duration)
+                );
     }
 
     public @NotNull Component relativeTimeDurationIndefinite() {
-        return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("relative-time.duration-indefinite")));
+        return MiniMessage.miniMessage().deserialize(
+                Objects.requireNonNull(config.getString("relative-time.duration-indefinite"))
+        );
     }
 }
