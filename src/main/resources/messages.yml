@@ -117,3 +117,4 @@ error:
   demote-leader: <red>(!) You cannot demote the nation leader.</red>
   demote-citizen: <red>(!) Don't make this <i>citizen</i> unworthy of the nation! (To remove from nation, use <click:suggest_command:/nation citizens kick ><gray>/nation citizens kick</gray></click>.)</red>
   duration-zero-or-less: <red>(!) Duration must be greater than zero.</red>
+  invalid-duration: <red>(!) Invalid duration format <gray>‘<duration></gray>’.</red>

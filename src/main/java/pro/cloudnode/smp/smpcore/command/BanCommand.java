@@ -33,10 +33,12 @@ public final class BanCommand extends Command {
 
         final @Nullable String durationArg = args.length > 1 ? args[1] : null;
         @Nullable Duration duration = null;
-        if (durationArg != null) try {
+        if (durationArg != null && durationArg.matches("(?i)^PT\\d.*")) try {
             duration = Duration.parse(durationArg);
         }
-        catch (DateTimeParseException ignored) {}
+        catch (DateTimeParseException ignored) {
+            return sendMessage(sender, SMPCore.messages().invalidDuration(durationArg));
+        }
 
         if (duration != null && (duration.isNegative() || duration.isZero()))
             return sendMessage(sender, SMPCore.messages().errorDurationZeroOrLess());

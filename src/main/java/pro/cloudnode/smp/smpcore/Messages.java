@@ -619,6 +619,13 @@ public final class Messages extends BaseConfig {
         return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.duration-zero-or-less")));
     }
 
+    public @NotNull Component invalidDuration(final @NotNull String duration) {
+        return MiniMessage.miniMessage().deserialize(
+                Objects.requireNonNull(config.getString("error.invalid-duration")),
+                Placeholder.unparsed("duration", duration)
+        );
+    }
+
     public record SubCommandArgument(@NotNull String name, boolean required) {
         public @NotNull Component component() {
             return required ? SMPCore.messages().subCommandArgumentRequired(name) : SMPCore.messages()
