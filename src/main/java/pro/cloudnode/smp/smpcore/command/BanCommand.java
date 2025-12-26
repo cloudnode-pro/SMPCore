@@ -1,7 +1,9 @@
 package pro.cloudnode.smp.smpcore.command;
 
+import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pro.cloudnode.smp.smpcore.Member;
@@ -25,25 +27,28 @@ public final class BanCommand extends Command {
             return sendMessage(sender, SMPCore.messages().errorNoPermission());
         if (args.length < 1) return sendMessage(sender, SMPCore.messages().usage(label, "<username> [reason]"));
         final @NotNull OfflinePlayer target = SMPCore.getInstance().getServer().getOfflinePlayer(args[0]);
+
         final @Nullable String reason = args.length > 1 ? String.join(" ", Arrays.copyOfRange(args, 1, args.length)) : null;
+        final @Nullable Date banExpiry = null;
+        final @NotNull NamespacedKey banSource;
+        if (sender instanceof final @NotNull Player player)
+            banSource = new NamespacedKey(SMPCore.getInstance(), "player/" + player.getUniqueId());
+        else banSource = new NamespacedKey(SMPCore.getInstance(), "console");
+
         final @NotNull Optional<@NotNull Member> targetMember = Member.get(target);
         if (targetMember.isEmpty()) {
-            SMPCore.runMain(() -> target.ban(reason, (Date) null, null));
+            SMPCore.runMain(() -> target.ban(reason, banExpiry, banSource.asString()));
             return sendMessage(sender, SMPCore.messages().bannedPlayer(target));
         }
         final @NotNull Member main = targetMember.get().altOwner().orElse(targetMember.get());
         final @NotNull HashSet<@NotNull Member> alts = main.getAlts();
 
-        // todo: possibly add temp bans & ban source
-        final @Nullable Date banExpiry = null;
-        final @Nullable String banSource = null;
-
-        SMPCore.runMain(() -> main.player().ban(reason, banExpiry, banSource));
+        SMPCore.runMain(() -> main.player().ban(reason, banExpiry, banSource.asString()));
         if (alts.isEmpty()) return sendMessage(sender, SMPCore.messages().bannedMember(main));
         else {
             SMPCore.runMain(() -> {
                 for (final @NotNull Member alt : alts)
-                    alt.player().ban(reason, banExpiry, banSource);
+                    alt.player().ban(reason, banExpiry, banSource.asString());
             });
             return sendMessage(sender, SMPCore.messages().bannedMemberChain(main, alts.stream().toList()));
         }
