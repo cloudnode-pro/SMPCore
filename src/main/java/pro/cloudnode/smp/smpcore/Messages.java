@@ -85,7 +85,11 @@ public final class Messages extends BaseConfig {
                 );
     }
 
-    public @NotNull Component bannedMemberChain(final @NotNull Member member, final @NotNull List<@NotNull Member> alts, final @Nullable Duration duration) {
+    public @NotNull Component bannedMemberChain(
+            final @NotNull Member member,
+            final @NotNull List<@NotNull Member> alts,
+            final @Nullable Duration duration
+    ) {
         final @NotNull String altsString = alts.stream()
                 .map(m -> Optional.ofNullable(m.player().getName()).orElse(m.player().getUniqueId().toString()))
                 .collect(Collectors.joining(", "));
