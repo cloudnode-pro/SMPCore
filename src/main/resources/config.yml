@@ -23,3 +23,5 @@ relative-time:
   years: <t> <format:'0#years|1#year|1<years'>
   future: in <t>
   past: <t> ago
+  duration: for <t>
+  duration-indefinite: <u><b>forever</b></u>

@@ -188,7 +188,7 @@ public final class SMPCore extends JavaPlugin {
         final double years = Math.floor(months / 12.0);
 
         final @NotNull Component t;
-        if (years > 0) t = SMPCore.config().relativeTime((int) years, ChronoUnit.YEARS);
+        if (years > 0) t = SMPCore.config().relativeTime(years, ChronoUnit.YEARS);
         else if (months > 0) t = SMPCore.config().relativeTime((int) months, ChronoUnit.MONTHS);
         else if (days > 0) t = SMPCore.config().relativeTime((int) days, ChronoUnit.DAYS);
         else if (hours > 0) t = SMPCore.config().relativeTime((int) hours, ChronoUnit.HOURS);

@@ -1,6 +1,7 @@
 package pro.cloudnode.smp.smpcore;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Formatter;
@@ -10,7 +11,9 @@ import org.bukkit.permissions.Permissible;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.Duration;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -22,7 +25,7 @@ import java.util.Optional;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 
-public class Messages extends BaseConfig {
+public final class Messages extends BaseConfig {
 
     public Messages() {
         super("messages.yml");
@@ -37,26 +40,70 @@ public class Messages extends BaseConfig {
                 .deserialize(Objects.requireNonNull(config.getString("usage")), Placeholder.unparsed("label", label), Placeholder.unparsed("args", args));
     }
 
-    public @NotNull Component bannedPlayer(final @NotNull OfflinePlayer player) {
-        return MiniMessage.miniMessage()
-                .deserialize(Objects.requireNonNull(config.getString("banned-player")), Placeholder.unparsed("player", Optional
-                        .ofNullable(player.getName()).orElse(player.getUniqueId().toString())));
+    private @NotNull Component formatDuration(@Nullable Duration duration) {
+        if (duration == null) return SMPCore.config().relativeTimeDurationIndefinite();
+
+        final long seconds = Math.abs(duration.getSeconds());
+        final long days    = seconds / 86_400;
+        final long hours   = (seconds % 86_400) / 3_600;
+        final long minutes = (seconds % 3_600) / 60;
+        final long secs    = seconds % 60;
+
+        final ArrayList<Component> components = new ArrayList<>();
+
+        if (days    > 0) components.add(SMPCore.config().relativeTime(days, ChronoUnit.DAYS));
+        if (hours   > 0) components.add(SMPCore.config().relativeTime(hours, ChronoUnit.HOURS));
+        if (minutes > 0) components.add(SMPCore.config().relativeTime(minutes, ChronoUnit.MINUTES));
+        if (secs    > 0) components.add(SMPCore.config().relativeTime(secs, ChronoUnit.SECONDS));
+
+        final Component joined = Component.join(JoinConfiguration.spaces(), components);
+
+        return SMPCore.config().relativeTimeDuration(joined);
     }
 
-    public @NotNull Component bannedMember(final @NotNull Member member) {
+    public @NotNull Component bannedPlayer(final @NotNull OfflinePlayer player, final @Nullable Duration duration) {
         return MiniMessage.miniMessage()
-                .deserialize(Objects.requireNonNull(config.getString("banned-member")), Placeholder.unparsed("player", Optional
-                        .ofNullable(member.player().getName()).orElse(member.player().getUniqueId().toString())));
+                .deserialize(
+                        Objects.requireNonNull(config.getString("banned-player")),
+                        Placeholder.unparsed("player",
+                                Optional.ofNullable(player.getName())
+                                        .orElse(player.getUniqueId().toString())
+                        ),
+                        Placeholder.component("duration", formatDuration(duration))
+                );
     }
 
-    public @NotNull Component bannedMemberChain(final @NotNull Member member, final @NotNull List<@NotNull Member> alts) {
+    public @NotNull Component bannedMember(final @NotNull Member member, final @Nullable Duration duration) {
+        return MiniMessage.miniMessage()
+                .deserialize(
+                        Objects.requireNonNull(config.getString("banned-member")),
+                        Placeholder.unparsed("player",
+                                Optional.ofNullable(member.player().getName())
+                                        .orElse(member.player().getUniqueId().toString())
+                        ),
+                        Placeholder.component("duration", formatDuration(duration))
+                );
+    }
+
+    public @NotNull Component bannedMemberChain(
+            final @NotNull Member member,
+            final @NotNull List<@NotNull Member> alts,
+            final @Nullable Duration duration
+    ) {
         final @NotNull String altsString = alts.stream()
                 .map(m -> Optional.ofNullable(m.player().getName()).orElse(m.player().getUniqueId().toString()))
                 .collect(Collectors.joining(", "));
         return MiniMessage.miniMessage()
-                .deserialize(Objects.requireNonNull(config.getString("banned-member-chain")), Placeholder.unparsed("player", Optional
-                        .ofNullable(member.player().getName()).orElse(member.player().getUniqueId()
-                                .toString())), Placeholder.unparsed("n-alt", String.valueOf(alts.size())), Placeholder.unparsed("alts", altsString));
+                .deserialize(
+                        Objects.requireNonNull(config.getString("banned-member-chain")),
+                        Placeholder.unparsed("player",
+                                Optional.ofNullable(member.player().getName())
+                                        .orElse(member.player().getUniqueId().toString())
+                        ),
+                        Placeholder.unparsed("n-alt", String.valueOf(alts.size())),
+                        Placeholder.unparsed("alts", altsString),
+                        Placeholder.component("duration", formatDuration(duration))
+                );
     }
 
     public @NotNull Component unbannedPlayer(final @NotNull OfflinePlayer player) {
@@ -566,6 +613,17 @@ public class Messages extends BaseConfig {
 
     public @NotNull Component errorDemoteCitizen() {
         return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.demote-citizen")));
+    }
+
+    public @NotNull Component errorDurationZeroOrLess() {
+        return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.duration-zero-or-less")));
+    }
+
+    public @NotNull Component invalidDuration(final @NotNull String duration) {
+        return MiniMessage.miniMessage().deserialize(
+                Objects.requireNonNull(config.getString("error.invalid-duration")),
+                Placeholder.unparsed("duration", duration)
+        );
     }
 
     public record SubCommandArgument(@NotNull String name, boolean required) {

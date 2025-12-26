@@ -1,9 +1,9 @@
 reloaded: <green>(!) Plugin successfully reloaded.</green>
 usage: "<yellow>(!) Usage: <white>/<label> <args></white></yellow>"
 
-banned-player: <yellow>(!) Banned singular non-member player <gray><player></gray>.</yellow>
-banned-member: <green>(!) Banned member <gray><player></gray>. No alts found.</green>
-banned-member-chain: "<green>(!) Banned member <gray><player></gray> and <gray><n-alt></gray> alts: <gray><alts></gray>.</green>"
+banned-player: <yellow>(!) Banned singular non-member player <gray><player></gray> <duration>.</yellow>
+banned-member: <green>(!) Banned member <gray><player></gray> <duration>. No alts found.</green>
+banned-member-chain: "<green>(!) Banned member <gray><player></gray> and <gray><n-alt></gray> alts <duration>: <gray><alts></gray>.</green>"
 
 unbanned-player: <yellow>(!) Unbanned singular non-member player <gray><player></gray>.</yellow>
 unbanned-member: <green>(!) Unbanned member <gray><player></gray> and <gray><n-alts></gray> alts.</green>
@@ -116,3 +116,5 @@ error:
   already-vice: <red>(!) The vice-leader is already <gray><player></gray>.</red>
   demote-leader: <red>(!) You cannot demote the nation leader.</red>
   demote-citizen: <red>(!) Don't make this <i>citizen</i> unworthy of the nation! (To remove from nation, use <click:suggest_command:/nation citizens kick ><gray>/nation citizens kick</gray></click>.)</red>
+  duration-zero-or-less: <red>(!) Duration must be greater than zero.</red>
+  invalid-duration: <red>(!) Invalid duration format <gray>‘<duration></gray>’.</red>
