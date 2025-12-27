@@ -83,6 +83,19 @@ nation:
     request-rejected: <green>(!) You have rejected the request of <gray><player></gray> to join <gray><nation></gray>.</green>
     invite-cancelled: <green>(!) You have cancelled the invitation to <gray><player></gray> to join <gray><nation></gray>.</green>
     invite-rejected: <green>(!) You have rejected the invitation to join <gray><nation></gray>.</green>
+
+ban-screen:
+  permanent: |-
+    <red><lang:multiplayer.disconnect.banned></red>
+    
+    <reason>
+
+  temporary: |-
+    <red><lang:multiplayer.disconnect.banned></red>
+    
+    <reason>
+    <gray><lang:multiplayer.disconnect.banned.expiration:'on <white><expiration:"yyyy-MM-dd"></white> at <white><expiration:"HH:mm:ss z"></white>'> (<expiration-relative>).</gray>
+
 error:
   no-permission: <red>(!) You don't have permission to use this command.</red>
   player-not-banned: <red>(!) Player <gray><player></gray> is not banned and is not a member.</red>
