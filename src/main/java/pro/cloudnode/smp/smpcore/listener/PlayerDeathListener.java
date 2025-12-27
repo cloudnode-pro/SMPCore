@@ -27,7 +27,7 @@ public final class PlayerDeathListener implements Listener {
             return;
 
         player.spigot().respawn();
-        player.setGameMode(SMPCore.getInstance().getServer().getDefaultGameMode());
+        player.setGameMode(player.getServer().getDefaultGameMode());
 
         final Component reason = Optional.ofNullable(event.deathMessage())
                 .orElse(SMPCore.config().deathBanMessage());
