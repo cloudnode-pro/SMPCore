@@ -94,7 +94,7 @@ ban-screen:
     <red><lang:multiplayer.disconnect.banned></red>
     
     <reason>
-    <gray><lang:multiplayer.disconnect.banned.expiration:'on <white><expiration:"yyyy-MM-dd"></white> at <white><expiration:"HH:mm:ss z"></white>'> (<expiration-relative>).</gray>
+    <gray><lang:multiplayer.disconnect.banned.expiration:'<white><expiration:"yyyy-MM-dd"></white> at <white><expiration:"HH:mm:ss z"></white>'> (<expiration-relative>).</gray>
 
 error:
   no-permission: <red>(!) You don't have permission to use this command.</red>
