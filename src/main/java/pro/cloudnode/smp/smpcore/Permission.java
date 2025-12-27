@@ -156,4 +156,9 @@ public final class Permission {
      * Relieve vice-leader of any nation of their duties
      */
     public static @NotNull String NATION_DEMOTE_OTHER = "smpcore.nation.citizens.demote.other";
+
+    /**
+     * Bypass death ban.
+     */
+    public static @NotNull String DEATHBAN_BYPASS = "smpcore.deathban.bypass";
 }

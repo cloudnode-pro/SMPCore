@@ -6,7 +6,9 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Formatter;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Objects;
 
 public final class Configuration extends BaseConfig {
@@ -40,6 +42,24 @@ public final class Configuration extends BaseConfig {
      */
     public int joinRequestExpireMinutes() {
         return config.getInt("join.request-expire-minutes");
+    }
+
+    /**
+     * Ban players upon death
+     */
+    public boolean deathBanEnabled() {
+        return config.getBoolean("death-ban.enabled");
+    }
+
+    public @NotNull Component deathBanMessage() {
+        return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("death-ban.message")));
+    }
+
+    public @NotNull Duration deathBanProgression(final int index) {
+        List<Duration> progression = config.getStringList("death-ban.progression")
+                .stream().map(Duration::parse).toList();
+        if (index >= progression.size()) progression.getLast();
+        return progression.get(index);
     }
 
     public @NotNull Component relativeTime(final Number t, final @NotNull ChronoUnit unit) {
