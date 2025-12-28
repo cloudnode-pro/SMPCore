@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 public final class Member {
     public final @NotNull UUID uuid;
     public @Nullable String nationID;
+    @SuppressWarnings("CanBeFinal")
     public boolean staff;
     public final @Nullable UUID altOwnerUUID;
     public final @NotNull Date added;

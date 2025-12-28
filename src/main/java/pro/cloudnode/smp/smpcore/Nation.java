@@ -34,6 +34,7 @@ public final class Nation {
      * <p>
      * Max length: 128
      */
+    @SuppressWarnings("CanBeFinal")
     public @NotNull String name;
 
     /**
@@ -41,6 +42,7 @@ public final class Nation {
      * <p>
      * Max length: 16
      */
+    @SuppressWarnings("CanBeFinal")
     public @NotNull String shortName;
 
     /**
@@ -48,11 +50,13 @@ public final class Nation {
      * <p>
      * Max length: 6
      */
+    @SuppressWarnings("CanBeFinal")
     public @NotNull String color;
 
     /**
      * Nation leader's UUID
      */
+    @SuppressWarnings("CanBeFinal")
     public @NotNull UUID leaderUUID;
 
     /**

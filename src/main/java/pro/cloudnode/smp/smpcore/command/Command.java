@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public abstract class Command implements TabCompleter, CommandExecutor {
+    @SuppressWarnings("SameReturnValue")
     public static boolean sendMessage(final @NotNull Audience recipient, final @NotNull Component message) {
         recipient.sendMessage(message);
         return true;
