@@ -70,9 +70,7 @@ public final class Configuration extends BaseConfig {
             case DAYS -> "days";
             case MONTHS -> "months";
             case YEARS -> "years";
-            default -> {
-                throw new IllegalStateException("No relative time format for ChronoUnit " + unit);
-            }
+            default -> throw new IllegalStateException("No relative time format for ChronoUnit " + unit);
         }));
         return MiniMessage.miniMessage().deserialize(formatString,
                 Formatter.number("t", t),
