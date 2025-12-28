@@ -14,6 +14,28 @@ join:
   # The number of minutes after which requests/invitations to join a nation expire
   request-expire-minutes: 1440
 
+# Ban players upon death
+death-ban:
+  enabled: true
+  message: <lang:deathScreen.title>
+
+  # Ban durations
+  progression:
+    - PT1M
+    - PT2M
+    - PT5M
+    - PT10M
+    - PT20M
+    - PT45M
+    - PT1H30M
+    - PT3H
+    - PT6H
+    - PT12H
+    - P1D
+    - P3D
+    - P7D
+    - P14D
+
 relative-time:
   seconds: <t> <format:'0#seconds|1#second|1<seconds'>
   minutes: <t> <format:'0#minutes|1#minute|1<minutes'>

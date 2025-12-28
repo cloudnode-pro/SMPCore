@@ -17,7 +17,10 @@ import pro.cloudnode.smp.smpcore.command.SeenCommand;
 import pro.cloudnode.smp.smpcore.command.TimeCommand;
 import pro.cloudnode.smp.smpcore.command.UnbanCommand;
 import pro.cloudnode.smp.smpcore.listener.NationTeamUpdaterListener;
+import pro.cloudnode.smp.smpcore.listener.PlayerDeathListener;
+import pro.cloudnode.smp.smpcore.listener.PlayerPostRespawnListener;
 import pro.cloudnode.smp.smpcore.listener.PlayerSlotsListener;
+import pro.cloudnode.smp.smpcore.listener.PlayerPreLoginListener;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -73,6 +76,9 @@ public final class SMPCore extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new NationTeamUpdaterListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerSlotsListener(), this);
+        getServer().getPluginManager().registerEvents(new PlayerDeathListener(), this);
+        getServer().getPluginManager().registerEvents(new PlayerPreLoginListener(), this);
+        getServer().getPluginManager().registerEvents(new PlayerPostRespawnListener(), this);
 
         final @NotNull HashMap<@NotNull String, @NotNull Command> commands = new HashMap<>() {{
             put("smpcore", new MainCommand());

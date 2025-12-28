@@ -1,11 +1,14 @@
 package pro.cloudnode.smp.smpcore;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Formatter;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import org.bukkit.BanEntry;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.permissions.Permissible;
 import org.jetbrains.annotations.NotNull;
@@ -13,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -461,6 +465,23 @@ public final class Messages extends BaseConfig {
                         Objects.requireNonNull(config.getString("nation.join.invite-rejected")),
                         Placeholder.unparsed("nation", nation.name)
                 );
+    }
+
+    public @NotNull Optional<@NotNull Component> banScreen(final @NotNull BanEntry<PlayerProfile> banEntry) {
+        final @Nullable Date expiration = banEntry.getExpiration();
+        final @Nullable String template = config.getString("ban-screen." + (expiration == null ? "permanent" : "temporary"));
+        if (template == null || template.isBlank() || template.equals("null"))
+            return Optional.empty();
+
+        List<TagResolver> placeholders = new ArrayList<>();
+        placeholders.add(Placeholder.unparsed("reason", Optional.ofNullable(banEntry.getReason()).orElse("")));
+        if (expiration != null) {
+            final @NotNull ZonedDateTime localExpiry = expiration.toInstant().atZone(ZoneOffset.systemDefault());
+            placeholders.add(Formatter.date("expiration", localExpiry));
+            placeholders.add(Placeholder.component("expiration-relative", SMPCore.relativeTime(expiration)));
+        }
+
+        return Optional.of(MiniMessage.miniMessage().deserialize(template, placeholders.toArray(TagResolver[]::new)));
     }
 
     // errors
