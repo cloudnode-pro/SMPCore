@@ -15,10 +15,10 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 public final class BanCommand extends Command {
     private static void ban(
@@ -62,7 +62,7 @@ public final class BanCommand extends Command {
         }
 
         final Member main = targetMember.get().altOwner().orElse(targetMember.get());
-        final HashSet<Member> alts = main.getAlts();
+        final Set<Member> alts = main.getAlts();
 
         ban(main.player(), reason, banExpiry, banSource);
         final List<Member> bannedMembers = new ArrayList<>();

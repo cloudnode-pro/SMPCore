@@ -160,5 +160,5 @@ public final class Permission {
     /**
      * Bypass death ban.
      */
-    public static @NotNull String DEATHBAN_BYPASS = "smpcore.deathban.bypass";
+    public static final @NotNull String DEATHBAN_BYPASS = "smpcore.deathban.bypass";
 }
