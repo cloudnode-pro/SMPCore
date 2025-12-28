@@ -187,8 +187,7 @@ public final class Nation {
 
     public void save() {
         try (
-                final @NotNull Connection conn = SMPCore.getInstance().db()
-                        .getConnection(); final @NotNull PreparedStatement stmt = conn.prepareStatement("INSERT OR REPLACE INTO `nations` (`id`, `name`, `short_name`, `color`, `leader`, `vice`, `founded`, `founded_ticks`, `bank`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
+                final @NotNull PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement("INSERT OR REPLACE INTO `nations` (`id`, `name`, `short_name`, `color`, `leader`, `vice`, `founded`, `founded_ticks`, `bank`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
         ) {
             stmt.setString(1, id);
             stmt.setString(2, name);
@@ -212,8 +211,7 @@ public final class Nation {
 
     public static @NotNull Optional<@NotNull Nation> get(final @NotNull String id) {
         try (
-                final @NotNull Connection conn = SMPCore.getInstance().db()
-                        .getConnection(); final @NotNull PreparedStatement stmt = conn.prepareStatement("SELECT * FROM `nations` WHERE `id` = ? LIMIT 1")
+                final @NotNull PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement("SELECT * FROM `nations` WHERE `id` = ? LIMIT 1")
         ) {
             stmt.setString(1, id);
             final @NotNull ResultSet rs = stmt.executeQuery();
@@ -228,8 +226,7 @@ public final class Nation {
 
     public static @NotNull Set<@NotNull Nation> get() {
         try (
-                final @NotNull Connection conn = SMPCore.getInstance().db()
-                        .getConnection(); final @NotNull PreparedStatement stmt = conn.prepareStatement("SELECT * FROM `nations`")
+                final @NotNull PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement("SELECT * FROM `nations`")
         ) {
             final @NotNull ResultSet rs = stmt.executeQuery();
             final @NotNull Set<@NotNull Nation> nations = new HashSet<>();

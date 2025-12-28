@@ -46,11 +46,8 @@ public final class SMPCore extends JavaPlugin {
     }
 
     public final @NotNull HikariConfig hikariConfig = new HikariConfig();
-    private HikariDataSource dbSource;
-
-    public @NotNull HikariDataSource db() {
-        return dbSource;
-    }
+    private HikariDataSource db;
+    Connection conn;
 
     private @Nullable Configuration config;
     private @Nullable Messages messages;
@@ -99,7 +96,13 @@ public final class SMPCore extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        db().close();
+        try {
+            conn.close();
+        }
+        catch (SQLException e) {
+            getLogger().log(Level.SEVERE, "failed to close db connection", e);
+        }
+        db.close();
         if (rest != null) rest.javalin.stop();
     }
 
@@ -130,7 +133,14 @@ public final class SMPCore extends JavaPlugin {
         hikariConfig.addDataSourceProperty("elideSetAutoCommits", "true");
         hikariConfig.addDataSourceProperty("maintainTimeStats", "true");
 
-        dbSource = new HikariDataSource(hikariConfig);
+        db = new HikariDataSource(hikariConfig);
+        try {
+            conn = db.getConnection();
+        }
+        catch (final SQLException e) {
+            getLogger().log(Level.SEVERE, "could not get db connection", e);
+            disable();
+        }
     }
 
     private void initDatabase() {
@@ -148,7 +158,7 @@ public final class SMPCore extends JavaPlugin {
             final String query = q.stripTrailing().stripIndent().replaceAll("^\\s+(?:--.+)*", "");
             if (query.isBlank()) continue;
             try (
-                    final Connection conn = db().getConnection();
+                    final Connection conn = db.getConnection();
                     final PreparedStatement stmt = conn.prepareStatement(query)
             ) {
                 stmt.executeUpdate();

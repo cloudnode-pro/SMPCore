@@ -6,7 +6,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pro.cloudnode.smp.smpcore.command.Command;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -130,10 +129,10 @@ public final class CitizenRequest {
 
     public void save() {
         try (
-                final @NotNull Connection conn = SMPCore.getInstance().db().getConnection();
-                final @NotNull PreparedStatement stmt = conn.prepareStatement(
-                        "INSERT INTO `citizen_requests` (`member`, `nation`, `mode`, `created`, `expires`) VALUES (?,"
-                                + " ?, ?, ?, ?)")
+            final @NotNull PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement(
+                    "INSERT INTO `citizen_requests` (`member`, `nation`, `mode`, `created`, `expires`) VALUES (?,"
+                            + " ?, ?, ?, ?)"
+            )
         ) {
             stmt.setString(1, uuid.toString());
             stmt.setString(2, nationID);
@@ -155,8 +154,7 @@ public final class CitizenRequest {
 
     public void delete() {
         try (
-                final @NotNull Connection conn = SMPCore.getInstance().db().getConnection();
-                final @NotNull PreparedStatement stmt = conn.prepareStatement(
+                final @NotNull PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement(
                         "DELETE FROM `citizen_requests` WHERE `member` = ? AND `nation` = ?")
         ) {
             stmt.setString(1, uuid.toString());
@@ -185,8 +183,7 @@ public final class CitizenRequest {
             final @NotNull Nation nation
     ) {
         try (
-                final @NotNull Connection conn = SMPCore.getInstance().db().getConnection();
-                final @NotNull PreparedStatement stmt = conn.prepareStatement(
+                final @NotNull PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement(
                         "SELECT * FROM `citizen_requests` WHERE `member` = ? AND `nation` = ? LIMIT 1")
         ) {
             stmt.setString(1, member.uuid.toString());
@@ -214,8 +211,7 @@ public final class CitizenRequest {
      */
     public static @NotNull List<@NotNull CitizenRequest> get(final @NotNull Nation nation, final boolean mode) {
         try (
-                final @NotNull Connection conn = SMPCore.getInstance().db().getConnection();
-                final @NotNull PreparedStatement stmt = conn.prepareStatement(
+                final @NotNull PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement(
                         "SELECT * FROM `citizen_requests` WHERE `nation` = ? AND `mode` = ? ORDER BY `created`")
         ) {
             stmt.setString(1, nation.id);
@@ -242,8 +238,7 @@ public final class CitizenRequest {
      */
     public static @NotNull List<@NotNull CitizenRequest> get(final @NotNull Member member, final boolean mode) {
         try (
-                final @NotNull Connection conn = SMPCore.getInstance().db().getConnection();
-                final @NotNull PreparedStatement stmt = conn.prepareStatement(
+                final @NotNull PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement(
                         "SELECT * FROM `citizen_requests` WHERE `member` = ? AND `mode` = ? ORDER BY `created`")
         ) {
             stmt.setString(1, member.uuid.toString());
@@ -273,11 +268,10 @@ public final class CitizenRequest {
      */
     public static void delete(final @NotNull List<@NotNull CitizenRequest> requests) {
         try (
-                final @NotNull Connection conn = SMPCore.getInstance().db().getConnection();
-                final @NotNull PreparedStatement stmt = conn.prepareStatement(
+                final @NotNull PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement(
                         "DELETE FROM `citizen_requests` WHERE `member` = ? AND `nation` = ?")
         ) {
-            conn.setAutoCommit(false);
+            SMPCore.getInstance().conn.setAutoCommit(false);
             for (final @NotNull CitizenRequest request : requests) {
                 stmt.setString(1, request.uuid.toString());
                 stmt.setString(2, request.nationID);
@@ -285,7 +279,8 @@ public final class CitizenRequest {
             }
 
             stmt.executeBatch();
-            conn.commit();
+            SMPCore.getInstance().conn.commit();
+            SMPCore.getInstance().conn.setAutoCommit(true);
         }
         catch (final @NotNull SQLException e) {
             SMPCore.getInstance().getLogger().log(
