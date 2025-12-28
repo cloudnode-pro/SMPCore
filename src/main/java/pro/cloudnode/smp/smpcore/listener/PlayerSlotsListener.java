@@ -1,12 +1,15 @@
 package pro.cloudnode.smp.smpcore.listener;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
+import io.papermc.paper.event.player.PlayerServerFullCheckEvent;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.jetbrains.annotations.NotNull;
 import pro.cloudnode.smp.smpcore.Member;
 
+import java.util.Objects;
 import java.util.Optional;
 
 public final class PlayerSlotsListener implements Listener {
@@ -21,11 +24,12 @@ public final class PlayerSlotsListener implements Listener {
     /**
      * If the player is a member, but the server thinks it's full, allow them to join
      */
-    @EventHandler
-    public void onPlayerLogin(final @NotNull PlayerLoginEvent event) {
-        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL) {
-            final @NotNull Optional<@NotNull Member> member = Member.get(event.getPlayer());
-            if (member.isPresent()) event.allow();
-        }
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void allowMemberJoinWhenServerFull(final @NotNull PlayerServerFullCheckEvent event) {
+        if (event.isAllowed()) return;
+        final PlayerProfile profile = event.getPlayerProfile();
+        final @NotNull Optional<@NotNull Member> member = Member.get(Objects.requireNonNull(profile.getId()));
+        if (member.isEmpty()) return;
+        event.allow(true);
     }
 }
