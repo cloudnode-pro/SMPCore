@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
+@SuppressWarnings("unused")
 public final class Token {
     public final @NotNull UUID token;
     public final @NotNull UUID memberUUID;
@@ -64,7 +65,6 @@ public final class Token {
         }
     }
 
-    @SuppressWarnings("unused")
     public static @NotNull Optional<@NotNull Token> get(final @NotNull UUID token) throws SQLException {
         try (
                 final @NotNull Connection conn = SMPCore.getInstance().db()

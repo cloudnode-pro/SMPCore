@@ -37,6 +37,7 @@ public final class UnbanCommand extends Command {
         return sendMessage(sender, SMPCore.messages().unbannedMember(main, alts.stream().toList()));
     }
 
+    @SuppressWarnings("NullableProblems")
     @Override
     public @NotNull List<@NotNull String> tab(@NotNull CommandSender sender, @NotNull String label, @NotNull String @NotNull [] args) {
         if (args.length <= 1) {

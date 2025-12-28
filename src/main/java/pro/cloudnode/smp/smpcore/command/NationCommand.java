@@ -74,6 +74,7 @@ public final class NationCommand extends Command {
         return tabComplete(sender, label, args);
     }
 
+    @SuppressWarnings("NullableProblems")
     public static @Nullable List<@NotNull String> tabComplete(
             final @NotNull CommandSender sender,
             final @NotNull String ignored,

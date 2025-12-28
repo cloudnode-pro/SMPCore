@@ -132,6 +132,7 @@ public final class Member {
      *
      * @return whether the member was deleted
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean delete() {
         if (!getAlts().isEmpty()) return false;
         final @NotNull OfflinePlayer player = player();
@@ -234,10 +235,12 @@ public final class Member {
         }
     }
 
+    @SuppressWarnings("NullableProblems")
     public static @NotNull Set<@NotNull String> getNames() {
         return get().stream().map(m -> m.player().getName()).filter(Objects::nonNull).collect(Collectors.toSet());
     }
 
+    @SuppressWarnings("NullableProblems")
     public static @NotNull Set<@NotNull String> getAltNames() {
         return get().stream().filter(Member::isAlt).map(m -> m.player().getName()).filter(Objects::nonNull).collect(Collectors.toSet());
     }

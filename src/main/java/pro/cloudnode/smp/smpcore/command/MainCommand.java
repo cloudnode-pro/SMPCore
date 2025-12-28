@@ -37,6 +37,7 @@ public final class MainCommand extends Command {
         };
     }
 
+    @SuppressWarnings("NullableProblems")
     @Override
     public @Nullable List<@NotNull String> tab(@NotNull CommandSender sender, @NotNull String label, @NotNull String @NotNull [] args) {
         final @NotNull ArrayList<@NotNull String> suggestions = new ArrayList<>();
