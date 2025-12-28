@@ -76,7 +76,7 @@ public final class NationCommand extends Command {
 
     public static @Nullable List<@NotNull String> tabComplete(
             final @NotNull CommandSender sender,
-            final @NotNull String label,
+            final @NotNull String ignored,
             @NotNull String @NotNull [] args
     ) {
         final var list = new ArrayList<@NotNull String>();
