@@ -102,7 +102,8 @@ public final class SMPCore extends JavaPlugin {
     }
 
     public void reload() {
-        if (config != null) config.reload();
+        Objects.requireNonNull(config);
+        config.reload();
         if (messages != null) messages.reload();
         setupDatabase();
         if (rest != null) rest.javalin.stop();
