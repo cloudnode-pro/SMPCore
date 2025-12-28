@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -76,8 +77,8 @@ public final class Token {
         }
     }
 
-    public static @NotNull HashSet<@NotNull Token> get(final @NotNull Member member) {
-        final @NotNull HashSet<@NotNull Token> tokens = new HashSet<>();
+    public static @NotNull Set<@NotNull Token> get(final @NotNull Member member) {
+        final @NotNull Set<@NotNull Token> tokens = new HashSet<>();
         try (
                 final @NotNull Connection conn = SMPCore.getInstance().db()
                         .getConnection(); final @NotNull PreparedStatement stmt = conn.prepareStatement("SELECT * FROM `tokens` WHERE `member` = ?")

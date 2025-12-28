@@ -22,10 +22,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 
@@ -241,7 +241,7 @@ public final class Messages extends BaseConfig {
     }
 
     public @NotNull Component nationCitizensList(final @NotNull Nation nation, final @NotNull Permissible sender, final boolean other) {
-        final @NotNull HashSet<@NotNull Member> members = nation.citizens();
+        final @NotNull Set<@NotNull Member> members = nation.citizens();
         final @NotNull Component header = MiniMessage.miniMessage()
                 .deserialize(Objects.requireNonNull(config.getString("nation.citizens.list.header"))
                         .replaceAll("<color>", "<#" + nation.color + ">")
@@ -513,7 +513,7 @@ public final class Messages extends BaseConfig {
                         .ofNullable(player.player().getName()).orElse(player.player().getUniqueId().toString())));
     }
 
-    public @NotNull Component errorDisallowedCharacters(final @NotNull HashSet<@NotNull Character> chars) {
+    public @NotNull Component errorDisallowedCharacters(final @NotNull Set<@NotNull Character> chars) {
         return MiniMessage.miniMessage()
                 .deserialize(Objects.requireNonNull(config.getString("error.disallowed-characters")), Placeholder.unparsed("chars", chars.stream().map(String::valueOf).collect(Collectors.joining())));
     }

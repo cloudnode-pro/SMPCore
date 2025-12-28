@@ -78,12 +78,12 @@ public final class Member {
         return Token.create(this);
     }
 
-    public @NotNull HashSet<@NotNull Token> tokens() {
+    public @NotNull Set<@NotNull Token> tokens() {
         return Token.get(this);
     }
 
-    public @NotNull HashSet<@NotNull Member> getAlts() {
-        final @NotNull HashSet<@NotNull Member> alts = new HashSet<>();
+    public @NotNull Set<@NotNull Member> getAlts() {
+        final @NotNull Set<@NotNull Member> alts = new HashSet<>();
         try (
                 final @NotNull Connection conn = SMPCore.getInstance().db()
                         .getConnection(); final @NotNull PreparedStatement stmt = conn.prepareStatement("SELECT * FROM `members` WHERE `alt_owner` = ?")
@@ -193,8 +193,8 @@ public final class Member {
         }
     }
 
-    public static @NotNull HashSet<@NotNull Member> get() {
-        final @NotNull HashSet<@NotNull Member> members = new HashSet<>();
+    public static @NotNull Set<@NotNull Member> get() {
+        final @NotNull Set<@NotNull Member> members = new HashSet<>();
         try (
                 final @NotNull Connection conn = SMPCore.getInstance().db()
                         .getConnection(); final @NotNull PreparedStatement stmt = conn.prepareStatement("SELECT * FROM `members`")
@@ -208,9 +208,9 @@ public final class Member {
         return members;
     }
 
-    public static @NotNull HashSet<@NotNull Member> get(int limit, int page) {
+    public static @NotNull Set<@NotNull Member> get(int limit, int page) {
         final int offset = (page - 1) * limit;
-        final @NotNull HashSet<@NotNull Member> members = new HashSet<>();
+        final @NotNull Set<@NotNull Member> members = new HashSet<>();
         try (
                 final @NotNull Connection conn = SMPCore.getInstance().db()
                         .getConnection(); final @NotNull PreparedStatement stmt = conn.prepareStatement("SELECT * FROM `members` LIMIT ? OFFSET ?")
@@ -226,8 +226,8 @@ public final class Member {
         return members;
     }
 
-    public static @NotNull HashSet<@NotNull Member> get(final @NotNull Nation nation) {
-        final @NotNull HashSet<@NotNull Member> members = new HashSet<>();
+    public static @NotNull Set<@NotNull Member> get(final @NotNull Nation nation) {
+        final @NotNull Set<@NotNull Member> members = new HashSet<>();
         try (
                 final @NotNull Connection conn = SMPCore.getInstance().db()
                         .getConnection(); final @NotNull PreparedStatement stmt = conn.prepareStatement("SELECT * FROM `members` WHERE `nation` = ?")

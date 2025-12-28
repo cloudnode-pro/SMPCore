@@ -19,8 +19,8 @@ import pro.cloudnode.smp.smpcore.command.UnbanCommand;
 import pro.cloudnode.smp.smpcore.listener.NationTeamUpdaterListener;
 import pro.cloudnode.smp.smpcore.listener.PlayerDeathListener;
 import pro.cloudnode.smp.smpcore.listener.PlayerPostRespawnListener;
-import pro.cloudnode.smp.smpcore.listener.PlayerSlotsListener;
 import pro.cloudnode.smp.smpcore.listener.PlayerPreLoginListener;
+import pro.cloudnode.smp.smpcore.listener.PlayerSlotsListener;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
@@ -46,6 +47,7 @@ public final class SMPCore extends JavaPlugin {
     public final @NotNull HikariConfig hikariConfig = new HikariConfig();
     private HikariDataSource dbSource;
 
+    @SuppressWarnings("resource")
     public @NotNull HikariDataSource db() {
         return dbSource;
     }
@@ -165,17 +167,17 @@ public final class SMPCore extends JavaPlugin {
         getInstance().getServer().getScheduler().runTask(getInstance(), runnable);
     }
 
-    public static @NotNull HashSet<@NotNull Character> getDisallowedCharacters(final @NotNull String source, final @NotNull Pattern pattern) {
+    public static @NotNull Set<@NotNull Character> getDisallowedCharacters(final @NotNull String source, final @NotNull Pattern pattern) {
         final @NotNull Matcher matcher = pattern.matcher(source);
-        final @NotNull HashSet<@NotNull Character> chars = new HashSet<>();
+        final @NotNull Set<@NotNull Character> chars = new HashSet<>();
         while (matcher.find())
             for (char c : matcher.group().toCharArray())
                 chars.add(c);
         return chars;
     }
 
-    public static boolean ifDisallowedCharacters(final @NotNull String source, final @NotNull Pattern pattern, final @NotNull Consumer<@NotNull HashSet<@NotNull Character>> consumer) {
-        final @NotNull HashSet<@NotNull Character> chars = getDisallowedCharacters(source, pattern);
+    public static boolean ifDisallowedCharacters(final @NotNull String source, final @NotNull Pattern pattern, final @NotNull Consumer<@NotNull Set<@NotNull Character>> consumer) {
+        final @NotNull Set<@NotNull Character> chars = getDisallowedCharacters(source, pattern);
         if (!chars.isEmpty()) {
             consumer.accept(chars);
             return true;

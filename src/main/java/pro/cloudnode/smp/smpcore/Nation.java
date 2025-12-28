@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.stream.Stream;
@@ -97,7 +98,7 @@ public final class Nation {
         this.bank = bank;
     }
 
-    public @NotNull HashSet<@NotNull Member> citizens() {
+    public @NotNull Set<@NotNull Member> citizens() {
         return Member.get(this);
     }
 
@@ -221,13 +222,13 @@ public final class Nation {
         }
     }
 
-    public static @NotNull HashSet<@NotNull Nation> get() {
+    public static @NotNull Set<@NotNull Nation> get() {
         try (
                 final @NotNull Connection conn = SMPCore.getInstance().db()
                         .getConnection(); final @NotNull PreparedStatement stmt = conn.prepareStatement("SELECT * FROM `nations`")
         ) {
             final @NotNull ResultSet rs = stmt.executeQuery();
-            final @NotNull HashSet<@NotNull Nation> nations = new HashSet<>();
+            final @NotNull Set<@NotNull Nation> nations = new HashSet<>();
             while (rs.next()) nations.add(new Nation(rs));
             return nations;
         }

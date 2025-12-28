@@ -11,8 +11,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Type;
-import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 public class Rest {
@@ -108,7 +108,7 @@ public class Rest {
                 page = t;
             }
 
-            final @NotNull HashSet<@NotNull Member> members = limit == null ? Member.get() : Member.get(limit, page);
+            final @NotNull Set<@NotNull Member> members = limit == null ? Member.get() : Member.get(limit, page);
             final @NotNull JsonArray arr = new JsonArray();
             for (final @NotNull Member member : members) {
                 if (filter != null) {
@@ -147,7 +147,7 @@ public class Rest {
                 e404(ctx);
                 return;
             }
-            final @NotNull HashSet<@NotNull Member> alts = member.get().getAlts();
+            final @NotNull Set<@NotNull Member> alts = member.get().getAlts();
             final @NotNull JsonObject obj = getMemberObject(member.get());
             final @NotNull JsonArray altsArray = new JsonArray();
             for (final @NotNull Member alt : alts) {
@@ -165,7 +165,7 @@ public class Rest {
         });
 
         javalin.get("/nations", ctx -> {
-            final @NotNull HashSet<@NotNull Nation> nations = Nation.get();
+            final @NotNull Set<@NotNull Nation> nations = Nation.get();
             final @NotNull JsonArray arr = new JsonArray();
             for (final @NotNull Nation nation : nations)
                 arr.add(getNationObject(nation));
@@ -186,7 +186,7 @@ public class Rest {
                 switch (include) {
                     case "members" -> {
                         final @NotNull JsonArray arr = new JsonArray();
-                        final @NotNull HashSet<@NotNull Member> members = nation.get().citizens();
+                        final @NotNull Set<@NotNull Member> members = nation.get().citizens();
                         for (final @NotNull Member member : members)
                             arr.add(getMemberObject(member));
                         obj.add("members", arr);

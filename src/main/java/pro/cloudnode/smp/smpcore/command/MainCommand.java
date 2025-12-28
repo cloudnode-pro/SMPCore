@@ -16,11 +16,11 @@ import pro.cloudnode.smp.smpcore.SMPCore;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 public final class MainCommand extends Command {
@@ -135,7 +135,7 @@ public final class MainCommand extends Command {
                 }
 
                 final @NotNull Member member = targetMember.get().altOwner().orElse(targetMember.get());
-                final @NotNull HashSet<@NotNull Member> alts = member.getAlts();
+                final @NotNull Set<@NotNull Member> alts = member.getAlts();
 
                 sendMessage(sender, SMPCore.messages().altsListHeader(member));
                 if (alts.isEmpty()) return sendMessage(sender, SMPCore.messages().altsListNone());
