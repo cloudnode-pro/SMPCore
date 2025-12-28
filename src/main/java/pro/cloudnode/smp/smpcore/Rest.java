@@ -16,9 +16,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public class Rest {
-    final @NotNull Javalin javalin = Javalin.create(config -> {
-        config.jsonMapper(new Mapper());
-    });
+    final @NotNull Javalin javalin = Javalin.create(config -> config.jsonMapper(new Mapper()));
 
     private void e404 (final @NotNull io.javalin.http.Context ctx) {
         ctx.status(404);
