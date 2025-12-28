@@ -92,10 +92,4 @@ public final class Token {
         }
         return tokens;
     }
-
-    public static @NotNull Token create(final @NotNull Member member) {
-        final @NotNull Token token = new Token(UUID.randomUUID(), member.uuid, new Date(), new Date());
-        token.save();
-        return token;
-    }
 }
