@@ -157,7 +157,7 @@ public final class NationCommand extends Command {
                                     break;
                                 if (!sender.hasPermission(Permission.NATION_CITIZENS_KICK))
                                     break;
-                                list.addAll((List<@NotNull String>) nation.get().citizens().stream()
+                                list.addAll(nation.get().citizens().stream()
                                                   .filter(c -> !c.uuid.equals(nation.get().leaderUUID))
                                                   .map(c -> c.player().getName())
                                                   .filter(Objects::nonNull).toList());
@@ -167,7 +167,7 @@ public final class NationCommand extends Command {
                                     break;
                                 if (!sender.hasPermission(Permission.NATION_PROMOTE))
                                     break;
-                                list.addAll((List<@NotNull String>) nation.get().citizens().stream()
+                                list.addAll(nation.get().citizens().stream()
                                                   .filter(c -> !(c.uuid.equals(nation.get().leaderUUID) || c.uuid.equals(nation.get().viceLeaderUUID)))
                                                   .map(c -> c.player().getName())
                                                   .filter(Objects::nonNull).toList());
@@ -189,7 +189,7 @@ public final class NationCommand extends Command {
                                     break;
                                 if (!sender.hasPermission(Permission.NATION_INVITE))
                                     break;
-                                list.addAll((List<@NotNull String>) Member.get().stream()
+                                list.addAll(Member.get().stream()
                                     .filter(m -> !nation.get().id.equals(m.nationID))
                                     .map(c -> c.player().getName())
                                     .filter(Objects::nonNull).toList());
@@ -199,7 +199,7 @@ public final class NationCommand extends Command {
                                     break;
                                 if (!sender.hasPermission(Permission.NATION_INVITE))
                                     break;
-                                list.addAll((List<@NotNull String>) Stream.concat(
+                                list.addAll(Stream.concat(
                                         CitizenRequest.get(nation.get(), true).stream(),
                                         CitizenRequest.get(nation.get(), false).stream()
                                 ).map(req -> req.member().player().getName()).filter(Objects::nonNull).sorted().toList());
@@ -209,7 +209,7 @@ public final class NationCommand extends Command {
                                     break;
                                 if (!sender.hasPermission(Permission.NATION_CITIZEN_ADD))
                                     break;
-                                list.addAll((List<@NotNull String>) Member.get().stream()
+                                list.addAll(Member.get().stream()
                                                                           .filter(m -> !nation.get().id.equals(m.nationID))
                                                                           .map(c -> c.player().getName())
                                                                           .filter(Objects::nonNull).toList());
