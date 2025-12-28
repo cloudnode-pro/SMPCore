@@ -584,10 +584,6 @@ public final class Messages extends BaseConfig {
         return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.other-citizen")), Placeholder.unparsed("player", Optional.ofNullable(member.player().getName()).orElse(member.player().getUniqueId().toString())));
     }
 
-    public @NotNull Component errorNotPlayer() {
-        return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.not-player")));
-    }
-
     public @NotNull Component errorKickLeadership() {
         return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.kick-leadership")));
     }
