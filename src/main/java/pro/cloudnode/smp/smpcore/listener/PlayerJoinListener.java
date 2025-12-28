@@ -2,6 +2,7 @@ package pro.cloudnode.smp.smpcore.listener;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.scoreboard.Team;
@@ -12,12 +13,9 @@ import pro.cloudnode.smp.smpcore.SMPCore;
 
 import java.util.Optional;
 
-/**
- * When a player connects to the server, ensures that they are in the right Nation's team
- */
-public final class NationTeamUpdaterListener implements Listener {
-    @EventHandler
-    public void onPlayerJoin(final @NotNull PlayerJoinEvent event) {
+public final class PlayerJoinListener implements Listener {
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void putPlayerInNationTeam(final @NotNull PlayerJoinEvent event) {
         SMPCore.runAsync(() -> {
             final @NotNull Player player = event.getPlayer();
             final @NotNull Optional<@NotNull Member> member = Member.get(player);

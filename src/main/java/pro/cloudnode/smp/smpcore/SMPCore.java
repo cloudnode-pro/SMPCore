@@ -16,11 +16,12 @@ import pro.cloudnode.smp.smpcore.command.NationCommand;
 import pro.cloudnode.smp.smpcore.command.SeenCommand;
 import pro.cloudnode.smp.smpcore.command.TimeCommand;
 import pro.cloudnode.smp.smpcore.command.UnbanCommand;
-import pro.cloudnode.smp.smpcore.listener.NationTeamUpdaterListener;
+import pro.cloudnode.smp.smpcore.listener.PlayerJoinListener;
 import pro.cloudnode.smp.smpcore.listener.PlayerDeathListener;
 import pro.cloudnode.smp.smpcore.listener.PlayerPostRespawnListener;
 import pro.cloudnode.smp.smpcore.listener.PlayerPreLoginListener;
-import pro.cloudnode.smp.smpcore.listener.PlayerSlotsListener;
+import pro.cloudnode.smp.smpcore.listener.PlayerServerFullCheckListener;
+import pro.cloudnode.smp.smpcore.listener.ServerListPingListener;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -75,8 +76,9 @@ public final class SMPCore extends JavaPlugin {
         reload();
         initDatabase();
 
-        getServer().getPluginManager().registerEvents(new NationTeamUpdaterListener(), this);
-        getServer().getPluginManager().registerEvents(new PlayerSlotsListener(), this);
+        getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
+        getServer().getPluginManager().registerEvents(new ServerListPingListener(), this);
+        getServer().getPluginManager().registerEvents(new PlayerServerFullCheckListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerDeathListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerPreLoginListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerPostRespawnListener(), this);
