@@ -47,7 +47,6 @@ public final class SMPCore extends JavaPlugin {
     public final @NotNull HikariConfig hikariConfig = new HikariConfig();
     private HikariDataSource dbSource;
 
-    @SuppressWarnings("resource")
     public @NotNull HikariDataSource db() {
         return dbSource;
     }
