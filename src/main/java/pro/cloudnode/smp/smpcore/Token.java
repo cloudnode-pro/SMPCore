@@ -1,7 +1,6 @@
 package pro.cloudnode.smp.smpcore;
 
 import org.jetbrains.annotations.NotNull;
-import pro.cloudnode.smp.smpcore.exception.MemberNotFoundException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -65,7 +64,7 @@ public final class Token {
         }
     }
 
-    public static @NotNull Optional<@NotNull Token> get(final @NotNull UUID token) throws @NotNull SQLException, @NotNull MemberNotFoundException {
+    public static @NotNull Optional<@NotNull Token> get(final @NotNull UUID token) throws SQLException {
         try (
                 final @NotNull Connection conn = SMPCore.getInstance().db()
                         .getConnection(); final @NotNull PreparedStatement stmt = conn.prepareStatement("SELECT * FROM `tokens` WHERE `token` = ? LIMIT 1")
@@ -93,7 +92,7 @@ public final class Token {
         return tokens;
     }
 
-    public static @NotNull Token create(final @NotNull Member member) throws @NotNull SQLException {
+    public static @NotNull Token create(final @NotNull Member member) {
         final @NotNull Token token = new Token(UUID.randomUUID(), member.uuid, new Date(), new Date());
         token.save();
         return token;

@@ -61,7 +61,7 @@ public final class Member {
         return nationID == null ? Optional.empty() : Nation.get(nationID);
     }
 
-    public @NotNull Token createToken() throws @NotNull SQLException {
+    public @NotNull Token createToken() {
         return Token.create(this);
     }
 
