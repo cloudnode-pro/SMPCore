@@ -62,10 +62,6 @@ public final class Member {
         return nationID == null ? Optional.empty() : Nation.get(nationID);
     }
 
-    public @NotNull Token createToken() {
-        return Token.create(this);
-    }
-
     public @NotNull Set<@NotNull Token> tokens() {
         return Token.get(this);
     }
@@ -152,13 +148,6 @@ public final class Member {
         tokens().forEach(Token::delete);
         remove();
         return true;
-    }
-
-    public static @NotNull Member create(final @NotNull OfflinePlayer player, final @Nullable Member altOwner) {
-        final @NotNull Member member = new Member(player.getUniqueId(), null, false, altOwner == null ? null : altOwner.uuid, new Date());
-        member.save();
-        member.player().setWhitelisted(true);
-        return member;
     }
 
     public static @NotNull Optional<@NotNull Member> get(final @NotNull OfflinePlayer player) {

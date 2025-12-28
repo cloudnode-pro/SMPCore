@@ -112,7 +112,6 @@ error:
   command-on-staff: <red>(!) You cannot use <gray>/<command></gray> on staff.</red>
   not-citizen-you: <red>(!) You are not a citizen of any nation.</red>
   not-citizen: <red>(!) Member <gray><player></gray> is not a citizen of the nation.</red>
-  not-player: <red>(!) You must be a player to use this command.</red>
   kick-leadership: <red>(!) You cannot kick a member of the nation's leadership.</red>
   leader-leave: <red>(!) You cannot leave your nation because you are the leader!</red>
   nation-not-found: <red>(!) Nation <gray><nation></gray> not found.</red>

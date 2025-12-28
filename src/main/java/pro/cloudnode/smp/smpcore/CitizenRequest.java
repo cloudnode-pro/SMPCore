@@ -118,13 +118,6 @@ public final class CitizenRequest {
         delete();
     }
 
-    /**
-     * Rejects the request
-     */
-    public void reject() {
-        delete();
-    }
-
     public CitizenRequest(final @NotNull ResultSet rs) throws SQLException {
         this(
                 UUID.fromString(rs.getString("member")),
