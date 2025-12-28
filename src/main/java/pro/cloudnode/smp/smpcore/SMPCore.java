@@ -82,7 +82,7 @@ public final class SMPCore extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerPreLoginListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerPostRespawnListener(), this);
 
-        final @NotNull HashMap<@NotNull String, @NotNull Command> commands = new HashMap<>() {{
+        final @NotNull Map<@NotNull String, @NotNull Command> commands = new HashMap<>() {{
             put("smpcore", new MainCommand());
             put("ban", new BanCommand());
             put("unban", new UnbanCommand());
