@@ -15,7 +15,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-public class Rest {
+public class REST {
     final @NotNull Javalin javalin = Javalin.create(config -> config.jsonMapper(new Mapper()));
 
     private void e404 (final @NotNull io.javalin.http.Context ctx) {
@@ -59,7 +59,7 @@ public class Rest {
         return obj;
     }
 
-    public Rest(final int port) {
+    public REST(final int port) {
         javalin.before(ctx -> {
            final @Nullable String origin = ctx.header("Origin");
            ctx.header("Access-Control-Allow-Origin", origin == null ? "*" : origin);

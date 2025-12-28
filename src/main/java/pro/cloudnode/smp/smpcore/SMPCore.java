@@ -63,7 +63,7 @@ public final class SMPCore extends JavaPlugin {
         return Objects.requireNonNull(getInstance().messages);
     }
 
-    private @Nullable Rest rest;
+    private @Nullable REST rest;
 
     @Override
     public void onEnable() {
@@ -109,7 +109,7 @@ public final class SMPCore extends JavaPlugin {
         if (messages != null) messages.reload();
         setupDatabase();
         if (rest != null) rest.javalin.stop();
-        rest = new Rest(config.apiPort());
+        rest = new REST(config.apiPort());
     }
 
     private void disable() {
