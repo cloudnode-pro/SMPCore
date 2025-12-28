@@ -16,7 +16,7 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
-          java-version: '17'
+          java-version: '25'
           distribution: 'temurin'
 
       - name: Set release version
@@ -32,8 +32,8 @@ jobs:
         run: mvn clean package
 
       - name: Upload to release
-        uses: JasonEtco/upload-to-release@master
+        uses: cloudnode-pro/release-upload-asset@v1
         with:
-          args: target/SMPCore-${{ steps.version.outputs.VERSION }}.jar application/java-archive
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          gh-token: ${{ github.token }}
+          files: |-
+            target/SMPCore-${{ steps.version.outputs.VERSION }}.jar; type=application/java-archive
