@@ -39,7 +39,7 @@ public abstract class Command implements TabCompleter, CommandExecutor {
     }
 
     /**
-     * Check for the presence of any of the permissions (using OR).
+     * Check for the presence of the permissions (using OR).
      *
      * @param permissible Permissible to check
      * @param permissions Permissions to check
