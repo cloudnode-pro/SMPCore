@@ -26,7 +26,7 @@ public final class Token {
         this.lastUsed = lastUsed;
     }
 
-    public Token(final @NotNull ResultSet rs) throws @NotNull SQLException {
+    public Token(final @NotNull ResultSet rs) throws SQLException {
         this(
                 UUID.fromString(rs.getString("token")),
                 UUID.fromString(rs.getString("member")),

@@ -171,7 +171,7 @@ public final class Nation {
         getTeam().removePlayer(member.player());
     }
 
-    public Nation(final @NotNull ResultSet rs) throws @NotNull SQLException {
+    public Nation(final @NotNull ResultSet rs) throws SQLException {
         this(
                 rs.getString("id"),
                 rs.getString("name"),

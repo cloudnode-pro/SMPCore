@@ -38,7 +38,7 @@ public final class Member {
         this(player.getUniqueId(), null, false, altOwner == null ? null : altOwner.uuid, new Date());
     }
 
-    private Member(final @NotNull ResultSet rs) throws @NotNull SQLException {
+    private Member(final @NotNull ResultSet rs) throws SQLException {
         this(UUID.fromString(rs.getString("uuid")), rs.getString("nation"), rs.getBoolean("staff"), rs.getString("alt_owner") == null ? null : UUID.fromString(rs.getString("alt_owner")), rs.getTimestamp("added"));
     }
 
