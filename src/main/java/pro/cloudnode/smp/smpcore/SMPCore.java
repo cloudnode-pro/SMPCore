@@ -16,11 +16,12 @@ import pro.cloudnode.smp.smpcore.command.NationCommand;
 import pro.cloudnode.smp.smpcore.command.SeenCommand;
 import pro.cloudnode.smp.smpcore.command.TimeCommand;
 import pro.cloudnode.smp.smpcore.command.UnbanCommand;
-import pro.cloudnode.smp.smpcore.listener.NationTeamUpdaterListener;
+import pro.cloudnode.smp.smpcore.listener.PlayerJoinListener;
 import pro.cloudnode.smp.smpcore.listener.PlayerDeathListener;
 import pro.cloudnode.smp.smpcore.listener.PlayerPostRespawnListener;
-import pro.cloudnode.smp.smpcore.listener.PlayerSlotsListener;
 import pro.cloudnode.smp.smpcore.listener.PlayerPreLoginListener;
+import pro.cloudnode.smp.smpcore.listener.PlayerServerFullCheckListener;
+import pro.cloudnode.smp.smpcore.listener.ServerListPingListener;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,6 +34,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
@@ -44,11 +46,8 @@ public final class SMPCore extends JavaPlugin {
     }
 
     public final @NotNull HikariConfig hikariConfig = new HikariConfig();
-    private HikariDataSource dbSource;
-
-    public @NotNull HikariDataSource db() {
-        return dbSource;
-    }
+    private HikariDataSource db;
+    Connection conn;
 
     private @Nullable Configuration config;
     private @Nullable Messages messages;
@@ -61,7 +60,7 @@ public final class SMPCore extends JavaPlugin {
         return Objects.requireNonNull(getInstance().messages);
     }
 
-    private @Nullable Rest rest;
+    private @Nullable REST rest;
 
     @Override
     public void onEnable() {
@@ -74,13 +73,14 @@ public final class SMPCore extends JavaPlugin {
         reload();
         initDatabase();
 
-        getServer().getPluginManager().registerEvents(new NationTeamUpdaterListener(), this);
-        getServer().getPluginManager().registerEvents(new PlayerSlotsListener(), this);
+        getServer().getPluginManager().registerEvents(new PlayerJoinListener(), this);
+        getServer().getPluginManager().registerEvents(new ServerListPingListener(), this);
+        getServer().getPluginManager().registerEvents(new PlayerServerFullCheckListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerDeathListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerPreLoginListener(), this);
         getServer().getPluginManager().registerEvents(new PlayerPostRespawnListener(), this);
 
-        final @NotNull HashMap<@NotNull String, @NotNull Command> commands = new HashMap<>() {{
+        final Map<String, Command> commands = new HashMap<>() {{
             put("smpcore", new MainCommand());
             put("ban", new BanCommand());
             put("unban", new UnbanCommand());
@@ -90,22 +90,29 @@ public final class SMPCore extends JavaPlugin {
             put("citizens", new CitizensCommand());
         }};
         commands.put("alts", new AltsCommand(commands.get("smpcore")));
-        for (final @NotNull Map.Entry<@NotNull String, @NotNull Command> entry : commands.entrySet())
+        for (final Map.Entry<String, Command> entry : commands.entrySet())
             Objects.requireNonNull(getServer().getPluginCommand(entry.getKey())).setExecutor(entry.getValue());
     }
 
     @Override
     public void onDisable() {
-        db().close();
+        try {
+            conn.close();
+        }
+        catch (SQLException e) {
+            getLogger().log(Level.SEVERE, "failed to close db connection", e);
+        }
+        db.close();
         if (rest != null) rest.javalin.stop();
     }
 
     public void reload() {
-        if (config != null) config.reload();
+        Objects.requireNonNull(config);
+        config.reload();
         if (messages != null) messages.reload();
         setupDatabase();
         if (rest != null) rest.javalin.stop();
-        rest = new Rest(config.apiPort());
+        rest = new REST(config.apiPort());
     }
 
     private void disable() {
@@ -126,30 +133,37 @@ public final class SMPCore extends JavaPlugin {
         hikariConfig.addDataSourceProperty("elideSetAutoCommits", "true");
         hikariConfig.addDataSourceProperty("maintainTimeStats", "true");
 
-        dbSource = new HikariDataSource(hikariConfig);
+        db = new HikariDataSource(hikariConfig);
+        try {
+            conn = db.getConnection();
+        }
+        catch (final SQLException e) {
+            getLogger().log(Level.SEVERE, "could not get db connection", e);
+            disable();
+        }
     }
 
     private void initDatabase() {
-        final @NotNull String setup;
-        try (final @Nullable InputStream in = getClassLoader().getResourceAsStream("init.sql")) {
+        final String setup;
+        try (final InputStream in = getClassLoader().getResourceAsStream("init.sql")) {
             setup = new String(Objects.requireNonNull(in).readAllBytes());
         }
-        catch (final @NotNull IOException e) {
+        catch (final IOException e) {
             getLogger().log(Level.SEVERE, "db init: could not read db setup file", e);
             disable();
             return;
         }
-        final @NotNull String @NotNull [] queries = setup.split(";");
-        for (@NotNull String q : queries) {
-            final @NotNull String query = q.stripTrailing().stripIndent().replaceAll("^\\s+(?:--.+)*", "");
+        final String[] queries = setup.split(";");
+        for (String q : queries) {
+            final String query = q.stripTrailing().stripIndent().replaceAll("^\\s+(?:--.+)*", "");
             if (query.isBlank()) continue;
             try (
-                    final @NotNull Connection conn = db().getConnection();
-                    final @NotNull PreparedStatement stmt = conn.prepareStatement(query)
+                    final Connection conn = db.getConnection();
+                    final PreparedStatement stmt = conn.prepareStatement(query)
             ) {
                 stmt.executeUpdate();
             }
-            catch (final @NotNull SQLException e) {
+            catch (final SQLException e) {
                 getLogger().log(Level.SEVERE, "db init: could not execute query: " + query, e);
                 disable();
                 return;
@@ -165,17 +179,17 @@ public final class SMPCore extends JavaPlugin {
         getInstance().getServer().getScheduler().runTask(getInstance(), runnable);
     }
 
-    public static @NotNull HashSet<@NotNull Character> getDisallowedCharacters(final @NotNull String source, final @NotNull Pattern pattern) {
-        final @NotNull Matcher matcher = pattern.matcher(source);
-        final @NotNull HashSet<@NotNull Character> chars = new HashSet<>();
+    public static @NotNull Set<@NotNull Character> getDisallowedCharacters(final @NotNull String source, final @NotNull Pattern pattern) {
+        final Matcher matcher = pattern.matcher(source);
+        final Set<Character> chars = new HashSet<>();
         while (matcher.find())
             for (char c : matcher.group().toCharArray())
                 chars.add(c);
         return chars;
     }
 
-    public static boolean ifDisallowedCharacters(final @NotNull String source, final @NotNull Pattern pattern, final @NotNull Consumer<@NotNull HashSet<@NotNull Character>> consumer) {
-        final @NotNull HashSet<@NotNull Character> chars = getDisallowedCharacters(source, pattern);
+    public static boolean ifDisallowedCharacters(final @NotNull String source, final @NotNull Pattern pattern, final @NotNull Consumer<@NotNull Set<@NotNull Character>> consumer) {
+        final Set<Character> chars = getDisallowedCharacters(source, pattern);
         if (!chars.isEmpty()) {
             consumer.accept(chars);
             return true;
@@ -193,7 +207,7 @@ public final class SMPCore extends JavaPlugin {
         final double months = Math.floor(days / 30.0);
         final double years = Math.floor(months / 12.0);
 
-        final @NotNull Component t;
+        final Component t;
         if (years > 0) t = SMPCore.config().relativeTime(years, ChronoUnit.YEARS);
         else if (months > 0) t = SMPCore.config().relativeTime((int) months, ChronoUnit.MONTHS);
         else if (days > 0) t = SMPCore.config().relativeTime((int) days, ChronoUnit.DAYS);

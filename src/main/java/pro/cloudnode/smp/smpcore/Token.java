@@ -1,7 +1,6 @@
 package pro.cloudnode.smp.smpcore;
 
 import org.jetbrains.annotations.NotNull;
-import pro.cloudnode.smp.smpcore.exception.MemberNotFoundException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,9 +9,11 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
+@SuppressWarnings("unused")
 public final class Token {
     public final @NotNull UUID token;
     public final @NotNull UUID memberUUID;
@@ -26,7 +27,7 @@ public final class Token {
         this.lastUsed = lastUsed;
     }
 
-    public Token(final @NotNull ResultSet rs) throws @NotNull SQLException {
+    public Token(final @NotNull ResultSet rs) throws SQLException {
         this(
                 UUID.fromString(rs.getString("token")),
                 UUID.fromString(rs.getString("member")),
@@ -37,8 +38,7 @@ public final class Token {
 
     public void save() {
         try (
-                final @NotNull Connection conn = SMPCore.getInstance().db()
-                        .getConnection(); final @NotNull PreparedStatement stmt = conn.prepareStatement("INSERT OR REPLACE INTO `tokens` (`token`, `member`, `created`, `last_used`) VALUES (?, ?, ?, ?)")
+                final @NotNull PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement("INSERT OR REPLACE INTO `tokens` (`token`, `member`, `created`, `last_used`) VALUES (?, ?, ?, ?)")
         ) {
             stmt.setString(1, token.toString());
             stmt.setString(2, memberUUID.toString());
@@ -53,8 +53,7 @@ public final class Token {
 
     public void delete() {
         try (
-                final @NotNull Connection conn = SMPCore.getInstance().db()
-                        .getConnection(); final @NotNull PreparedStatement stmt = conn.prepareStatement("DELETE FROM `tokens` WHERE `token` = ?")
+                final @NotNull PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement("DELETE FROM `tokens` WHERE `token` = ?")
         ) {
             stmt.setString(1, token.toString());
             stmt.executeUpdate();
@@ -64,10 +63,9 @@ public final class Token {
         }
     }
 
-    public static @NotNull Optional<@NotNull Token> get(final @NotNull UUID token) throws @NotNull SQLException, @NotNull MemberNotFoundException {
+    public static @NotNull Optional<@NotNull Token> get(final @NotNull UUID token) throws SQLException {
         try (
-                final @NotNull Connection conn = SMPCore.getInstance().db()
-                        .getConnection(); final @NotNull PreparedStatement stmt = conn.prepareStatement("SELECT * FROM `tokens` WHERE `token` = ? LIMIT 1")
+                final @NotNull PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement("SELECT * FROM `tokens` WHERE `token` = ? LIMIT 1")
         ) {
             stmt.setString(1, token.toString());
             final @NotNull ResultSet rs = stmt.executeQuery();
@@ -76,11 +74,10 @@ public final class Token {
         }
     }
 
-    public static @NotNull HashSet<@NotNull Token> get(final @NotNull Member member) {
-        final @NotNull HashSet<@NotNull Token> tokens = new HashSet<>();
+    public static @NotNull Set<@NotNull Token> get(final @NotNull Member member) {
+        final @NotNull Set<@NotNull Token> tokens = new HashSet<>();
         try (
-                final @NotNull Connection conn = SMPCore.getInstance().db()
-                        .getConnection(); final @NotNull PreparedStatement stmt = conn.prepareStatement("SELECT * FROM `tokens` WHERE `member` = ?")
+                final @NotNull PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement("SELECT * FROM `tokens` WHERE `member` = ?")
         ) {
             stmt.setString(1, member.uuid.toString());
             final @NotNull ResultSet rs = stmt.executeQuery();
@@ -90,11 +87,5 @@ public final class Token {
             SMPCore.getInstance().getLogger().log(Level.SEVERE, "could not get tokens for member " + member.uuid, e);
         }
         return tokens;
-    }
-
-    public static @NotNull Token create(final @NotNull Member member) throws @NotNull SQLException {
-        final @NotNull Token token = new Token(UUID.randomUUID(), member.uuid, new Date(), new Date());
-        token.save();
-        return token;
     }
 }

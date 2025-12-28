@@ -11,14 +11,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Type;
-import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
-public class Rest {
-    final @NotNull Javalin javalin = Javalin.create(config -> {
-        config.jsonMapper(new Mapper());
-    });
+public class REST {
+    final @NotNull Javalin javalin = Javalin.create(config -> config.jsonMapper(new Mapper()));
 
     private void e404 (final @NotNull io.javalin.http.Context ctx) {
         ctx.status(404);
@@ -34,7 +32,7 @@ public class Rest {
         obj.addProperty("name", player.getName());
         obj.addProperty("nation", member.nationID);
         obj.addProperty("staff", member.staff);
-        obj.addProperty("online", member.onlineNotVanished());
+        obj.addProperty("online", !member.staff && player.isOnline());
         obj.addProperty("whitelisted", player.isWhitelisted());
         obj.addProperty("banned", player.isBanned());
         obj.addProperty("altOwner", member.altOwnerUUID == null ? null : member.altOwnerUUID.toString());
@@ -61,7 +59,7 @@ public class Rest {
         return obj;
     }
 
-    public Rest(final int port) {
+    public REST(final int port) {
         javalin.before(ctx -> {
            final @Nullable String origin = ctx.header("Origin");
            ctx.header("Access-Control-Allow-Origin", origin == null ? "*" : origin);
@@ -108,14 +106,21 @@ public class Rest {
                 page = t;
             }
 
-            final @NotNull HashSet<@NotNull Member> members = limit == null ? Member.get() : Member.get(limit, page);
+            final @NotNull Set<@NotNull Member> members = limit == null ? Member.get() : Member.get(limit, page);
             final @NotNull JsonArray arr = new JsonArray();
             for (final @NotNull Member member : members) {
-                if (filter != null) {
-                    if (filter.equals("online") && !member.onlineNotVanished()) continue;
-                    if (filter.equals("offline") && member.onlineNotVanished()) continue;
-                    if (filter.equals("banned") && !member.player().isBanned()) continue;
-                }
+                if (filter != null)
+                    switch (filter) {
+                        case "online":
+                            if (member.staff || !member.player().isOnline())
+                                continue;
+                        case "offline":
+                            if (!member.staff && member.player().isOnline())
+                                continue;
+                        case "banned":
+                            if (!member.player().isBanned())
+                                continue;
+                    }
                 final @NotNull JsonObject m = getMemberObject(member);
                 if (include != null) {
                     switch (include) {
@@ -147,7 +152,7 @@ public class Rest {
                 e404(ctx);
                 return;
             }
-            final @NotNull HashSet<@NotNull Member> alts = member.get().getAlts();
+            final @NotNull Set<@NotNull Member> alts = member.get().getAlts();
             final @NotNull JsonObject obj = getMemberObject(member.get());
             final @NotNull JsonArray altsArray = new JsonArray();
             for (final @NotNull Member alt : alts) {
@@ -165,7 +170,7 @@ public class Rest {
         });
 
         javalin.get("/nations", ctx -> {
-            final @NotNull HashSet<@NotNull Nation> nations = Nation.get();
+            final @NotNull Set<@NotNull Nation> nations = Nation.get();
             final @NotNull JsonArray arr = new JsonArray();
             for (final @NotNull Nation nation : nations)
                 arr.add(getNationObject(nation));
@@ -186,7 +191,7 @@ public class Rest {
                 switch (include) {
                     case "members" -> {
                         final @NotNull JsonArray arr = new JsonArray();
-                        final @NotNull HashSet<@NotNull Member> members = nation.get().citizens();
+                        final @NotNull Set<@NotNull Member> members = nation.get().citizens();
                         for (final @NotNull Member member : members)
                             arr.add(getMemberObject(member));
                         obj.add("members", arr);

@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public abstract class Command implements TabCompleter, CommandExecutor {
+    @SuppressWarnings("SameReturnValue")
     public static boolean sendMessage(final @NotNull Audience recipient, final @NotNull Component message) {
         recipient.sendMessage(message);
         return true;
@@ -38,7 +39,7 @@ public abstract class Command implements TabCompleter, CommandExecutor {
     }
 
     /**
-     * Check for the presence of any of the permissions (using OR).
+     * Check for the presence of the permissions (using OR).
      *
      * @param permissible Permissible to check
      * @param permissions Permissions to check

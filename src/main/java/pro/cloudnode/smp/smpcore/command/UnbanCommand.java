@@ -10,7 +10,6 @@ import pro.cloudnode.smp.smpcore.Member;
 import pro.cloudnode.smp.smpcore.Permission;
 import pro.cloudnode.smp.smpcore.SMPCore;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -32,12 +31,13 @@ public final class UnbanCommand extends Command {
             return sendMessage(sender, SMPCore.messages().unbannedPlayer(target));
         }
         final @NotNull Member main = targetMember.get().altOwner().orElse(targetMember.get());
-        final @NotNull HashSet<@NotNull Member> alts = main.getAlts();
+        final @NotNull Set<@NotNull Member> alts = main.getAlts();
         main.unban();
         alts.forEach(Member::unban);
         return sendMessage(sender, SMPCore.messages().unbannedMember(main, alts.stream().toList()));
     }
 
+    @SuppressWarnings("NullableProblems")
     @Override
     public @NotNull List<@NotNull String> tab(@NotNull CommandSender sender, @NotNull String label, @NotNull String @NotNull [] args) {
         if (args.length <= 1) {

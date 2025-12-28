@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.stream.Stream;
@@ -33,6 +34,7 @@ public final class Nation {
      * <p>
      * Max length: 128
      */
+    @SuppressWarnings("CanBeFinal")
     public @NotNull String name;
 
     /**
@@ -40,6 +42,7 @@ public final class Nation {
      * <p>
      * Max length: 16
      */
+    @SuppressWarnings("CanBeFinal")
     public @NotNull String shortName;
 
     /**
@@ -47,11 +50,13 @@ public final class Nation {
      * <p>
      * Max length: 6
      */
+    @SuppressWarnings("CanBeFinal")
     public @NotNull String color;
 
     /**
      * Nation leader's UUID
      */
+    @SuppressWarnings("CanBeFinal")
     public @NotNull UUID leaderUUID;
 
     /**
@@ -97,7 +102,7 @@ public final class Nation {
         this.bank = bank;
     }
 
-    public @NotNull HashSet<@NotNull Member> citizens() {
+    public @NotNull Set<@NotNull Member> citizens() {
         return Member.get(this);
     }
 
@@ -166,7 +171,7 @@ public final class Nation {
         getTeam().removePlayer(member.player());
     }
 
-    public Nation(final @NotNull ResultSet rs) throws @NotNull SQLException {
+    public Nation(final @NotNull ResultSet rs) throws SQLException {
         this(
                 rs.getString("id"),
                 rs.getString("name"),
@@ -182,8 +187,7 @@ public final class Nation {
 
     public void save() {
         try (
-                final @NotNull Connection conn = SMPCore.getInstance().db()
-                        .getConnection(); final @NotNull PreparedStatement stmt = conn.prepareStatement("INSERT OR REPLACE INTO `nations` (`id`, `name`, `short_name`, `color`, `leader`, `vice`, `founded`, `founded_ticks`, `bank`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
+                final @NotNull PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement("INSERT OR REPLACE INTO `nations` (`id`, `name`, `short_name`, `color`, `leader`, `vice`, `founded`, `founded_ticks`, `bank`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
         ) {
             stmt.setString(1, id);
             stmt.setString(2, name);
@@ -207,8 +211,7 @@ public final class Nation {
 
     public static @NotNull Optional<@NotNull Nation> get(final @NotNull String id) {
         try (
-                final @NotNull Connection conn = SMPCore.getInstance().db()
-                        .getConnection(); final @NotNull PreparedStatement stmt = conn.prepareStatement("SELECT * FROM `nations` WHERE `id` = ? LIMIT 1")
+                final @NotNull PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement("SELECT * FROM `nations` WHERE `id` = ? LIMIT 1")
         ) {
             stmt.setString(1, id);
             final @NotNull ResultSet rs = stmt.executeQuery();
@@ -221,13 +224,12 @@ public final class Nation {
         }
     }
 
-    public static @NotNull HashSet<@NotNull Nation> get() {
+    public static @NotNull Set<@NotNull Nation> get() {
         try (
-                final @NotNull Connection conn = SMPCore.getInstance().db()
-                        .getConnection(); final @NotNull PreparedStatement stmt = conn.prepareStatement("SELECT * FROM `nations`")
+                final @NotNull PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement("SELECT * FROM `nations`")
         ) {
             final @NotNull ResultSet rs = stmt.executeQuery();
-            final @NotNull HashSet<@NotNull Nation> nations = new HashSet<>();
+            final @NotNull Set<@NotNull Nation> nations = new HashSet<>();
             while (rs.next()) nations.add(new Nation(rs));
             return nations;
         }

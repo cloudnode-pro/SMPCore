@@ -2,12 +2,9 @@ package pro.cloudnode.smp.smpcore;
 
 import io.papermc.paper.ban.BanListType;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
-import org.bukkit.metadata.MetadataValue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -23,6 +20,7 @@ import java.util.stream.Collectors;
 public final class Member {
     public final @NotNull UUID uuid;
     public @Nullable String nationID;
+    @SuppressWarnings("CanBeFinal")
     public boolean staff;
     public final @Nullable UUID altOwnerUUID;
     public final @NotNull Date added;
@@ -39,23 +37,12 @@ public final class Member {
         this(player.getUniqueId(), null, false, altOwner == null ? null : altOwner.uuid, new Date());
     }
 
-    private Member(final @NotNull ResultSet rs) throws @NotNull SQLException {
+    private Member(final @NotNull ResultSet rs) throws SQLException {
         this(UUID.fromString(rs.getString("uuid")), rs.getString("nation"), rs.getBoolean("staff"), rs.getString("alt_owner") == null ? null : UUID.fromString(rs.getString("alt_owner")), rs.getTimestamp("added"));
     }
 
     public @NotNull OfflinePlayer player() {
         return SMPCore.getInstance().getServer().getOfflinePlayer(uuid);
-    }
-
-    /**
-     * Check if player is online and not vanished
-     */
-    public boolean onlineNotVanished() {
-        final @NotNull Optional<@NotNull Player> player = Optional.ofNullable(player().getPlayer());
-        if (player.isEmpty()) return false;
-        for (final @NotNull MetadataValue meta : player.get().getMetadata("vanished"))
-            if (meta.asBoolean()) return false;
-        return player.get().isOnline();
     }
 
     public boolean isActive() {
@@ -74,19 +61,14 @@ public final class Member {
         return nationID == null ? Optional.empty() : Nation.get(nationID);
     }
 
-    public @NotNull Token createToken() throws @NotNull SQLException {
-        return Token.create(this);
-    }
-
-    public @NotNull HashSet<@NotNull Token> tokens() {
+    public @NotNull Set<@NotNull Token> tokens() {
         return Token.get(this);
     }
 
-    public @NotNull HashSet<@NotNull Member> getAlts() {
-        final @NotNull HashSet<@NotNull Member> alts = new HashSet<>();
+    public @NotNull Set<@NotNull Member> getAlts() {
+        final @NotNull Set<@NotNull Member> alts = new HashSet<>();
         try (
-                final @NotNull Connection conn = SMPCore.getInstance().db()
-                        .getConnection(); final @NotNull PreparedStatement stmt = conn.prepareStatement("SELECT * FROM `members` WHERE `alt_owner` = ?")
+                final @NotNull PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement("SELECT * FROM `members` WHERE `alt_owner` = ?")
         ) {
             stmt.setString(1, uuid.toString());
             final @NotNull ResultSet rs = stmt.executeQuery();
@@ -105,8 +87,7 @@ public final class Member {
 
     public void save() {
         try (
-                final @NotNull Connection conn = SMPCore.getInstance().db()
-                        .getConnection(); final @NotNull PreparedStatement stmt = conn.prepareStatement("INSERT OR REPLACE INTO `members` (`uuid`, `nation`, `staff`, `alt_owner`, `added`) VALUES (?, ?, ?, ?, ?)")
+                final @NotNull PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement("INSERT OR REPLACE INTO `members` (`uuid`, `nation`, `staff`, `alt_owner`, `added`) VALUES (?, ?, ?, ?, ?)")
         ) {
             stmt.setString(1, uuid.toString());
             stmt.setString(2, nationID == null ? null : nationID);
@@ -125,8 +106,7 @@ public final class Member {
      */
     private void remove() {
         try (
-                final @NotNull Connection conn = SMPCore.getInstance().db()
-                        .getConnection(); final @NotNull PreparedStatement stmt = conn.prepareStatement("DELETE FROM `members` WHERE `uuid` = ?")
+                final @NotNull PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement("DELETE FROM `members` WHERE `uuid` = ?")
         ) {
             stmt.setString(1, uuid.toString());
             stmt.executeUpdate();
@@ -148,6 +128,7 @@ public final class Member {
      *
      * @return whether the member was deleted
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean delete() {
         if (!getAlts().isEmpty()) return false;
         final @NotNull OfflinePlayer player = player();
@@ -166,21 +147,13 @@ public final class Member {
         return true;
     }
 
-    public static @NotNull Member create(final @NotNull OfflinePlayer player, final @Nullable Member altOwner) {
-        final @NotNull Member member = new Member(player.getUniqueId(), null, false, altOwner == null ? null : altOwner.uuid, new Date());
-        member.save();
-        member.player().setWhitelisted(true);
-        return member;
-    }
-
     public static @NotNull Optional<@NotNull Member> get(final @NotNull OfflinePlayer player) {
         return get(player.getUniqueId());
     }
 
     public static @NotNull Optional<@NotNull Member> get(final @NotNull UUID uuid) {
         try (
-                final @NotNull Connection conn = SMPCore.getInstance().db()
-                        .getConnection(); final @NotNull PreparedStatement stmt = conn.prepareStatement("SELECT * FROM `members` WHERE `uuid` = ? LIMIT 1")
+                final @NotNull PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement("SELECT * FROM `members` WHERE `uuid` = ? LIMIT 1")
         ) {
             stmt.setString(1, uuid.toString());
             final @NotNull ResultSet rs = stmt.executeQuery();
@@ -193,11 +166,10 @@ public final class Member {
         }
     }
 
-    public static @NotNull HashSet<@NotNull Member> get() {
-        final @NotNull HashSet<@NotNull Member> members = new HashSet<>();
+    public static @NotNull Set<@NotNull Member> get() {
+        final @NotNull Set<@NotNull Member> members = new HashSet<>();
         try (
-                final @NotNull Connection conn = SMPCore.getInstance().db()
-                        .getConnection(); final @NotNull PreparedStatement stmt = conn.prepareStatement("SELECT * FROM `members`")
+                final @NotNull PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement("SELECT * FROM `members`")
         ) {
             final @NotNull ResultSet rs = stmt.executeQuery();
             while (rs.next()) members.add(new Member(rs));
@@ -208,12 +180,11 @@ public final class Member {
         return members;
     }
 
-    public static @NotNull HashSet<@NotNull Member> get(int limit, int page) {
+    public static @NotNull Set<@NotNull Member> get(int limit, int page) {
         final int offset = (page - 1) * limit;
-        final @NotNull HashSet<@NotNull Member> members = new HashSet<>();
+        final @NotNull Set<@NotNull Member> members = new HashSet<>();
         try (
-                final @NotNull Connection conn = SMPCore.getInstance().db()
-                        .getConnection(); final @NotNull PreparedStatement stmt = conn.prepareStatement("SELECT * FROM `members` LIMIT ? OFFSET ?")
+                final @NotNull PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement("SELECT * FROM `members` LIMIT ? OFFSET ?")
         ) {
             stmt.setInt(1, limit);
             stmt.setInt(2, offset);
@@ -226,11 +197,10 @@ public final class Member {
         return members;
     }
 
-    public static @NotNull HashSet<@NotNull Member> get(final @NotNull Nation nation) {
-        final @NotNull HashSet<@NotNull Member> members = new HashSet<>();
+    public static @NotNull Set<@NotNull Member> get(final @NotNull Nation nation) {
+        final @NotNull Set<@NotNull Member> members = new HashSet<>();
         try (
-                final @NotNull Connection conn = SMPCore.getInstance().db()
-                        .getConnection(); final @NotNull PreparedStatement stmt = conn.prepareStatement("SELECT * FROM `members` WHERE `nation` = ?")
+                final @NotNull PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement("SELECT * FROM `members` WHERE `nation` = ?")
         ) {
             stmt.setString(1, nation.id);
             final @NotNull ResultSet rs = stmt.executeQuery();
@@ -244,8 +214,7 @@ public final class Member {
 
     public static int count() {
         try (
-                final @NotNull Connection conn = SMPCore.getInstance().db()
-                        .getConnection(); final @NotNull PreparedStatement stmt = conn.prepareStatement("SELECT COUNT(*) as `n` FROM `members`")
+                final @NotNull PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement("SELECT COUNT(*) as `n` FROM `members`")
         ) {
             final @NotNull ResultSet rs = stmt.executeQuery();
             rs.next();
@@ -257,10 +226,12 @@ public final class Member {
         }
     }
 
+    @SuppressWarnings("NullableProblems")
     public static @NotNull Set<@NotNull String> getNames() {
         return get().stream().map(m -> m.player().getName()).filter(Objects::nonNull).collect(Collectors.toSet());
     }
 
+    @SuppressWarnings("NullableProblems")
     public static @NotNull Set<@NotNull String> getAltNames() {
         return get().stream().filter(Member::isAlt).map(m -> m.player().getName()).filter(Objects::nonNull).collect(Collectors.toSet());
     }

@@ -114,13 +114,14 @@ public final class BanCommand extends Command {
         if (banned.isEmpty())
             return sendMessage(sender, SMPCore.messages().bannedPlayer(target, duration));
         if (banned.size() == 1)
-            return sendMessage(sender, SMPCore.messages().bannedMember(banned.get(0), duration));
+            return sendMessage(sender, SMPCore.messages().bannedMember(banned.getFirst(), duration));
         return sendMessage(sender, SMPCore.messages().bannedMemberChain(
-                banned.get(0),
+                banned.getFirst(),
                 banned.subList(1, banned.size()), duration)
         );
     }
 
+    @SuppressWarnings("NullableProblems")
     @Override
     public @NotNull List<@NotNull String> tab(@NotNull CommandSender sender, @NotNull String label, @NotNull String @NotNull [] args) {
         if (args.length <= 1) return Arrays.stream(SMPCore.getInstance().getServer().getOfflinePlayers()).filter(p -> !p.isBanned()).map(OfflinePlayer::getName).filter(Objects::nonNull).toList();

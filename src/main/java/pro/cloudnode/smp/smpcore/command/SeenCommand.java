@@ -31,6 +31,7 @@ public final class SeenCommand extends Command {
                 .orElseGet(() -> sendMessage(sender, SMPCore.messages().seen(player)));
     }
 
+    @SuppressWarnings("NullableProblems")
     @Override
     public @NotNull List<@NotNull String> tab(@NotNull CommandSender sender, @NotNull String label, @NotNull String @NotNull [] args) {
         if (sender.hasPermission(Permission.SEEN_STAFF)) return Member.getNames().stream().toList();
