@@ -274,13 +274,12 @@ public final class Member {
         team.displayName(SMPCore.config().staffTeamName());
         team.prefix(SMPCore.config().staffTeamName().append(Component.text(" ")));
 
-        for (final Member staff : getStaff()) {
-            final OfflinePlayer player = staff.player();
-
-            if (player.getName() == null)
-                continue;
-
-            team.addPlayer(player);
+        for (final Member staff : getStaff()) try {
+            team.addPlayer(staff.player());
+        }
+        catch (final IllegalArgumentException e) {
+            SMPCore.getInstance().getLogger().log(Level.FINEST, "could not add staff member "
+                    + staff.player().getUniqueId() + " to staff team", e);
         }
 
         return team;
