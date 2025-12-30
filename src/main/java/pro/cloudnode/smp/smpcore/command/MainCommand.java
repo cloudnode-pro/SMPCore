@@ -6,6 +6,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -383,13 +384,19 @@ public final class MainCommand extends Command {
                 member.get().staff = requestedStatus;
                 member.get().save();
 
+                final ConsoleCommandSender console = sender.getServer().getConsoleSender();
+
                 if (member.get().staff) {
                     member.get().nation().ifPresent(nation -> nation.getTeam().removePlayer(member.get().player()));
                     Member.getStaffTeam().addPlayer(member.get().player());
+                    console.getServer().dispatchCommand(console, "luckperms:luckperms user "
+                            + member.get().player().getName() + " parent add " + SMPCore.config().staffGroup());
                 }
                 else {
                     Member.getStaffTeam().removePlayer(member.get().player());
                     member.get().nation().ifPresent(nation -> nation.getTeam().addPlayer(member.get().player()));
+                    console.getServer().dispatchCommand(console, "luckperms:luckperms user "
+                            + member.get().player().getName() + " parent remove " + SMPCore.config().staffGroup());
                 }
 
                 return sendMessage(sender, SMPCore.messages().membersSetStaff(member.get()));

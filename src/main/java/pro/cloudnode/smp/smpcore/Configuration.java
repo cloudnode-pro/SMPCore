@@ -109,4 +109,8 @@ public final class Configuration extends BaseConfig {
     public @NotNull Component staffTeamName() {
         return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("staff-team.name")));
     }
+
+    public @NotNull String staffGroup() {
+        return Objects.requireNonNull(config.getString("staff-group"));
+    }
 }

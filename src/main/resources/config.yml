@@ -51,3 +51,6 @@ relative-time:
 staff-team:
   id: staff
   name: <hover:show_text:'The shield that guards the realms of men.'><dark_red><b>STAFF</b></dark_red></hover>
+
+# LuckPerms group
+staff-group: staff
