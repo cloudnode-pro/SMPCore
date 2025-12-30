@@ -218,7 +218,8 @@ public final class Member {
     public static @NotNull Set<@NotNull Member> getStaff() {
         final @NotNull Set<@NotNull Member> members = new HashSet<>();
         try (
-                final @NotNull PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement("SELECT * FROM `members` WHERE `staff` = true")
+                final @NotNull PreparedStatement stmt = SMPCore.getInstance().conn
+                        .prepareStatement("SELECT * FROM `members` WHERE `staff` = true")
         ) {
             final @NotNull ResultSet rs = stmt.executeQuery();
             while (rs.next()) members.add(new Member(rs));
