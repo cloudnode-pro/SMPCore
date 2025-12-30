@@ -270,10 +270,8 @@ public final class Member {
         team.displayName(SMPCore.config().staffTeamName());
         team.prefix(SMPCore.config().staffTeamName().append(Component.text(" ")));
 
-        for (final Member staff : getStaff()) try {
+        for (final Member staff : getStaff())
             team.addPlayer(staff.player());
-        }
-        catch (final @NotNull IllegalArgumentException ignored) {}
 
         return team;
     }
