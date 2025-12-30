@@ -161,4 +161,29 @@ public final class Permission {
      * Bypass death ban.
      */
     public static final @NotNull String DEATHBAN_BYPASS = "smpcore.deathban.bypass";
+
+    /**
+     * Access to the {@code /smpcore member} command.
+     */
+    public static final @NotNull String MEMBER = "smpcore.member";
+
+    /**
+     * Add member to server.
+     */
+    public static final @NotNull String MEMBER_ADD = "smpcore.member.add";
+
+    /**
+     * List server members.
+     */
+    public static final @NotNull String MEMBER_LIST = "smpcore.member.list";
+
+    /**
+     * Revoke server membership.
+     */
+    public static final @NotNull String MEMBER_REMOVE = "smpcore.member.remove";
+
+    /**
+     * Set member staff status.
+     */
+    public static final @NotNull String MEMBER_SET_STAFF = "smpcore.member.set.staff";
 }

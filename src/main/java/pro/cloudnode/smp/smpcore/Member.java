@@ -36,6 +36,10 @@ public final class Member {
         this.added = added;
     }
 
+    public Member(final @NotNull OfflinePlayer player) {
+        this(player, null);
+    }
+
     public Member(final @NotNull OfflinePlayer player, final @Nullable Member altOwner) {
         this(player.getUniqueId(), null, false, altOwner == null ? null : altOwner.uuid, new Date());
     }
