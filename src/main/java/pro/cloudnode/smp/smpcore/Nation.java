@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.NotNull;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -128,6 +127,9 @@ public final class Nation {
         team.displayName(Component.text(shortName).color(TextColor.color(Integer.decode("0x" + color))).hoverEvent(HoverEvent.showText(Component.text(name))));
         team.prefix(Component.text(shortName + " ").color(TextColor.color(Integer.decode("0x" + color))).hoverEvent(HoverEvent.showText(Component.text(name))));
         for (final @NotNull Member member : citizens()) try {
+            if (member.staff)
+                continue;
+
             team.addPlayer(member.player());
         }
         catch (final @NotNull IllegalArgumentException ignored) {}
@@ -145,7 +147,9 @@ public final class Nation {
         member.nation().ifPresent(nation -> nation.remove(member));
         member.nationID = id;
         member.save();
-        getTeam().addPlayer(member.player());
+
+        if (!member.staff)
+            getTeam().addPlayer(member.player());
 
         Audience.audience(onlinePlayers()).sendMessage(SMPCore.messages().nationJoinJoined(member));
 

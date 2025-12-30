@@ -1,7 +1,10 @@
 package pro.cloudnode.smp.smpcore;
 
 import io.papermc.paper.ban.BanListType;
+import net.kyori.adventure.text.Component;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -212,6 +215,20 @@ public final class Member {
         return members;
     }
 
+    public static @NotNull Set<@NotNull Member> getStaff() {
+        final @NotNull Set<@NotNull Member> members = new HashSet<>();
+        try (
+                final @NotNull PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement("SELECT * FROM `members` WHERE `staff` = true")
+        ) {
+            final @NotNull ResultSet rs = stmt.executeQuery();
+            while (rs.next()) members.add(new Member(rs));
+        }
+        catch (final @NotNull SQLException e) {
+            SMPCore.getInstance().getLogger().log(Level.SEVERE, "could not get staff members", e);
+        }
+        return members;
+    }
+
     public static int count() {
         try (
                 final @NotNull PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement("SELECT COUNT(*) as `n` FROM `members`")
@@ -234,5 +251,37 @@ public final class Member {
     @SuppressWarnings("NullableProblems")
     public static @NotNull Set<@NotNull String> getAltNames() {
         return get().stream().filter(Member::isAlt).map(m -> m.player().getName()).filter(Objects::nonNull).collect(Collectors.toSet());
+    }
+
+    public static @NotNull Team createStaffTeam() {
+        final Scoreboard scoreboard = SMPCore.getInstance().getServer().getScoreboardManager().getMainScoreboard();
+
+        final Optional<Team> existing = Optional.ofNullable(scoreboard.getTeam(SMPCore.config().staffTeamId()));
+        existing.ifPresent(Team::unregister);
+
+        final Team team = scoreboard.registerNewTeam(SMPCore.config().staffTeamId());
+
+        team.setAllowFriendlyFire(false);
+        team.setCanSeeFriendlyInvisibles(true);
+
+        team.setOption(Team.Option.DEATH_MESSAGE_VISIBILITY, Team.OptionStatus.FOR_OWN_TEAM);
+
+        team.displayName(SMPCore.config().staffTeamName());
+        team.prefix(SMPCore.config().staffTeamName().append(Component.text(" ")));
+
+        for (final Member staff : getStaff()) try {
+            team.addPlayer(staff.player());
+        }
+        catch (final @NotNull IllegalArgumentException ignored) {}
+
+        return team;
+    }
+
+    public static @NotNull Team getStaffTeam() {
+        return Optional.ofNullable(
+                SMPCore.getInstance().getServer().getScoreboardManager().getMainScoreboard().getTeam(
+                        SMPCore.config().staffTeamId()
+                )
+        ).orElseGet(Member::createStaffTeam);
     }
 }

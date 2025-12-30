@@ -111,6 +111,7 @@ public final class SMPCore extends JavaPlugin {
         config.reload();
         if (messages != null) messages.reload();
         setupDatabase();
+        Member.createStaffTeam();
         if (rest != null) rest.javalin.stop();
         rest = new REST(config.apiPort());
     }
