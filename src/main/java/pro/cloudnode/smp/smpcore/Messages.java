@@ -693,7 +693,7 @@ public final class Messages extends BaseConfig {
         return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.duration-zero-or-less")));
     }
 
-    public @NotNull Component invalidDuration(final @NotNull String duration) {
+    public @NotNull Component errorInvalidDuration(final @NotNull String duration) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("error.invalid-duration")),
                 Placeholder.unparsed("duration", duration)
