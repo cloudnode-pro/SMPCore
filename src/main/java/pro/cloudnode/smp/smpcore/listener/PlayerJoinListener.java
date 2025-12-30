@@ -21,12 +21,26 @@ public final class PlayerJoinListener implements Listener {
             final @NotNull Optional<@NotNull Member> member = Member.get(player);
             final @NotNull Optional<@NotNull Team> team = Optional.ofNullable(player.getScoreboard()
                     .getPlayerTeam(player));
+            final Team staffTeam = Member.getStaffTeam();
+
             final @NotNull Optional<@NotNull Nation> nationFromTeam = team.flatMap(Nation::get);
             if (member.isEmpty()) {
                 // no longer a member, but in a nation's team?
                 nationFromTeam.ifPresent(ignored -> team.get().removePlayer(player));
+                staffTeam.removePlayer(player);
                 return;
             }
+
+            if (member.get().staff) {
+                if (team.isPresent() && !team.get().equals(staffTeam))
+                    team.get().removePlayer(player);
+
+                staffTeam.addPlayer(player);
+
+                return;
+            }
+            staffTeam.removePlayer(player);
+
             final @NotNull Optional<@NotNull Nation> nation = member.get().nation();
             if (nation.isEmpty() && team.isPresent()) {
                 // no longer in a nation, but in a nation's team?

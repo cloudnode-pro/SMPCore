@@ -101,4 +101,12 @@ public final class Configuration extends BaseConfig {
                 Objects.requireNonNull(config.getString("relative-time.duration-indefinite"))
         );
     }
+
+    public @NotNull String staffTeamId() {
+        return Objects.requireNonNull(config.getString("staff-team.id"));
+    }
+
+    public @NotNull Component staffTeamName() {
+        return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("staff-team.name")));
+    }
 }
