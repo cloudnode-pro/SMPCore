@@ -103,14 +103,14 @@ public final class Configuration extends BaseConfig {
     }
 
     public @NotNull String staffTeamId() {
-        return Objects.requireNonNull(config.getString("staff-team.id"));
+        return Objects.requireNonNull(config.getString("staff.team.id"));
     }
 
     public @NotNull Component staffTeamName() {
-        return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("staff-team.name")));
+        return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("staff.team.name")));
     }
 
     public @NotNull String staffGroup() {
-        return Objects.requireNonNull(config.getString("staff-group"));
+        return Objects.requireNonNull(config.getString("staff.group"));
     }
 }
