@@ -92,7 +92,7 @@ public final class BanCommand extends Command {
             duration = Duration.parse(durationArg);
         }
         catch (DateTimeParseException ignored) {
-            return sendMessage(sender, SMPCore.messages().invalidDuration(durationArg));
+            return sendMessage(sender, SMPCore.messages().errorInvalidDuration(durationArg));
         }
 
         if (duration != null && (duration.isNegative() || duration.isZero()))

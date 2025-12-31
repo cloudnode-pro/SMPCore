@@ -33,6 +33,16 @@ alts:
   created: <green>(!) Created member profile for <gray><alt></gray> and added as an alt.</green>
   deleted: <green>(!) Deleted alt member profile for <gray><alt></gray>.</green>
 
+members:
+  nationless-fallback: <gray><italic>nationless</italic></gray>
+  list:
+    header: <green>Server members:</green>
+    none: " <gray><italic>(none)</italic></gray>"
+    entry: <dark_gray>></dark_gray> <staff:'0#|1#<red><b>STAFF</b></red> '><nation> <white><player></white> <gray>since <added:'dd MMM yyyy'></gray>
+  added: <green>(!) Created member profile for <gray><player></gray>.</green>
+  deleted: <green>(!) Revoked server membership of <gray><player></gray>.</green>
+  set-staff: <staff:'0#<gold>(!) Removed staff status of <gray><player></gray>.</gold>|1#<green>(!) Given staff status to <gray><player></gray>.</green>'>
+
 seen:
   online: <green>(!) Player <gray><player></gray> is online.</green>
   active: <aqua>(!) Member <white><player></white> is <green>active</green> and last seen on <white><last-seen:'dd MMM yyyy HH:mm'> UTC</white> <gray>(<last-seen-relative>)</aqua>
@@ -130,3 +140,6 @@ error:
   demote-citizen: <red>(!) Don't make this <i>citizen</i> unworthy of the nation! (To remove from nation, use <click:suggest_command:/nation citizens kick ><gray>/nation citizens kick</gray></click>.)</red>
   duration-zero-or-less: <red>(!) Duration must be greater than zero.</red>
   invalid-duration: <red>(!) Invalid duration format <gray>‘<duration></gray>’.</red>
+  already-member: <red>(!) Player <gray><player></gray> is already a member.</red>
+  already-staff: <red>(!) Member <gray><player></gray> <staff:'0#does not have|1#already has'> staff status.</red>
+  remove-member-leader: <red>(!) You cannot remove <gray><player></gray> because they are the leader of <gray><nation></gray>.</red>

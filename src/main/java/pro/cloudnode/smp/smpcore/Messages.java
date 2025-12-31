@@ -199,6 +199,63 @@ public final class Messages extends BaseConfig {
                         .ofNullable(alt.player().getName()).orElse(alt.player().getUniqueId().toString())));
     }
 
+    public @NotNull Component membersNationlessFallback() {
+        return MiniMessage.miniMessage().deserialize(
+                Objects.requireNonNull(config.getString("members.nationless-fallback"))
+        );
+    }
+
+    public @NotNull Component membersListHeader() {
+        return MiniMessage.miniMessage().deserialize(
+                Objects.requireNonNull(config.getString("members.list.header"))
+        );
+    }
+
+    public @NotNull Component membersListNone() {
+        return MiniMessage.miniMessage().deserialize(
+                Objects.requireNonNull(config.getString("members.list.none"))
+        );
+    }
+
+    public @NotNull Component membersListEntry(final @NotNull Member member) {
+        return MiniMessage.miniMessage().deserialize(
+                Objects.requireNonNull(config.getString("members.list.entry")),
+                Placeholder.unparsed("player", Optional.ofNullable(member.player().getName())
+                        .orElse(member.player().getUniqueId().toString())),
+                Formatter.choice("staff", member.staff ? 1 : 0),
+                Placeholder.component("nation", member.nation()
+                        .map(n -> n.getTeam().displayName())
+                        .orElse(membersNationlessFallback())
+                ),
+                Formatter.date("added", member.added.toInstant().atZone(ZoneOffset.systemDefault()))
+        );
+    }
+
+    public @NotNull Component membersAdded(final @NotNull Member member) {
+        return MiniMessage.miniMessage().deserialize(
+                Objects.requireNonNull(config.getString("members.added")),
+                Placeholder.unparsed("player", Optional.ofNullable(member.player().getName())
+                        .orElse(member.player().getUniqueId().toString()))
+        );
+    }
+
+    public @NotNull Component membersDeleted(final @NotNull OfflinePlayer player) {
+        return MiniMessage.miniMessage().deserialize(
+                Objects.requireNonNull(config.getString("members.deleted")),
+                Placeholder.unparsed("player", Optional.ofNullable(player.getName())
+                        .orElse(player.getUniqueId().toString()))
+        );
+    }
+
+    public @NotNull Component membersSetStaff(final @NotNull Member member) {
+        return MiniMessage.miniMessage().deserialize(
+                Objects.requireNonNull(config.getString("members.set-staff")),
+                Placeholder.unparsed("player", Optional.ofNullable(member.player().getName())
+                        .orElse(member.player().getUniqueId().toString())),
+                Formatter.choice("staff", member.staff ? 1 : 0)
+        );
+    }
+
     public @NotNull Component seen(final @NotNull Member member) {
         if (member.player().isOnline()) return MiniMessage.miniMessage()
                 .deserialize(Objects.requireNonNull(config.getString("seen.online")), Placeholder.unparsed("player", Optional
@@ -636,10 +693,36 @@ public final class Messages extends BaseConfig {
         return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("error.duration-zero-or-less")));
     }
 
-    public @NotNull Component invalidDuration(final @NotNull String duration) {
+    public @NotNull Component errorInvalidDuration(final @NotNull String duration) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("error.invalid-duration")),
                 Placeholder.unparsed("duration", duration)
+        );
+    }
+
+    public @NotNull Component errorAlreadyMember(final @NotNull Member member) {
+        return MiniMessage.miniMessage().deserialize(
+                Objects.requireNonNull(config.getString("error.already-member")),
+                Placeholder.unparsed("player", Optional.ofNullable(member.player().getName())
+                        .orElse(member.player().getUniqueId().toString()))
+        );
+    }
+
+    public @NotNull Component errorAlreadyStaff(final @NotNull Member member) {
+        return MiniMessage.miniMessage().deserialize(
+                Objects.requireNonNull(config.getString("error.already-staff")),
+                Placeholder.unparsed("player", Optional.ofNullable(member.player().getName())
+                        .orElse(member.player().getUniqueId().toString())),
+                Formatter.choice("staff", member.staff ? 1 : 0)
+        );
+    }
+
+    public @NotNull Component errorRemoveMemberLeader(final @NotNull Member member, final @NotNull Nation nation) {
+        return MiniMessage.miniMessage().deserialize(
+                Objects.requireNonNull(config.getString("error.remove-member-leader")),
+                Placeholder.unparsed("player", Optional.ofNullable(member.player().getName())
+                        .orElse(member.player().getUniqueId().toString())),
+                Placeholder.unparsed("nation", nation.name)
         );
     }
 

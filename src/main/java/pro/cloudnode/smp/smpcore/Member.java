@@ -36,6 +36,10 @@ public final class Member {
         this.added = added;
     }
 
+    public Member(final @NotNull OfflinePlayer player) {
+        this(player, null);
+    }
+
     public Member(final @NotNull OfflinePlayer player, final @Nullable Member altOwner) {
         this(player.getUniqueId(), null, false, altOwner == null ? null : altOwner.uuid, new Date());
     }
@@ -270,8 +274,13 @@ public final class Member {
         team.displayName(SMPCore.config().staffTeamName());
         team.prefix(SMPCore.config().staffTeamName().append(Component.text(" ")));
 
-        for (final Member staff : getStaff())
+        for (final Member staff : getStaff()) try {
             team.addPlayer(staff.player());
+        }
+        catch (final IllegalArgumentException e) {
+            SMPCore.getInstance().getLogger().log(Level.FINEST, "could not add staff member "
+                    + staff.player().getUniqueId() + " to staff team", e);
+        }
 
         return team;
     }
