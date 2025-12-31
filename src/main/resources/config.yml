@@ -54,6 +54,6 @@ staff:
     name: <hover:show_text:'The shield that guards the realms of men.'><dark_red><b>STAFF</b></dark_red></hover>
   commands:
     add:
-      - luckperms:luckperms user <player> parent remove staff
-    remove:
       - luckperms:luckperms user <player> parent add staff
+    remove:
+      - luckperms:luckperms user <player> parent remove staff
