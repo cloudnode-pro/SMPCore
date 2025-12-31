@@ -142,3 +142,4 @@ error:
   invalid-duration: <red>(!) Invalid duration format <gray>‘<duration></gray>’.</red>
   already-member: <red>(!) Player <gray><player></gray> is already a member.</red>
   already-staff: <red>(!) Member <gray><player></gray> <staff:'0#does not have|1#already has'> staff status.</red>
+  remove-member-leader: <red>(!) You cannot remove <gray><player></gray> because they are the leader of <gray><nation></gray>.</red>

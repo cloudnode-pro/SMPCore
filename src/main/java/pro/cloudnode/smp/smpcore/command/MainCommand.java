@@ -1,9 +1,11 @@
 package pro.cloudnode.smp.smpcore.command;
 
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -12,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pro.cloudnode.smp.smpcore.Member;
 import pro.cloudnode.smp.smpcore.Messages;
+import pro.cloudnode.smp.smpcore.Nation;
 import pro.cloudnode.smp.smpcore.Permission;
 import pro.cloudnode.smp.smpcore.SMPCore;
 
@@ -260,8 +263,8 @@ public final class MainCommand extends Command {
                 if (!sender.hasPermission(Permission.ALT_REMOVE_JOINED) && altPlayer.hasPlayedBefore())
                     return sendMessage(sender, SMPCore.messages().errorRemoveJoinedAlt(altMember.get()));
 
-                if (!altMember.get().delete())
-                    return sendMessage(sender, SMPCore.messages().errorFailedDeleteMember(altMember.get()));
+                if (removeMember(sender, altMember.get()))
+                    return true;
 
                 return sendMessage(sender, SMPCore.messages().altsDeleted(altMember.get()));
             }
@@ -347,10 +350,8 @@ public final class MainCommand extends Command {
                 if (member.isEmpty())
                     return sendMessage(sender, SMPCore.messages().errorNotMember(target));
 
-                if (!member.get().delete())
-                    return sendMessage(sender, SMPCore.messages().errorFailedDeleteMember(member.get()));
-
-                SMPCore.runMain(() -> member.get().player().setWhitelisted(false));
+                if (removeMember(sender, member.get()))
+                    return true;
 
                 return sendMessage(sender, SMPCore.messages().membersDeleted(target));
             }
@@ -388,13 +389,17 @@ public final class MainCommand extends Command {
 
                 if (member.get().staff) {
                     member.get().nation().ifPresent(nation -> nation.getTeam().removePlayer(member.get().player()));
+
                     Member.getStaffTeam().addPlayer(member.get().player());
+
                     console.getServer().dispatchCommand(console, "luckperms:luckperms user "
                             + member.get().player().getName() + " parent add " + SMPCore.config().staffGroup());
                 }
                 else {
                     Member.getStaffTeam().removePlayer(member.get().player());
+
                     member.get().nation().ifPresent(nation -> nation.getTeam().addPlayer(member.get().player()));
+
                     console.getServer().dispatchCommand(console, "luckperms:luckperms user "
                             + member.get().player().getName() + " parent remove " + SMPCore.config().staffGroup());
                 }
@@ -440,5 +445,43 @@ public final class MainCommand extends Command {
             ));
 
         return sendMessage(sender, subCommandBuilder.build());
+    }
+
+    /**
+     * @return Whether the action was prevented.
+     */
+    private static boolean removeMember(final @NotNull Audience audience, final @NotNull Member target) {
+        final Optional<Nation> nation = target.nation();
+        final OfflinePlayer player = target.player();
+
+        if (nation.isPresent()) {
+            if (nation.get().leaderUUID.equals(player.getUniqueId())) {
+                sendMessage(audience, SMPCore.messages().errorRemoveMemberLeader(target, nation.get()));
+                return true;
+            }
+
+            if (nation.get().viceLeaderUUID.equals(player.getUniqueId())) {
+                nation.get().viceLeaderUUID = nation.get().leaderUUID;
+                nation.get().save();
+            }
+
+            nation.get().getTeam().removePlayer(player);
+        }
+
+        if (target.staff) {
+            Member.getStaffTeam().removePlayer(player);
+
+            final ConsoleCommandSender console = Bukkit.getConsoleSender();
+
+            Bukkit.dispatchCommand(console, "luckperms:luckperms user " + player.getName()
+                    + " parent remove " + SMPCore.config().staffGroup());
+        }
+
+        if (!target.delete())
+            return sendMessage(audience, SMPCore.messages().errorFailedDeleteMember(target));
+
+        SMPCore.runMain(() -> target.player().setWhitelisted(false));
+
+        return false;
     }
 }

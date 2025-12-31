@@ -717,6 +717,15 @@ public final class Messages extends BaseConfig {
         );
     }
 
+    public @NotNull Component errorRemoveMemberLeader(final @NotNull Member member, final @NotNull Nation nation) {
+        return MiniMessage.miniMessage().deserialize(
+                Objects.requireNonNull(config.getString("error.remove-member-leader")),
+                Placeholder.unparsed("player", Optional.ofNullable(member.player().getName())
+                        .orElse(member.player().getUniqueId().toString())),
+                Placeholder.unparsed("nation", nation.name)
+        );
+    }
+
     public record SubCommandArgument(@NotNull String name, boolean required) {
         public @NotNull Component component() {
             return required ? SMPCore.messages().subCommandArgumentRequired(name) : SMPCore.messages()
