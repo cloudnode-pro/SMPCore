@@ -4,7 +4,10 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Formatter;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -110,7 +113,17 @@ public final class Configuration extends BaseConfig {
         return MiniMessage.miniMessage().deserialize(Objects.requireNonNull(config.getString("staff.team.name")));
     }
 
-    public @NotNull String staffGroup() {
-        return Objects.requireNonNull(config.getString("staff.group"));
+    public void staffCommands(final boolean addMode, final @NotNull OfflinePlayer player) {
+        final @Nullable String name = player.getName();
+        if (name == null)
+            return;
+
+        final List<String> commands = config.getStringList("staff.commands." + (addMode ? "add" : "remove"));
+
+        for (final String command : commands)
+            Bukkit.dispatchCommand(
+                    Bukkit.getConsoleSender(),
+                    command.replace("<player>", name)
+            );
     }
 }

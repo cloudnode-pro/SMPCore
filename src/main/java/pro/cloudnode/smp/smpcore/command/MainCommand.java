@@ -5,7 +5,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -391,18 +390,14 @@ public final class MainCommand extends Command {
                     member.get().nation().ifPresent(nation -> nation.getTeam().removePlayer(member.get().player()));
 
                     Member.getStaffTeam().addPlayer(member.get().player());
-
-                    console.getServer().dispatchCommand(console, "luckperms:luckperms user "
-                            + member.get().player().getName() + " parent add " + SMPCore.config().staffGroup());
                 }
                 else {
                     Member.getStaffTeam().removePlayer(member.get().player());
 
                     member.get().nation().ifPresent(nation -> nation.getTeam().addPlayer(member.get().player()));
-
-                    console.getServer().dispatchCommand(console, "luckperms:luckperms user "
-                            + member.get().player().getName() + " parent remove " + SMPCore.config().staffGroup());
                 }
+
+                SMPCore.config().staffCommands(member.get().staff, member.get().player());
 
                 return sendMessage(sender, SMPCore.messages().membersSetStaff(member.get()));
             }
@@ -471,10 +466,7 @@ public final class MainCommand extends Command {
         if (target.staff) {
             Member.getStaffTeam().removePlayer(player);
 
-            final ConsoleCommandSender console = Bukkit.getConsoleSender();
-
-            Bukkit.dispatchCommand(console, "luckperms:luckperms user " + player.getName()
-                    + " parent remove " + SMPCore.config().staffGroup());
+            SMPCore.config().staffCommands(false, player);
         }
 
         if (!target.delete())
