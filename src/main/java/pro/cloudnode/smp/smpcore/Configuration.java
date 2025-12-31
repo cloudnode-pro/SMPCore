@@ -120,10 +120,12 @@ public final class Configuration extends BaseConfig {
 
         final List<String> commands = config.getStringList("staff.commands." + (addMode ? "add" : "remove"));
 
-        for (final String command : commands)
-            Bukkit.dispatchCommand(
-                    Bukkit.getConsoleSender(),
-                    command.replace("<player>", name)
-            );
+        SMPCore.runMain(() -> {
+            for (final String command : commands)
+                Bukkit.dispatchCommand(
+                        Bukkit.getConsoleSender(),
+                        command.replace("<player>", name)
+                );
+        });
     }
 }
