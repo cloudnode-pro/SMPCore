@@ -42,7 +42,8 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
             .connectTimeout(Duration.ofSeconds(15))
             .build();
 
-    private static final @NotNull Logger logger = Logger.getLogger("ProfileCache");
+    private static final @NotNull Logger logger = Logger
+            .getLogger(SMPCore.getInstance().getLogger().getName() + "/ProfileCache");
 
     static {
         logger.setParent(SMPCore.getInstance().getLogger());
