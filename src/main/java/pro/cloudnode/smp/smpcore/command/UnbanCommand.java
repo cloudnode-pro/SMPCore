@@ -24,7 +24,7 @@ public final class UnbanCommand extends Command {
     public boolean run(@NotNull CommandSender sender, @NotNull String label, @NotNull String @NotNull [] args) {
         if (!sender.hasPermission(Permission.BAN)) return sendMessage(sender, SMPCore.messages().errorNoPermission());
         if (args.length < 1) return sendMessage(sender, SMPCore.messages().usage(label, "<username>"));
-        final @NotNull OfflinePlayer target = CachedProfile.fetch(args[0]);
+        final @NotNull OfflinePlayer target = CachedProfile.get(args[0]);
         final @NotNull Optional<@NotNull Member> targetMember = Member.get(target);
         if (targetMember.isEmpty()) {
             if (!target.isBanned()) return sendMessage(sender, SMPCore.messages().errorPlayerNotBanned(target));

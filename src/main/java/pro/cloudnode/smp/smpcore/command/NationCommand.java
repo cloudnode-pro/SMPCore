@@ -436,7 +436,7 @@ public final class NationCommand extends Command {
         if (args.length == 0)
             return sendMessage(sender, SMPCore.messages().usage(label, "<citizen>"));
 
-        final @NotNull OfflinePlayer target = CachedProfile.fetch(args[0]);
+        final @NotNull OfflinePlayer target = CachedProfile.get(args[0]);
         final @NotNull Optional<@NotNull Member> targetMemberOptional = Member.get(target);
         if (targetMemberOptional.isEmpty())
             return sendMessage(sender, SMPCore.messages().errorNotMember(target));
@@ -467,7 +467,7 @@ public final class NationCommand extends Command {
         if (args.length == 0)
             return sendMessage(sender, SMPCore.messages().usage(label, "<citizen>"));
 
-        final @NotNull OfflinePlayer target = CachedProfile.fetch(args[0]);
+        final @NotNull OfflinePlayer target = CachedProfile.get(args[0]);
         final @NotNull Optional<@NotNull Member> targetMember = Member.get(target);
         if (targetMember.isEmpty())
             return sendMessage(sender, SMPCore.messages().errorNotMember(target));
@@ -512,7 +512,7 @@ public final class NationCommand extends Command {
         if (args.length == 0)
             return sendMessage(sender, SMPCore.messages().usage(label, "<citizen>"));
 
-        final @NotNull OfflinePlayer target = CachedProfile.fetch(args[0]);
+        final @NotNull OfflinePlayer target = CachedProfile.get(args[0]);
         final @NotNull Optional<@NotNull Member> targetMemberOptional = Member.get(target);
         if (targetMemberOptional.isEmpty())
             return sendMessage(sender, SMPCore.messages().errorNotMember(target));
@@ -555,7 +555,7 @@ public final class NationCommand extends Command {
         if (args.length < 1)
             return sendMessage(sender, SMPCore.messages().usage(label, "<member>"));
 
-        final var targetPlayer = CachedProfile.fetch(args[0]);
+        final var targetPlayer = CachedProfile.get(args[0]);
         final @NotNull var target = Member.get(targetPlayer);
 
         if (target.isEmpty())
@@ -607,7 +607,7 @@ public final class NationCommand extends Command {
         if (args.length < 1)
             return sendMessage(sender, SMPCore.messages().usage(label, "<member>"));
 
-        final @NotNull var targetPlayer = CachedProfile.fetch(args[0]);
+        final @NotNull var targetPlayer = CachedProfile.get(args[0]);
         final @NotNull var target = Member.get(targetPlayer);
 
         if (target.isEmpty())
@@ -740,7 +740,7 @@ public final class NationCommand extends Command {
         if (args.length < 1)
             return sendMessage(sender, SMPCore.messages().usage(label, "<member>"));
 
-        final var targetPlayer = CachedProfile.fetch(args[0]);
+        final var targetPlayer = CachedProfile.get(args[0]);
         final @NotNull var target = Member.get(targetPlayer);
 
         if (target.isEmpty())

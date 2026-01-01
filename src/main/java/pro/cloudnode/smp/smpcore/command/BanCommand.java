@@ -102,7 +102,7 @@ public final class BanCommand extends Command {
                 ? String.join(" ", Arrays.copyOfRange(args, duration == null ? 1 : 2, args.length))
                 : null;
 
-        final @NotNull OfflinePlayer target = CachedProfile.fetch(args[0]);
+        final @NotNull OfflinePlayer target = CachedProfile.get(args[0]);
 
         final List<Member> banned = ban(
                 target,

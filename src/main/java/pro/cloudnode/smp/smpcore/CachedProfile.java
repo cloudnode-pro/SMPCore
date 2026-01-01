@@ -44,7 +44,7 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
      *
      * @param uuid UUID to look up in the database.
      */
-    public static @NotNull Optional<@NotNull CachedProfile> get(final @NotNull UUID uuid) {
+    public static @NotNull Optional<@NotNull CachedProfile> getOffline(final @NotNull UUID uuid) {
         try (final PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement(
                 "SELECT * FROM `cached_profiles` WHERE `uuid` = ? LIMIT 1"
         )) {
@@ -67,8 +67,8 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
      *
      * @param player OfflinePlayer to look up in the database.
      */
-    public static @NotNull Optional<@NotNull CachedProfile> get(final @NotNull OfflinePlayer player) {
-        return get(player.getUniqueId());
+    public static @NotNull Optional<@NotNull CachedProfile> getOffline(final @NotNull OfflinePlayer player) {
+        return getOffline(player.getUniqueId());
     }
 
     /**
@@ -76,7 +76,7 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
      *
      * @param uuid UUID of the player to fetch.
      */
-    public static @Nullable CachedProfile fetch(final @NotNull UUID uuid) {
+    private static @Nullable CachedProfile fetch(final @NotNull UUID uuid) {
         final PluginMeta meta = SMPCore.getInstance().getPluginMeta();
 
         final HttpRequest req = HttpRequest.newBuilder()
@@ -112,7 +112,7 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
      *
      * @param player OfflinePlayer to fetch.
      */
-    public static @Nullable CachedProfile fetch(final @NotNull OfflinePlayer player) {
+    private static @Nullable CachedProfile fetch(final @NotNull OfflinePlayer player) {
         return fetch(player.getUniqueId());
     }
 
@@ -122,8 +122,8 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
      * @param uuid UUID of the player to fetch.
      * @throws IllegalStateException if the profile could not be fetched.
      */
-    public static @NotNull CachedProfile getOrFetch(final @NotNull UUID uuid) throws IllegalStateException {
-        final @Nullable CachedProfile profile = get(uuid).orElseGet(() -> fetch(uuid));
+    public static @NotNull CachedProfile get(final @NotNull UUID uuid) throws IllegalStateException {
+        final @Nullable CachedProfile profile = getOffline(uuid).orElseGet(() -> fetch(uuid));
 
         if (profile == null)
             throw new IllegalStateException("profile for UUID " + uuid + " could not be fetched");
@@ -136,8 +136,8 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
      * @param player OfflinePlayer to fetch.
      * @throws IllegalStateException if the profile could not be fetched.
      */
-    public static @NotNull CachedProfile getOrFetch(final @NotNull OfflinePlayer player) throws IllegalStateException {
-        return getOrFetch(player.getUniqueId());
+    public static @NotNull CachedProfile get(final @NotNull OfflinePlayer player) throws IllegalStateException {
+        return get(player.getUniqueId());
     }
 
     /**
@@ -145,7 +145,7 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
      *
      * @param name Username of the player to look up.
      */
-    public static @Nullable OfflinePlayer get(final @NotNull String name) {
+    public static @Nullable OfflinePlayer getOffline(final @NotNull String name) {
             final @Nullable OfflinePlayer player = Bukkit.getOfflinePlayerIfCached(name);
         if (player != null)
             return player;
@@ -176,8 +176,8 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
      *
      * @param name Username of the player to look up.
      */
-    public static @NotNull OfflinePlayer fetch(final @NotNull String name) {
-        final OfflinePlayer player = Optional.<@NotNull OfflinePlayer>ofNullable(get(name))
+    public static @NotNull OfflinePlayer get(final @NotNull String name) {
+        final OfflinePlayer player = Optional.<@NotNull OfflinePlayer>ofNullable(getOffline(name))
                 .orElseGet(() -> Bukkit.getOfflinePlayer(name));
 
         final @Nullable CachedProfile profile = CachedProfile.from(player);

@@ -19,7 +19,7 @@ public final class SeenCommand extends Command {
 
         if (args.length != 1) return sendMessage(sender, SMPCore.messages().usage(label, "<player>"));
 
-        final @NotNull OfflinePlayer player = CachedProfile.fetch(args[0]);
+        final @NotNull OfflinePlayer player = CachedProfile.get(args[0]);
 
         if (!player.hasPlayedBefore()) return sendMessage(sender, SMPCore.messages().errorNeverJoined(player));
 

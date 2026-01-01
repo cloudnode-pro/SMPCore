@@ -262,7 +262,7 @@ public final class SMPCore extends JavaPlugin {
         }
 
         try {
-            return CachedProfile.getOrFetch(player).name();
+            return CachedProfile.get(player).name();
         }
         catch (IllegalStateException e) {
             getInstance().getLogger().warning("Failed to fetch");

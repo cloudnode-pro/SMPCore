@@ -3,12 +3,12 @@
     <option name="myName" value="Project Default" />
     <inspection_tool class="23997a40-4f2f-3fd3-a5be-4ec039e1783b" enabled="true" level="ERROR" enabled_by_default="true" editorAttributes="ERRORS_ATTRIBUTES" />
     <inspection_tool class="SSBasedInspection" enabled="true" level="WARNING" enabled_by_default="true">
-      <replaceConfiguration name="Use profile cache" uuid="23997a40-4f2f-3fd3-a5be-4ec039e1783b" description="Get names of offline players and look up offline players by name only using the cache." suppressId="ProfileCache" text="$srv$.getOfflinePlayer($str$)" recursive="false" caseInsensitive="false" type="JAVA" pattern_context="default" reformatAccordingToStyle="true" shortenFQN="true" replacement="pro.cloudnode.smp.smpcore.CachedProfile.fetch($str$)">
+      <replaceConfiguration name="Use profile cache" uuid="23997a40-4f2f-3fd3-a5be-4ec039e1783b" description="Get names of offline players and look up offline players by name only using the cache." suppressId="ProfileCache" text="$srv$.getOfflinePlayer($str$)" recursive="false" caseInsensitive="false" type="JAVA" pattern_context="default" reformatAccordingToStyle="true" shortenFQN="true" replacement="pro.cloudnode.smp.smpcore.CachedProfile.get($str$)">
         <constraint name="__context__" within="" contains="" />
         <constraint name="srv" nameOfExprType="org\.bukkit\.Server" within="" contains="" />
         <constraint name="str" nameOfExprType="java\.lang\.String" within="" contains="" />
       </replaceConfiguration>
-      <replaceConfiguration name="Use profile cache" uuid="23997a40-4f2f-3fd3-a5be-4ec039e1783b" text="org.bukkit.Bukkit.getOfflinePlayer($str$)" recursive="false" caseInsensitive="false" type="JAVA" pattern_context="default" reformatAccordingToStyle="true" shortenFQN="true" replacement="pro.cloudnode.smp.smpcore.CachedProfile.fetch($str$)">
+      <replaceConfiguration name="Use profile cache" uuid="23997a40-4f2f-3fd3-a5be-4ec039e1783b" text="org.bukkit.Bukkit.getOfflinePlayer($str$)" recursive="false" caseInsensitive="false" type="JAVA" pattern_context="default" reformatAccordingToStyle="true" shortenFQN="true" replacement="pro.cloudnode.smp.smpcore.CachedProfile.get($str$)">
         <constraint name="__context__" within="" contains="" />
         <constraint name="str" nameOfExprType="java\.lang\.String" within="" contains="" />
       </replaceConfiguration>
