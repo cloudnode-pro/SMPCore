@@ -32,6 +32,10 @@ import java.util.logging.Level;
 public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull Date fetched) {
     private static final @NotNull Duration MAX_AGE = Duration.ofDays(7);
 
+    private static final @NotNull HttpClient client = HttpClient.newBuilder()
+            .connectTimeout(Duration.ofSeconds(15))
+            .build();
+
     /**
      * Gets a cached profile by UUID.
      *
@@ -78,7 +82,7 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
                 .GET()
                 .build();
 
-        try (final HttpClient client = HttpClient.newHttpClient()) {
+        try {
             final HttpResponse<String> res = client
                     .send(req, HttpResponse.BodyHandlers.ofString());
 
