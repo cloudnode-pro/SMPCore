@@ -31,7 +31,7 @@ import java.util.logging.Level;
  */
 public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull Date fetched) {
     private static final @NotNull Duration MAX_AGE = Duration.ofDays(7);
-    private static final @NotNull Duration STALE_WHILE_REVALIDATE = Duration.ofDays(1);
+    static final @NotNull Duration STALE_WHILE_REVALIDATE = Duration.ofDays(1);
 
     private static final @NotNull HttpClient client = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(15))
@@ -155,6 +155,7 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
      * Deletes stale cached profiles.
      */
     public static void cleanUp() {
+        SMPCore.getInstance().getLogger().info("Cleaning up stale cached profiles...");
         try (final @NotNull PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement(
                 "DELETE FROM `names_cache` WHERE `fetched` < ?"
         )) {

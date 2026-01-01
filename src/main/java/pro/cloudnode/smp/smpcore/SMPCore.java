@@ -3,7 +3,9 @@ package pro.cloudnode.smp.smpcore;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import io.papermc.paper.util.Tick;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -95,7 +97,12 @@ public final class SMPCore extends JavaPlugin {
         for (final Map.Entry<String, Command> entry : commands.entrySet())
             Objects.requireNonNull(getServer().getPluginCommand(entry.getKey())).setExecutor(entry.getValue());
 
-        runAsync(CachedProfile::cleanUp);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(
+                this,
+                CachedProfile::cleanUp,
+                0L,
+                Tick.tick().fromDuration(CachedProfile.STALE_WHILE_REVALIDATE)
+        );
     }
 
     @Override
