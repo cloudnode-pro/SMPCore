@@ -195,6 +195,6 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
     }
 
     private boolean staleWhileRevalidate() {
-        return fetched.after(staleWhileRevalidateThreshold());
+        return fetched.before(staleWhileRevalidateThreshold());
     }
 }
