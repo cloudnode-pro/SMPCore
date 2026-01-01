@@ -3,6 +3,9 @@ author: Cloudnode
 version: '${project.version}'
 main: pro.cloudnode.smp.smpcore.SMPCore
 api-version: '1.20'
+libraries:
+  - com.zaxxer:HikariCP:7.0.2
+  - io.javalin:javalin:6.7.0
 commands:
   smpcore:
     description: SMPCore Main command
