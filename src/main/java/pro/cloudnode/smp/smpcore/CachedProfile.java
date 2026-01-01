@@ -158,7 +158,7 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
         try (final @NotNull PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement(
                 "DELETE FROM `names_cache` WHERE `fetched` < ?"
         )) {
-            stmt.setTimestamp(1, new Timestamp(expirationThreshold().getTime()));
+            stmt.setTimestamp(1, new Timestamp(staleWhileRevalidateThreshold().getTime()));
             stmt.execute();
         }
         catch (final SQLException e) {
