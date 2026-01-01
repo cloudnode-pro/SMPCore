@@ -31,6 +31,7 @@ import java.util.logging.Level;
  */
 public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull Date fetched) {
     private static final @NotNull Duration MAX_AGE = Duration.ofDays(7);
+    private static final @NotNull Duration STALE_WHILE_REVALIDATE = Duration.ofDays(1);
 
     private static final @NotNull HttpClient client = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(15))
@@ -51,7 +52,7 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
             if (!rs.next())
                 return Optional.empty();
 
-            return Optional.of(new CachedProfile(rs));
+            return Optional.<@NotNull CachedProfile>ofNullable(CachedProfile.from(rs));
         }
         catch (final SQLException e) {
             SMPCore.getInstance().getLogger().log(Level.SEVERE, "could not get cached profile for UUID " + uuid, e);
@@ -98,10 +99,11 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
             final CachedProfile profile = new CachedProfile(uuid, body.get("name").getAsString(), new Date());
 
             try (final PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement(
-                    "INSERT OR REPLACE INTO `names_cache` (uuid, name) VALUES (?, ?)"
+                    "INSERT OR REPLACE INTO `names_cache` (`uuid`, `name`, `fetched`) VALUES (?, ?, ?)"
             )) {
                 stmt.setString(1, profile.uuid().toString());
                 stmt.setString(2, profile.name());
+                stmt.setTimestamp(3, new Timestamp(profile.fetched().getTime()));
                 stmt.executeUpdate();
             }
             catch (final SQLException e) {
@@ -168,39 +170,31 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
         return new Date(System.currentTimeMillis() - MAX_AGE.toMillis());
     }
 
-    private CachedProfile(final ResultSet rs) throws SQLException {
-        this(
+    private static @NotNull Date staleWhileRevalidateThreshold() {
+        return new Date(System.currentTimeMillis() - STALE_WHILE_REVALIDATE.toMillis() - MAX_AGE.toMillis());
+    }
+
+    private static @Nullable CachedProfile from(final ResultSet rs) throws SQLException {
+        final CachedProfile profile = new CachedProfile(
                 UUID.fromString(rs.getString("uuid")),
                 rs.getString("name"),
                 rs.getTimestamp("fetched")
         );
 
-        if (stale())
-            SMPCore.runAsync(() -> {
-                try {
-                    delete();
-                }
-                catch (SQLException e) {
-                    SMPCore.getInstance().getLogger().log(Level.SEVERE, "could not delete stale cached profile for UUID " + uuid, e);
-                }
-            });
+        if (profile.stale()) {
+            SMPCore.runAsync(() -> CachedProfile.fetch(profile.uuid()));
+
+            return profile.staleWhileRevalidate() ? profile : null;
+        }
+
+        return profile;
     }
 
     private boolean stale() {
         return fetched.before(expirationThreshold());
     }
 
-    private void delete() throws SQLException {
-        try (
-                final @NotNull PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement(
-                        "DELETE FROM `names_cache` WHERE `uuid` = ?"
-                )
-        ) {
-            stmt.setString(1, uuid.toString());
-            stmt.executeUpdate();
-        }
-        catch (final SQLException e) {
-            SMPCore.getInstance().getLogger().log(Level.SEVERE, "could not delete cached profile for UUID " + uuid, e);
-        }
+    private boolean staleWhileRevalidate() {
+        return fetched.after(staleWhileRevalidateThreshold());
     }
 }
