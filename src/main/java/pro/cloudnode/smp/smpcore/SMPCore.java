@@ -1,8 +1,10 @@
 package pro.cloudnode.smp.smpcore;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import net.kyori.adventure.text.Component;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -16,8 +18,8 @@ import pro.cloudnode.smp.smpcore.command.NationCommand;
 import pro.cloudnode.smp.smpcore.command.SeenCommand;
 import pro.cloudnode.smp.smpcore.command.TimeCommand;
 import pro.cloudnode.smp.smpcore.command.UnbanCommand;
-import pro.cloudnode.smp.smpcore.listener.PlayerJoinListener;
 import pro.cloudnode.smp.smpcore.listener.PlayerDeathListener;
+import pro.cloudnode.smp.smpcore.listener.PlayerJoinListener;
 import pro.cloudnode.smp.smpcore.listener.PlayerPostRespawnListener;
 import pro.cloudnode.smp.smpcore.listener.PlayerPreLoginListener;
 import pro.cloudnode.smp.smpcore.listener.PlayerServerFullCheckListener;
@@ -92,6 +94,8 @@ public final class SMPCore extends JavaPlugin {
         commands.put("alts", new AltsCommand(commands.get("smpcore")));
         for (final Map.Entry<String, Command> entry : commands.entrySet())
             Objects.requireNonNull(getServer().getPluginCommand(entry.getKey())).setExecutor(entry.getValue());
+
+        runAsync(CachedProfile::cleanUp);
     }
 
     @Override
@@ -234,5 +238,27 @@ public final class SMPCore extends JavaPlugin {
 
     public static @NotNull Date gameTime(final long ticks) {
         return new Date(ticks * 3600 + 21600000);
+    }
+
+    public static @NotNull String getName(final @NotNull OfflinePlayer player) {
+        final @Nullable String name = player.getName();
+        if (name != null)
+            return name;
+
+        final PlayerProfile profile = player.getPlayerProfile();
+
+        if (profile.completeFromCache(true)) {
+            final @Nullable String profileName = profile.getName();
+            if (profileName != null && !profileName.isEmpty())
+                return profileName;
+        }
+
+        try {
+            return CachedProfile.getOrFetch(player).name();
+        }
+        catch (IllegalStateException e) {
+            getInstance().getLogger().warning("Failed to fetch");
+            return player.getUniqueId().toString();
+        }
     }
 }

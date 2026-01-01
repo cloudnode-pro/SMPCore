@@ -8,7 +8,6 @@ import pro.cloudnode.smp.smpcore.Permission;
 import pro.cloudnode.smp.smpcore.SMPCore;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 public final class SeenCommand extends Command {
@@ -35,6 +34,9 @@ public final class SeenCommand extends Command {
     @Override
     public @NotNull List<@NotNull String> tab(@NotNull CommandSender sender, @NotNull String label, @NotNull String @NotNull [] args) {
         if (sender.hasPermission(Permission.SEEN_STAFF)) return Member.getNames().stream().toList();
-        else return Member.get().stream().filter(m -> !m.staff).map(m -> m.player().getName()).filter(Objects::nonNull).toList();
+        else return Member.get().stream()
+                .filter(m -> !m.staff)
+                .map(m -> SMPCore.getName(m.player()))
+                .toList();
     }
 }

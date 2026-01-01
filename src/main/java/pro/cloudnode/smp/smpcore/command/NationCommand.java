@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -159,9 +158,10 @@ public final class NationCommand extends Command {
                                 if (!sender.hasPermission(Permission.NATION_CITIZENS_KICK))
                                     break;
                                 list.addAll(nation.get().citizens().stream()
-                                                  .filter(c -> !c.uuid.equals(nation.get().leaderUUID))
-                                                  .map(c -> c.player().getName())
-                                                  .filter(Objects::nonNull).toList());
+                                        .filter(c -> !c.uuid.equals(nation.get().leaderUUID))
+                                        .map(c -> SMPCore.getName(c.player()))
+                                        .toList()
+                                );
                             }
                             case "promote" -> {
                                 if (other && !sender.hasPermission(Permission.NATION_PROMOTE_OTHER))
@@ -169,9 +169,10 @@ public final class NationCommand extends Command {
                                 if (!sender.hasPermission(Permission.NATION_PROMOTE))
                                     break;
                                 list.addAll(nation.get().citizens().stream()
-                                                  .filter(c -> !(c.uuid.equals(nation.get().leaderUUID) || c.uuid.equals(nation.get().viceLeaderUUID)))
-                                                  .map(c -> c.player().getName())
-                                                  .filter(Objects::nonNull).toList());
+                                        .filter(c -> !(c.uuid.equals(nation.get().leaderUUID) ||
+                                                c.uuid.equals(nation.get().viceLeaderUUID)))
+                                        .map(c -> SMPCore.getName(c.player()))
+                                        .toList());
                             }
                             case "demote" -> {
                                 if (other && !sender.hasPermission(Permission.NATION_DEMOTE_OTHER))
@@ -181,9 +182,8 @@ public final class NationCommand extends Command {
                                 final @NotNull Member vice = nation.get().vice();
                                 if (vice.uuid.equals(nation.get().leaderUUID))
                                     break;
-                                final var name = vice.player().getName();
-                                if (name != null)
-                                    list.add(name);
+
+                                list.add(SMPCore.getName(vice.player()));
                             }
                             case "invite", "request", "req" -> {
                                 if (other && !sender.hasPermission(Permission.NATION_INVITE_OTHER))
@@ -192,8 +192,8 @@ public final class NationCommand extends Command {
                                     break;
                                 list.addAll(Member.get().stream()
                                     .filter(m -> !nation.get().id.equals(m.nationID))
-                                    .map(c -> c.player().getName())
-                                    .filter(Objects::nonNull).toList());
+                                    .map(c -> SMPCore.getName(c.player()))
+                                    .toList());
                             }
                             case "cancel", "reject", "decline", "withdraw", "refuse", "deny" -> {
                                 if (other && !sender.hasPermission(Permission.NATION_INVITE_OTHER))
@@ -203,7 +203,9 @@ public final class NationCommand extends Command {
                                 list.addAll(Stream.concat(
                                         CitizenRequest.get(nation.get(), true).stream(),
                                         CitizenRequest.get(nation.get(), false).stream()
-                                ).map(req -> req.member().player().getName()).filter(Objects::nonNull).sorted().toList());
+                                ).map(req -> SMPCore.getName(req.member().player()))
+                                        .sorted()
+                                        .toList());
                             }
                             case "add" -> {
                                 if (other && !sender.hasPermission(Permission.NATION_CITIZEN_ADD_OTHER))
@@ -211,9 +213,9 @@ public final class NationCommand extends Command {
                                 if (!sender.hasPermission(Permission.NATION_CITIZEN_ADD))
                                     break;
                                 list.addAll(Member.get().stream()
-                                                                          .filter(m -> !nation.get().id.equals(m.nationID))
-                                                                          .map(c -> c.player().getName())
-                                                                          .filter(Objects::nonNull).toList());
+                                        .filter(m -> !nation.get().id.equals(m.nationID))
+                                        .map(c -> SMPCore.getName(c.player()))
+                                        .toList());
                             }
                         }
                     }

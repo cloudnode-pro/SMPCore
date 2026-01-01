@@ -71,7 +71,8 @@ public final class MainCommand extends Command {
                             if (sender instanceof final @NotNull Player player) {
                                 final @NotNull Optional<@NotNull Member> member = Member.get(player);
                                 member.ifPresent(value -> suggestions.addAll(value.getAlts().stream()
-                                        .map(m -> m.player().getName()).filter(Objects::nonNull).toList()));
+                                        .map(m -> SMPCore.getName(m.player()))
+                                        .toList()));
                             }
                         }
                     }

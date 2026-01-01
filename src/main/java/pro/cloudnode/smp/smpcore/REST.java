@@ -29,7 +29,7 @@ public class REST {
         final @NotNull JsonObject obj = new JsonObject();
         final @NotNull OfflinePlayer player = member.player();
         obj.addProperty("uuid", member.uuid.toString());
-        obj.addProperty("name", player.getName());
+        obj.addProperty("name", SMPCore.getName(player));
         obj.addProperty("nation", member.nationID);
         obj.addProperty("staff", member.staff);
         obj.addProperty("online", !member.staff && player.isOnline());
@@ -159,7 +159,7 @@ public class REST {
                 final @NotNull JsonObject altObj = new JsonObject();
                 final @NotNull OfflinePlayer player = alt.player();
                 altObj.addProperty("uuid", alt.uuid.toString());
-                altObj.addProperty("name", player.getName());
+                altObj.addProperty("name", SMPCore.getName(player));
                 altObj.addProperty("nation", alt.nationID);
                 altObj.addProperty("added", alt.added.getTime());
                 altObj.addProperty("lastSeen", alt.staff ? 0 : player.getLastSeen());
