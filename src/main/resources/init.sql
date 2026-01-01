@@ -41,3 +41,11 @@ CREATE TABLE IF NOT EXISTS `citizen_requests`
 DELETE
 from `citizen_requests`
 WHERE `expires` >= CURRENT_TIMESTAMP;
+
+CREATE TABLE IF NOT EXISTS `names_cache`
+(
+    `uuid`    CHAR(36)    NOT NULL COLLATE NOCASE,
+    `name`    VARCHAR(16) NOT NULL COLLATE NOCASE,
+    `fetched` DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`uuid`)
+);
