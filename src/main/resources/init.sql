@@ -42,7 +42,7 @@ DELETE
 from `citizen_requests`
 WHERE `expires` >= CURRENT_TIMESTAMP;
 
-CREATE TABLE IF NOT EXISTS `names_cache`
+CREATE TABLE IF NOT EXISTS `cached_profiles`
 (
     `uuid`    CHAR(36)    NOT NULL COLLATE NOCASE,
     `name`    VARCHAR(16) NOT NULL COLLATE NOCASE,

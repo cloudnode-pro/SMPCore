@@ -44,7 +44,7 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
      */
     public static @NotNull Optional<@NotNull CachedProfile> get(final @NotNull UUID uuid) {
         try (final PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement(
-                "SELECT * FROM `names_cache` WHERE `uuid` = ? LIMIT 1"
+                "SELECT * FROM `cached_profiles` WHERE `uuid` = ? LIMIT 1"
         )) {
             stmt.setString(1, uuid.toString());
 
@@ -99,7 +99,7 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
             final CachedProfile profile = new CachedProfile(uuid, body.get("name").getAsString(), new Date());
 
             try (final PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement(
-                    "INSERT OR REPLACE INTO `names_cache` (`uuid`, `name`, `fetched`) VALUES (?, ?, ?)"
+                    "INSERT OR REPLACE INTO `cached_profiles` (`uuid`, `name`, `fetched`) VALUES (?, ?, ?)"
             )) {
                 stmt.setString(1, profile.uuid().toString());
                 stmt.setString(2, profile.name());
@@ -157,7 +157,7 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
     public static void cleanUp() {
         SMPCore.getInstance().getLogger().info("Cleaning up stale cached profiles...");
         try (final @NotNull PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement(
-                "DELETE FROM `names_cache` WHERE `fetched` < ?"
+                "DELETE FROM `cached_profiles` WHERE `fetched` < ?"
         )) {
             stmt.setTimestamp(1, new Timestamp(staleWhileRevalidateThreshold().getTime()));
             stmt.execute();
