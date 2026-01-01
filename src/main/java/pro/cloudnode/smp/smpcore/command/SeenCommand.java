@@ -36,7 +36,7 @@ public final class SeenCommand extends Command {
         if (sender.hasPermission(Permission.SEEN_STAFF)) return Member.getNames().stream().toList();
         else return Member.get().stream()
                 .filter(m -> !m.staff)
-                .map(m -> SMPCore.getName(m.player()))
+                .map(m -> CachedProfile.getName(m.player()))
                 .toList();
     }
 }

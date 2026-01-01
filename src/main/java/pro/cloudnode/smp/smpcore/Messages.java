@@ -73,7 +73,7 @@ public final class Messages extends BaseConfig {
     public @NotNull Component bannedPlayer(final @NotNull OfflinePlayer player, final @Nullable Duration duration) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("banned-player")),
-                Placeholder.unparsed("player", SMPCore.getName(player)),
+                Placeholder.unparsed("player", CachedProfile.getName(player)),
                 Placeholder.component("duration", formatDuration(duration))
         );
     }
@@ -82,7 +82,7 @@ public final class Messages extends BaseConfig {
         return MiniMessage.miniMessage()
                 .deserialize(
                         Objects.requireNonNull(config.getString("banned-member")),
-                        Placeholder.unparsed("player", SMPCore.getName(member.player())),
+                        Placeholder.unparsed("player", CachedProfile.getName(member.player())),
                         Placeholder.component("duration", formatDuration(duration))
                 );
     }
@@ -93,13 +93,13 @@ public final class Messages extends BaseConfig {
             final @Nullable Duration duration
     ) {
         final String altsString = alts.stream()
-                .map(m -> SMPCore.getName(m.player()))
+                .map(m -> CachedProfile.getName(m.player()))
                 .collect(Collectors.joining(", "));
 
         return MiniMessage.miniMessage()
                 .deserialize(
                         Objects.requireNonNull(config.getString("banned-member-chain")),
-                        Placeholder.unparsed("player", SMPCore.getName(member.player())),
+                        Placeholder.unparsed("player", CachedProfile.getName(member.player())),
                         Placeholder.unparsed("n-alt", String.valueOf(alts.size())),
                         Placeholder.unparsed("alts", altsString),
                         Placeholder.component("duration", formatDuration(duration))
@@ -109,14 +109,14 @@ public final class Messages extends BaseConfig {
     public @NotNull Component unbannedPlayer(final @NotNull OfflinePlayer player) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("unbanned-player")),
-                Placeholder.unparsed("player", SMPCore.getName(player))
+                Placeholder.unparsed("player", CachedProfile.getName(player))
         );
     }
 
     public @NotNull Component unbannedMember(final @NotNull Member member, final @NotNull List<@NotNull Member> alts) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("unbanned-member")),
-                Placeholder.unparsed("player", SMPCore.getName(member.player())),
+                Placeholder.unparsed("player", CachedProfile.getName(member.player())),
                 Placeholder.unparsed("n-alts", String.valueOf(alts.size()))
         );
     }
@@ -199,7 +199,7 @@ public final class Messages extends BaseConfig {
     public @NotNull Component altsListHeader(final @NotNull Member member) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("alts.list.header")),
-                Placeholder.unparsed("player", SMPCore.getName(member.player()))
+                Placeholder.unparsed("player", CachedProfile.getName(member.player()))
         );
     }
 
@@ -212,7 +212,7 @@ public final class Messages extends BaseConfig {
     public @NotNull Component altsListEntry(final @NotNull Member alt) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("alts.list.entry")),
-                Placeholder.unparsed("alt", SMPCore.getName(alt.player()))
+                Placeholder.unparsed("alt", CachedProfile.getName(alt.player()))
         );
     }
 
@@ -220,21 +220,21 @@ public final class Messages extends BaseConfig {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("alts.confirm-add"))
                         .replace("<confirm-command>", confirmCommand),
-                Placeholder.unparsed("alt", SMPCore.getName(alt))
+                Placeholder.unparsed("alt", CachedProfile.getName(alt))
         );
     }
 
     public @NotNull Component altsCreated(final @NotNull Member alt) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("alts.created")),
-                Placeholder.unparsed("alt", SMPCore.getName(alt.player()))
+                Placeholder.unparsed("alt", CachedProfile.getName(alt.player()))
         );
     }
 
     public @NotNull Component altsDeleted(final @NotNull Member alt) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("alts.deleted")),
-                Placeholder.unparsed("alt", SMPCore.getName(alt.player()))
+                Placeholder.unparsed("alt", CachedProfile.getName(alt.player()))
         );
     }
 
@@ -259,7 +259,7 @@ public final class Messages extends BaseConfig {
     public @NotNull Component membersListEntry(final @NotNull Member member) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("members.list.entry")),
-                Placeholder.unparsed("player", SMPCore.getName(member.player())),
+                Placeholder.unparsed("player", CachedProfile.getName(member.player())),
                 Formatter.choice("staff", member.staff ? 1 : 0),
                 Placeholder.component("nation", member.nation()
                         .map(n -> n.getTeam().displayName())
@@ -272,21 +272,21 @@ public final class Messages extends BaseConfig {
     public @NotNull Component membersAdded(final @NotNull Member member) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("members.added")),
-                Placeholder.unparsed("player", SMPCore.getName(member.player()))
+                Placeholder.unparsed("player", CachedProfile.getName(member.player()))
         );
     }
 
     public @NotNull Component membersDeleted(final @NotNull OfflinePlayer player) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("members.deleted")),
-                Placeholder.unparsed("player", SMPCore.getName(player))
+                Placeholder.unparsed("player", CachedProfile.getName(player))
         );
     }
 
     public @NotNull Component membersSetStaff(final @NotNull Member member) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("members.set-staff")),
-                Placeholder.unparsed("player", SMPCore.getName(member.player())),
+                Placeholder.unparsed("player", CachedProfile.getName(member.player())),
                 Formatter.choice("staff", member.staff ? 1 : 0)
         );
     }
@@ -294,14 +294,14 @@ public final class Messages extends BaseConfig {
     public @NotNull Component seen(final @NotNull Member member) {
         if (member.player().isOnline()) return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("seen.online")),
-                Placeholder.unparsed("player", SMPCore.getName(member.player()))
+                Placeholder.unparsed("player", CachedProfile.getName(member.player()))
         );
 
         final Date lastSeen = new Date(member.player().getLastSeen());
 
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString(member.isActive() ? "seen.active" : "seen.inactive")),
-                Placeholder.unparsed("player", SMPCore.getName(member.player())),
+                Placeholder.unparsed("player", CachedProfile.getName(member.player())),
                 Formatter.date("last-seen", lastSeen.toInstant().atZone(ZoneOffset.UTC).toLocalDateTime()),
                 Placeholder.component("last-seen-relative", SMPCore.relativeTime(lastSeen))
         );
@@ -311,14 +311,14 @@ public final class Messages extends BaseConfig {
         if (player.isOnline())
             return MiniMessage.miniMessage().deserialize(
                     Objects.requireNonNull(config.getString("seen.online")),
-                    Placeholder.unparsed("player", SMPCore.getName(player))
+                    Placeholder.unparsed("player", CachedProfile.getName(player))
             );
 
         final Date lastSeen = new Date(player.getLastSeen());
 
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("seen.non-member")),
-                Placeholder.unparsed("player", SMPCore.getName(player)),
+                Placeholder.unparsed("player", CachedProfile.getName(player)),
                 Formatter.date("last-seen", lastSeen.toInstant().atZone(ZoneOffset.UTC).toLocalDateTime()),
                 Placeholder.component("last-seen-relative", SMPCore.relativeTime(lastSeen))
         );
@@ -438,7 +438,7 @@ public final class Messages extends BaseConfig {
                 Objects.requireNonNull(config.getString(configKey))
                         .replaceAll("<color>", "<#" + nation.color + ">")
                         .replaceAll("</color>", "</#" + nation.color + ">")
-                        .replaceAll("<member-name>", SMPCore.getName(member.player())),
+                        .replaceAll("<member-name>", CachedProfile.getName(member.player())),
                 Placeholder.component("member-status", nationCitizensStatus(member)),
                 Placeholder.component("buttons", nationCitizensListButtons(nation, member, sender, other))
         );
@@ -506,21 +506,21 @@ public final class Messages extends BaseConfig {
                 Objects.requireNonNull(config.getString("nation.citizens.list.buttons." + button))
                         .replaceAll("<color>", "<#" + nation.color + ">")
                         .replaceAll("</color>", "</#" + nation.color + ">")
-                        .replaceAll("<member-name>", SMPCore.getName(member.player()))
+                        .replaceAll("<member-name>", CachedProfile.getName(member.player()))
         );
     }
 
     public @NotNull Component nationCitizensKicked(final @NotNull Member member) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("nation.citizens.kicked")),
-                Placeholder.unparsed("player", SMPCore.getName(member.player()))
+                Placeholder.unparsed("player", CachedProfile.getName(member.player()))
         );
     }
 
     public @NotNull Component nationCitizensVicePromoted(final @NotNull Member member) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("nation.citizens.vice.promoted")),
-                Placeholder.unparsed("player", SMPCore.getName(member.player()))
+                Placeholder.unparsed("player", CachedProfile.getName(member.player()))
         );
     }
 
@@ -533,7 +533,7 @@ public final class Messages extends BaseConfig {
     public @NotNull Component nationCitizensViceDemoted(final @NotNull Member member) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("nation.citizens.vice.demoted")),
-                Placeholder.unparsed("player", SMPCore.getName(member.player()))
+                Placeholder.unparsed("player", CachedProfile.getName(member.player()))
         );
     }
 
@@ -554,14 +554,14 @@ public final class Messages extends BaseConfig {
     public @NotNull Component nationJoinRequestReceived(final @NotNull Member member) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("nation.join.request-received"))
-                        .replaceAll("<player>", SMPCore.getName(member.player()))
+                        .replaceAll("<player>", CachedProfile.getName(member.player()))
         );
     }
 
     public @NotNull Component nationJoinInviteSent(final @NotNull Member member) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("nation.join.invite-sent"))
-                        .replaceAll("<player>", SMPCore.getName(member.player()))
+                        .replaceAll("<player>", CachedProfile.getName(member.player()))
         );
     }
 
@@ -576,14 +576,14 @@ public final class Messages extends BaseConfig {
     public @NotNull Component nationJoinJoined(final @NotNull Member member) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("nation.join.joined")),
-                Placeholder.unparsed("player", SMPCore.getName(member.player()))
+                Placeholder.unparsed("player", CachedProfile.getName(member.player()))
         );
     }
 
     public @NotNull Component nationJoinLeft(final @NotNull Member member) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("nation.join.left")),
-                Placeholder.unparsed("player", SMPCore.getName(member.player()))
+                Placeholder.unparsed("player", CachedProfile.getName(member.player()))
         );
     }
 
@@ -597,7 +597,7 @@ public final class Messages extends BaseConfig {
     public @NotNull Component nationJoinRequestRejected(final @NotNull Member member, final @NotNull Nation nation) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("nation.join.request-rejected")),
-                Placeholder.unparsed("player", SMPCore.getName(member.player())),
+                Placeholder.unparsed("player", CachedProfile.getName(member.player())),
                 Placeholder.unparsed("nation", nation.name)
         );
     }
@@ -605,7 +605,7 @@ public final class Messages extends BaseConfig {
     public @NotNull Component nationJoinInviteCancelled(final @NotNull Member member, final @NotNull Nation nation) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("nation.join.invite-cancelled")),
-                Placeholder.unparsed("player", SMPCore.getName(member.player())),
+                Placeholder.unparsed("player", CachedProfile.getName(member.player())),
                 Placeholder.unparsed("nation", nation.name)
         );
     }
@@ -656,14 +656,14 @@ public final class Messages extends BaseConfig {
     public @NotNull Component errorPlayerNotBanned(final @NotNull OfflinePlayer player) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("error.player-not-banned")),
-                Placeholder.unparsed("player", SMPCore.getName(player))
+                Placeholder.unparsed("player", CachedProfile.getName(player))
         );
     }
 
     public @NotNull Component errorNotMember(final @NotNull OfflinePlayer player) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("error.not-member")),
-                Placeholder.unparsed("player", SMPCore.getName(player))
+                Placeholder.unparsed("player", CachedProfile.getName(player))
         );
     }
 
@@ -676,7 +676,7 @@ public final class Messages extends BaseConfig {
     public @NotNull Component errorAltAlreadyMember(final @NotNull Member member) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("error.alt-already-member")),
-                Placeholder.unparsed("player", SMPCore.getName(member.player()))
+                Placeholder.unparsed("player", CachedProfile.getName(member.player()))
         );
     }
 
@@ -690,14 +690,14 @@ public final class Messages extends BaseConfig {
     public @NotNull Component errorFailedDeleteMember(final @NotNull Member member) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("error.failed-delete-member")),
-                Placeholder.unparsed("player", SMPCore.getName(member.player()))
+                Placeholder.unparsed("player", CachedProfile.getName(member.player()))
         );
     }
 
     public @NotNull Component errorAlreadyYourAlt(final @NotNull Member alt) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("error.already-your-alt")),
-                Placeholder.unparsed("alt", SMPCore.getName(alt.player()))
+                Placeholder.unparsed("alt", CachedProfile.getName(alt.player()))
         );
     }
 
@@ -711,21 +711,21 @@ public final class Messages extends BaseConfig {
     public @NotNull Component errorMemberNotAlt(final @NotNull Member member) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("error.member-not-alt")),
-                Placeholder.unparsed("player", SMPCore.getName(member.player()))
+                Placeholder.unparsed("player", CachedProfile.getName(member.player()))
         );
     }
 
     public @NotNull Component errorRemoveJoinedAlt(final @NotNull Member member) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("error.remove-joined-alt")),
-                Placeholder.unparsed("player", SMPCore.getName(member.player()))
+                Placeholder.unparsed("player", CachedProfile.getName(member.player()))
         );
     }
 
     public @NotNull Component errorNeverJoined(final @NotNull OfflinePlayer player) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("error.never-joined")),
-                Placeholder.unparsed("player", SMPCore.getName(player))
+                Placeholder.unparsed("player", CachedProfile.getName(player))
         );
     }
 
@@ -745,7 +745,7 @@ public final class Messages extends BaseConfig {
     public @NotNull Component errorNotCitizen(final @NotNull Member member) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("error.not-citizen")),
-                Placeholder.unparsed("player", SMPCore.getName(member.player()))
+                Placeholder.unparsed("player", CachedProfile.getName(member.player()))
         );
     }
 
@@ -765,14 +765,14 @@ public final class Messages extends BaseConfig {
     public @NotNull Component errorAlreadyCitizen(final @NotNull Member member) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("error.already-citizen-player")),
-                Placeholder.unparsed("player", SMPCore.getName(member.player()))
+                Placeholder.unparsed("player", CachedProfile.getName(member.player()))
         );
     }
 
     public @NotNull Component errorOtherCitizen(final @NotNull Member member) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("error.other-citizen")),
-                Placeholder.unparsed("player", SMPCore.getName(member.player()))
+                Placeholder.unparsed("player", CachedProfile.getName(member.player()))
         );
     }
 
@@ -812,7 +812,7 @@ public final class Messages extends BaseConfig {
     public @NotNull Component errorAlreadyInvited(final @NotNull Member member) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("error.already-invited")),
-                Placeholder.unparsed("player", SMPCore.getName(member.player()))
+                Placeholder.unparsed("player", CachedProfile.getName(member.player()))
         );
     }
 
@@ -826,7 +826,7 @@ public final class Messages extends BaseConfig {
     public @NotNull Component errorNoRequest(final @NotNull Member member) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("error.no-request-player")),
-                Placeholder.unparsed("player", SMPCore.getName(member.player()))
+                Placeholder.unparsed("player", CachedProfile.getName(member.player()))
         );
     }
 
@@ -839,7 +839,7 @@ public final class Messages extends BaseConfig {
     public @NotNull Component errorAlreadyVice(final @NotNull Member member) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("error.already-vice")),
-                Placeholder.unparsed("player", SMPCore.getName(member.player()))
+                Placeholder.unparsed("player", CachedProfile.getName(member.player()))
         );
     }
 
@@ -871,14 +871,14 @@ public final class Messages extends BaseConfig {
     public @NotNull Component errorAlreadyMember(final @NotNull Member member) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("error.already-member")),
-                Placeholder.unparsed("player", SMPCore.getName(member.player()))
+                Placeholder.unparsed("player", CachedProfile.getName(member.player()))
         );
     }
 
     public @NotNull Component errorAlreadyStaff(final @NotNull Member member) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("error.already-staff")),
-                Placeholder.unparsed("player", SMPCore.getName(member.player())),
+                Placeholder.unparsed("player", CachedProfile.getName(member.player())),
                 Formatter.choice("staff", member.staff ? 1 : 0)
         );
     }
@@ -886,7 +886,7 @@ public final class Messages extends BaseConfig {
     public @NotNull Component errorRemoveMemberLeader(final @NotNull Member member, final @NotNull Nation nation) {
         return MiniMessage.miniMessage().deserialize(
                 Objects.requireNonNull(config.getString("error.remove-member-leader")),
-                Placeholder.unparsed("player", SMPCore.getName(member.player())),
+                Placeholder.unparsed("player", CachedProfile.getName(member.player())),
                 Placeholder.unparsed("nation", nation.name)
         );
     }

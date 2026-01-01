@@ -126,7 +126,7 @@ public final class BanCommand extends Command {
         if (args.length <= 1)
             return Arrays.stream(SMPCore.getInstance().getServer().getOfflinePlayers())
                     .filter(p -> !p.isBanned())
-                    .map(SMPCore::getName)
+                    .map(CachedProfile::getName)
                     .toList();
         return List.of();
     }

@@ -1,5 +1,6 @@
 package pro.cloudnode.smp.smpcore;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.papermc.paper.plugin.configuration.PluginMeta;
@@ -201,6 +202,28 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
         }
         catch (final SQLException e) {
             SMPCore.getInstance().getLogger().log(Level.SEVERE, "could not clean up cached profiles", e);
+        }
+    }
+
+    public static @NotNull String getName(final @NotNull OfflinePlayer player) {
+        final @Nullable String name = player.getName();
+        if (name != null)
+            return name;
+
+        final PlayerProfile profile = player.getPlayerProfile();
+
+        if (profile.completeFromCache(true)) {
+            final @Nullable String profileName = profile.getName();
+            if (profileName != null && !profileName.isEmpty())
+                return profileName;
+        }
+
+        try {
+            return get(player).name();
+        }
+        catch (IllegalStateException e) {
+            SMPCore.getInstance().getLogger().warning("Failed to fetch");
+            return player.getUniqueId().toString();
         }
     }
 

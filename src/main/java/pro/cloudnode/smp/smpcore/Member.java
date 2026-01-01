@@ -81,7 +81,7 @@ public final class Member {
             while (rs.next()) alts.add(new Member(rs));
         }
         catch (final @NotNull SQLException e) {
-            SMPCore.getInstance().getLogger().log(Level.SEVERE, "could not get alts for " + SMPCore.getName(player()), e);
+            SMPCore.getInstance().getLogger().log(Level.SEVERE, "could not get alts for " + CachedProfile.getName(player()), e);
         }
 
         return alts;
@@ -249,14 +249,14 @@ public final class Member {
 
     public static @NotNull Set<@NotNull String> getNames() {
         return get().stream()
-                .map(m -> SMPCore.getName(m.player()))
+                .map(m -> CachedProfile.getName(m.player()))
                 .collect(Collectors.toSet());
     }
 
     public static @NotNull Set<@NotNull String> getAltNames() {
         return get().stream()
                 .filter(Member::isAlt)
-                .map(m -> SMPCore.getName(m.player()))
+                .map(m -> CachedProfile.getName(m.player()))
                 .collect(Collectors.toSet());
     }
 

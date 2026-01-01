@@ -1,12 +1,10 @@
 package pro.cloudnode.smp.smpcore;
 
-import com.destroystokyo.paper.profile.PlayerProfile;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import io.papermc.paper.util.Tick;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -247,26 +245,4 @@ public final class SMPCore extends JavaPlugin {
         return new Date(ticks * 3600 + 21600000);
     }
 
-    @SuppressWarnings("ProfileCache")
-    public static @NotNull String getName(final @NotNull OfflinePlayer player) {
-        final @Nullable String name = player.getName();
-        if (name != null)
-            return name;
-
-        final PlayerProfile profile = player.getPlayerProfile();
-
-        if (profile.completeFromCache(true)) {
-            final @Nullable String profileName = profile.getName();
-            if (profileName != null && !profileName.isEmpty())
-                return profileName;
-        }
-
-        try {
-            return CachedProfile.get(player).name();
-        }
-        catch (IllegalStateException e) {
-            getInstance().getLogger().warning("Failed to fetch");
-            return player.getUniqueId().toString();
-        }
-    }
 }

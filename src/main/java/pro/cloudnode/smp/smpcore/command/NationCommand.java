@@ -160,7 +160,7 @@ public final class NationCommand extends Command {
                                     break;
                                 list.addAll(nation.get().citizens().stream()
                                         .filter(c -> !c.uuid.equals(nation.get().leaderUUID))
-                                        .map(c -> SMPCore.getName(c.player()))
+                                        .map(c -> CachedProfile.getName(c.player()))
                                         .toList()
                                 );
                             }
@@ -172,7 +172,7 @@ public final class NationCommand extends Command {
                                 list.addAll(nation.get().citizens().stream()
                                         .filter(c -> !(c.uuid.equals(nation.get().leaderUUID) ||
                                                 c.uuid.equals(nation.get().viceLeaderUUID)))
-                                        .map(c -> SMPCore.getName(c.player()))
+                                        .map(c -> CachedProfile.getName(c.player()))
                                         .toList());
                             }
                             case "demote" -> {
@@ -184,7 +184,7 @@ public final class NationCommand extends Command {
                                 if (vice.uuid.equals(nation.get().leaderUUID))
                                     break;
 
-                                list.add(SMPCore.getName(vice.player()));
+                                list.add(CachedProfile.getName(vice.player()));
                             }
                             case "invite", "request", "req" -> {
                                 if (other && !sender.hasPermission(Permission.NATION_INVITE_OTHER))
@@ -193,7 +193,7 @@ public final class NationCommand extends Command {
                                     break;
                                 list.addAll(Member.get().stream()
                                     .filter(m -> !nation.get().id.equals(m.nationID))
-                                    .map(c -> SMPCore.getName(c.player()))
+                                    .map(c -> CachedProfile.getName(c.player()))
                                     .toList());
                             }
                             case "cancel", "reject", "decline", "withdraw", "refuse", "deny" -> {
@@ -204,7 +204,7 @@ public final class NationCommand extends Command {
                                 list.addAll(Stream.concat(
                                         CitizenRequest.get(nation.get(), true).stream(),
                                         CitizenRequest.get(nation.get(), false).stream()
-                                ).map(req -> SMPCore.getName(req.member().player()))
+                                ).map(req -> CachedProfile.getName(req.member().player()))
                                         .sorted()
                                         .toList());
                             }
@@ -215,7 +215,7 @@ public final class NationCommand extends Command {
                                     break;
                                 list.addAll(Member.get().stream()
                                         .filter(m -> !nation.get().id.equals(m.nationID))
-                                        .map(c -> SMPCore.getName(c.player()))
+                                        .map(c -> CachedProfile.getName(c.player()))
                                         .toList());
                             }
                         }

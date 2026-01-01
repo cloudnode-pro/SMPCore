@@ -12,7 +12,7 @@
         <constraint name="__context__" within="" contains="" />
         <constraint name="str" nameOfExprType="java\.lang\.String" within="" contains="" />
       </replaceConfiguration>
-      <replaceConfiguration name="Use profile cache" uuid="23997a40-4f2f-3fd3-a5be-4ec039e1783b" text="$offlinePlayer$.getName()" recursive="false" caseInsensitive="false" type="JAVA" pattern_context="default" reformatAccordingToStyle="true" shortenFQN="true" replacement="pro.cloudnode.smp.smpcore.SMPCore.getName($offlinePlayer$)">
+      <replaceConfiguration name="Use profile cache" uuid="23997a40-4f2f-3fd3-a5be-4ec039e1783b" text="$offlinePlayer$.getName()" recursive="false" caseInsensitive="false" type="JAVA" pattern_context="default" reformatAccordingToStyle="true" shortenFQN="true" replacement="pro.cloudnode.smp.smpcore.CachedProfile.getName($offlinePlayer$)">
         <constraint name="__context__" within="" contains="" />
         <constraint name="offlinePlayer" nameOfExprType="org\.bukkit\.OfflinePlayer" within="" contains="" />
       </replaceConfiguration>

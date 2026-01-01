@@ -113,7 +113,7 @@ public final class Configuration extends BaseConfig {
     }
 
     public void staffCommands(final boolean addMode, final @NotNull OfflinePlayer player) {
-        final String name = SMPCore.getName(player);
+        final String name = CachedProfile.getName(player);
 
         final List<String> commands = config.getStringList("staff.commands." + (addMode ? "add" : "remove"));
 
