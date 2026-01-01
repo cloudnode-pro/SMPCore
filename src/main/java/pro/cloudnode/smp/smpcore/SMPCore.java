@@ -247,6 +247,7 @@ public final class SMPCore extends JavaPlugin {
         return new Date(ticks * 3600 + 21600000);
     }
 
+    @SuppressWarnings("ProfileCache")
     public static @NotNull String getName(final @NotNull OfflinePlayer player) {
         final @Nullable String name = player.getName();
         if (name != null)

@@ -5,6 +5,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pro.cloudnode.smp.smpcore.CachedProfile;
 import pro.cloudnode.smp.smpcore.Member;
 import pro.cloudnode.smp.smpcore.Permission;
 import pro.cloudnode.smp.smpcore.SMPCore;
@@ -16,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -102,7 +102,7 @@ public final class BanCommand extends Command {
                 ? String.join(" ", Arrays.copyOfRange(args, duration == null ? 1 : 2, args.length))
                 : null;
 
-        final @NotNull OfflinePlayer target = SMPCore.getInstance().getServer().getOfflinePlayer(args[0]);
+        final @NotNull OfflinePlayer target = CachedProfile.fetch(args[0]);
 
         final List<Member> banned = ban(
                 target,
@@ -121,10 +121,13 @@ public final class BanCommand extends Command {
         );
     }
 
-    @SuppressWarnings("NullableProblems")
     @Override
     public @NotNull List<@NotNull String> tab(@NotNull CommandSender sender, @NotNull String label, @NotNull String @NotNull [] args) {
-        if (args.length <= 1) return Arrays.stream(SMPCore.getInstance().getServer().getOfflinePlayers()).filter(p -> !p.isBanned()).map(OfflinePlayer::getName).filter(Objects::nonNull).toList();
+        if (args.length <= 1)
+            return Arrays.stream(SMPCore.getInstance().getServer().getOfflinePlayers())
+                    .filter(p -> !p.isBanned())
+                    .map(SMPCore::getName)
+                    .toList();
         return List.of();
     }
 }
