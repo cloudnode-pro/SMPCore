@@ -189,15 +189,11 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
      * @param name Username of the player to look up.
      */
     public static @NotNull OfflinePlayer get(final @NotNull String name) {
-        final OfflinePlayer player = Optional.<@NotNull OfflinePlayer>ofNullable(getOffline(name))
+        return Optional.<@NotNull OfflinePlayer>ofNullable(getOffline(name))
                 .orElseGet(() -> {
                     logger.fine("Miss for name " + name);
                     return Bukkit.getOfflinePlayer(name);
                 });
-
-        CachedProfile.from(player);
-
-        return player;
     }
 
     /**
@@ -265,14 +261,6 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
         }
 
         return profile;
-    }
-
-    private static @Nullable CachedProfile from(final @NotNull OfflinePlayer player) {
-        if (player.getName() == null)
-            return null;
-
-        return new CachedProfile(player.getUniqueId(), player.getName(), new Date())
-                .save();
     }
 
     private boolean stale() {
