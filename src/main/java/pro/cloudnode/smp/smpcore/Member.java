@@ -81,7 +81,8 @@ public final class Member {
             while (rs.next()) alts.add(new Member(rs));
         }
         catch (final @NotNull SQLException e) {
-            SMPCore.getInstance().getLogger().log(Level.SEVERE, "could not get alts for " + CachedProfile.getName(player()), e);
+            SMPCore.getInstance().getLogger().log(Level.SEVERE, "could not get alts for "
+                    + CachedProfile.getName(player()), e);
         }
 
         return alts;

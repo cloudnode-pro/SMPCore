@@ -36,6 +36,7 @@ import java.util.logging.Logger;
 @SuppressWarnings("ProfileCache")
 public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull Date fetched) {
     private static final @NotNull Duration MAX_AGE = Duration.ofDays(7);
+
     static final @NotNull Duration STALE_WHILE_REVALIDATE = Duration.ofDays(1);
 
     private static final @NotNull HttpClient client = HttpClient.newBuilder()
@@ -250,7 +251,8 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
         );
 
         if (profile.stale()) {
-            logger.fine("Profile cache is stale for " + profile.uuid + " (" + Duration.between(profile.fetched.toInstant(), Instant.now()) + " old). Revalidation scheduled.");
+            logger.fine("Profile cache is stale for " + profile.uuid + " ("
+                    + Duration.between(profile.fetched.toInstant(), Instant.now()) + " old). Revalidation scheduled.");
             SMPCore.runAsync(() -> CachedProfile.fetch(profile.uuid()));
 
             if (profile.staleWhileRevalidate()) {
