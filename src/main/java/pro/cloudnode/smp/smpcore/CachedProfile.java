@@ -195,13 +195,9 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
                     return Bukkit.getOfflinePlayer(name);
                 });
 
-        final @Nullable CachedProfile profile = CachedProfile.from(player);
-        if (profile != null)
-            return Bukkit.getOfflinePlayer(profile.uuid());
+        CachedProfile.from(player);
 
-        // unlikely
-        logger.warning("Unlikely cache miss for name " + name);
-        return Bukkit.getOfflinePlayer(name);
+        return player;
     }
 
     /**
