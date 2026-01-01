@@ -47,5 +47,6 @@ CREATE TABLE IF NOT EXISTS `cached_profiles`
     `uuid`    CHAR(36)    NOT NULL COLLATE NOCASE,
     `name`    VARCHAR(16) NOT NULL COLLATE NOCASE,
     `fetched` DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (`uuid`)
+    PRIMARY KEY (`uuid`),
+    UNIQUE (`name`)
 );

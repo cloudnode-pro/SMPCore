@@ -3,6 +3,7 @@ package pro.cloudnode.smp.smpcore;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.papermc.paper.plugin.configuration.PluginMeta;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,6 +30,7 @@ import java.util.logging.Level;
  * @param name    Username of the player.
  * @param fetched Date the profile was fetched from Mojang.
  */
+@SuppressWarnings("ProfileCache")
 public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull Date fetched) {
     private static final @NotNull Duration MAX_AGE = Duration.ofDays(7);
     static final @NotNull Duration STALE_WHILE_REVALIDATE = Duration.ofDays(1);
@@ -96,21 +98,8 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
 
             final JsonObject body = JsonParser.parseString(res.body()).getAsJsonObject();
 
-            final CachedProfile profile = new CachedProfile(uuid, body.get("name").getAsString(), new Date());
-
-            try (final PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement(
-                    "INSERT OR REPLACE INTO `cached_profiles` (`uuid`, `name`, `fetched`) VALUES (?, ?, ?)"
-            )) {
-                stmt.setString(1, profile.uuid().toString());
-                stmt.setString(2, profile.name());
-                stmt.setTimestamp(3, new Timestamp(profile.fetched().getTime()));
-                stmt.executeUpdate();
-            }
-            catch (final SQLException e) {
-                SMPCore.getInstance().getLogger().log(Level.SEVERE, "could not save profile for UUID " + uuid, e);
-            }
-
-            return profile;
+            return new CachedProfile(uuid, body.get("name").getAsString(), new Date())
+                    .save();
         }
         catch (final IOException | InterruptedException e) {
             SMPCore.getInstance().getLogger().log(Level.SEVERE, "could not fetch profile for UUID " + uuid, e);
@@ -149,6 +138,54 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
      */
     public static @NotNull CachedProfile getOrFetch(final @NotNull OfflinePlayer player) throws IllegalStateException {
         return getOrFetch(player.getUniqueId());
+    }
+
+    /**
+     * Get OfflinePlayer by name if cached.
+     *
+     * @param name Username of the player to look up.
+     */
+    public static @Nullable OfflinePlayer get(final @NotNull String name) {
+            final @Nullable OfflinePlayer player = Bukkit.getOfflinePlayerIfCached(name);
+        if (player != null)
+            return player;
+        
+        try (final PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement(
+                "SELECT * from `cached_profiles` where `name` = ? LIMIT  1"
+        )) {
+            stmt.setString(1, name);
+            
+            final ResultSet rs = stmt.executeQuery();
+            if (!rs.next())
+                return null;
+
+            final @Nullable CachedProfile profile = CachedProfile.from(rs);
+            if (profile == null)
+                return null;
+
+            return Bukkit.getOfflinePlayer(profile.uuid());
+        }
+        catch (final SQLException e) {
+            SMPCore.getInstance().getLogger().log(Level.SEVERE, "could not get cached profile for name " + name, e);
+            return null;
+        }
+    }
+
+    /**
+     * Get OfflinePlayer by name, fetching from Mojang if necessary.
+     *
+     * @param name Username of the player to look up.
+     */
+    public static @NotNull OfflinePlayer fetch(final @NotNull String name) {
+        final OfflinePlayer player = Optional.<@NotNull OfflinePlayer>ofNullable(get(name))
+                .orElseGet(() -> Bukkit.getOfflinePlayer(name));
+
+        final @Nullable CachedProfile profile = CachedProfile.from(player);
+        if (profile != null)
+            return Bukkit.getOfflinePlayer(profile.uuid());
+
+        // unlikely
+        return Bukkit.getOfflinePlayer(name);
     }
 
     /**
@@ -191,11 +228,36 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
         return profile;
     }
 
+    private static @Nullable CachedProfile from(final @NotNull OfflinePlayer player) {
+        if (player.getName() == null)
+            return null;
+
+        return new CachedProfile(player.getUniqueId(), player.getName(), new Date())
+                .save();
+    }
+
     private boolean stale() {
         return fetched.before(expirationThreshold());
     }
 
     private boolean staleWhileRevalidate() {
         return fetched.before(staleWhileRevalidateThreshold());
+    }
+
+    private @NotNull CachedProfile save() {
+        SMPCore.runAsync(() -> {
+            try (final PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement(
+                    "INSERT OR REPLACE INTO `cached_profiles` (`uuid`, `name`, `fetched`) VALUES (?, ?, ?)"
+            )) {
+                stmt.setString(1, uuid().toString());
+                stmt.setString(2, name());
+                stmt.setTimestamp(3, new Timestamp(fetched().getTime()));
+                stmt.executeUpdate();
+            } catch (final SQLException e) {
+                SMPCore.getInstance().getLogger().log(Level.SEVERE, "could not save profile for UUID " + uuid, e);
+            }
+        });
+
+        return this;
     }
 }
