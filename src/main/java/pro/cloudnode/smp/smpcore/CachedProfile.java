@@ -93,7 +93,16 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
 
             final CachedProfile profile = new CachedProfile(uuid, body.get("name").getAsString(), new Date());
 
-
+            try (final PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement(
+                    "INSERT OR REPLACE INTO `names_cache` (uuid, name) VALUES (?, ?)"
+            )) {
+                stmt.setString(1, profile.uuid().toString());
+                stmt.setString(2, profile.name());
+                stmt.executeUpdate();
+            }
+            catch (final SQLException e) {
+                SMPCore.getInstance().getLogger().log(Level.SEVERE, "could not save profile for UUID " + uuid, e);
+            }
 
             return profile;
         }
