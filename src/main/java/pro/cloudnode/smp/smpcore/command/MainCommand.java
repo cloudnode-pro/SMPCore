@@ -11,6 +11,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pro.cloudnode.smp.smpcore.CachedProfile;
 import pro.cloudnode.smp.smpcore.Member;
 import pro.cloudnode.smp.smpcore.Messages;
 import pro.cloudnode.smp.smpcore.Nation;
@@ -71,7 +72,8 @@ public final class MainCommand extends Command {
                             if (sender instanceof final @NotNull Player player) {
                                 final @NotNull Optional<@NotNull Member> member = Member.get(player);
                                 member.ifPresent(value -> suggestions.addAll(value.getAlts().stream()
-                                        .map(m -> m.player().getName()).filter(Objects::nonNull).toList()));
+                                        .map(m -> CachedProfile.getName(m.player()))
+                                        .toList()));
                             }
                         }
                     }
@@ -158,10 +160,11 @@ public final class MainCommand extends Command {
                 final @NotNull OfflinePlayer target;
                 if (!(sender instanceof final @NotNull Player player)) {
                     if (originalArgs.length == 1) return sendMessage(sender, SMPCore.messages().usage(label, "list <player>"));
-                    target = sender.getServer().getOfflinePlayer(originalArgs[1]);
+                    target = CachedProfile.get(originalArgs[1]);
                 }
                 else {
-                    if (originalArgs.length > 1 && player.hasPermission(Permission.ALT_OTHER)) target = player.getServer().getOfflinePlayer(originalArgs[1]);
+                    if (originalArgs.length > 1 && player.hasPermission(Permission.ALT_OTHER))
+                        target = CachedProfile.get(originalArgs[1]);
                     else target = player;
                 }
                 final @NotNull Optional<@NotNull Member> targetMember = Member.get(target);
@@ -200,10 +203,11 @@ public final class MainCommand extends Command {
                 final @NotNull OfflinePlayer target;
                 if (!(sender instanceof final @NotNull Player player)) {
                     if (args.length == 2) return sendMessage(sender, SMPCore.messages().usage(label, "add <username> <owner>"));
-                    target = sender.getServer().getOfflinePlayer(args[2]);
+                    target = CachedProfile.get(args[2]);
                 }
                 else {
-                    if (args.length > 2 && player.hasPermission(Permission.ALT_ADD_OTHER)) target = player.getServer().getOfflinePlayer(args[2]);
+                    if (args.length > 2 && player.hasPermission(Permission.ALT_ADD_OTHER))
+                        target = CachedProfile.get(args[2]);
                     else target = player;
                 }
                 final @NotNull Optional<@NotNull Member> tempTargetMember = Member.get(target);
@@ -220,7 +224,7 @@ public final class MainCommand extends Command {
                 if (!sender.hasPermission(Permission.ALT_MAX_BYPASS) && targetMember.getAlts().size() >= SMPCore.config().altsMax())
                     return sendMessage(sender, SMPCore.messages().errorMaxAltsReached(SMPCore.config().altsMax()));
 
-                final @NotNull OfflinePlayer altPlayer = sender.getServer().getOfflinePlayer(args[1]);
+                final @NotNull OfflinePlayer altPlayer = CachedProfile.get(args[1]);
                 final @NotNull Optional<@NotNull Member> altMember = Member.get(altPlayer);
                 if (altMember.isPresent()) {
                     if (altMember.get().isAlt() && Objects.requireNonNull(altMember.get().altOwnerUUID).equals(target.getUniqueId()))
@@ -245,7 +249,7 @@ public final class MainCommand extends Command {
                 if (originalArgs.length == 1)
                     return sendMessage(sender, SMPCore.messages().usage(label, "remove <alt>"));
 
-                final @NotNull OfflinePlayer altPlayer = sender.getServer().getOfflinePlayer(originalArgs[1]);
+                final @NotNull OfflinePlayer altPlayer = CachedProfile.get(originalArgs[1]);
                 final @NotNull Optional<@NotNull Member> altMember = Member.get(altPlayer);
                 if (altMember.isEmpty()) return sendMessage(sender, SMPCore.messages().errorNotMember(altPlayer));
 
@@ -306,7 +310,7 @@ public final class MainCommand extends Command {
                 if (args.length != 2)
                     return sendMessage(sender, SMPCore.messages().usage(label, "member add <username>"));
 
-                final OfflinePlayer target = sender.getServer().getOfflinePlayer(args[1]);
+                final OfflinePlayer target = CachedProfile.get(args[1]);
 
                 final Optional<Member> existing = Member.get(target);
                 if (existing.isPresent())
@@ -343,7 +347,7 @@ public final class MainCommand extends Command {
                 if (args.length != 2)
                     return sendMessage(sender, SMPCore.messages().usage(label, "member remove <member>"));
 
-                final OfflinePlayer target = sender.getServer().getOfflinePlayer(args[1]);
+                final OfflinePlayer target = CachedProfile.get(args[1]);
                 final Optional<Member> member = Member.get(target);
 
                 if (member.isEmpty())
@@ -362,7 +366,7 @@ public final class MainCommand extends Command {
                 if (args.length != 3)
                     return sendMessage(sender, SMPCore.messages().usage(label, "member staff " + (args.length > 1 ? args[1] : "<member>") + " <true|false>"));
 
-                final OfflinePlayer target = sender.getServer().getOfflinePlayer(args[1]);
+                final OfflinePlayer target = CachedProfile.get(args[1]);
 
                 final boolean requestedStatus;
                 switch (args[2].toLowerCase()) {

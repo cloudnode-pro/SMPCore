@@ -2,7 +2,9 @@ package pro.cloudnode.smp.smpcore;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import io.papermc.paper.util.Tick;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -16,8 +18,8 @@ import pro.cloudnode.smp.smpcore.command.NationCommand;
 import pro.cloudnode.smp.smpcore.command.SeenCommand;
 import pro.cloudnode.smp.smpcore.command.TimeCommand;
 import pro.cloudnode.smp.smpcore.command.UnbanCommand;
-import pro.cloudnode.smp.smpcore.listener.PlayerJoinListener;
 import pro.cloudnode.smp.smpcore.listener.PlayerDeathListener;
+import pro.cloudnode.smp.smpcore.listener.PlayerJoinListener;
 import pro.cloudnode.smp.smpcore.listener.PlayerPostRespawnListener;
 import pro.cloudnode.smp.smpcore.listener.PlayerPreLoginListener;
 import pro.cloudnode.smp.smpcore.listener.PlayerServerFullCheckListener;
@@ -92,6 +94,13 @@ public final class SMPCore extends JavaPlugin {
         commands.put("alts", new AltsCommand(commands.get("smpcore")));
         for (final Map.Entry<String, Command> entry : commands.entrySet())
             Objects.requireNonNull(getServer().getPluginCommand(entry.getKey())).setExecutor(entry.getValue());
+
+        Bukkit.getScheduler().runTaskTimerAsynchronously(
+                this,
+                CachedProfile::cleanUp,
+                0L,
+                Tick.tick().fromDuration(CachedProfile.STALE_WHILE_REVALIDATE)
+        );
     }
 
     @Override
@@ -235,4 +244,5 @@ public final class SMPCore extends JavaPlugin {
     public static @NotNull Date gameTime(final long ticks) {
         return new Date(ticks * 3600 + 21600000);
     }
+
 }

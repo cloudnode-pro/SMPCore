@@ -3,12 +3,12 @@ package pro.cloudnode.smp.smpcore.command;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
+import pro.cloudnode.smp.smpcore.CachedProfile;
 import pro.cloudnode.smp.smpcore.Member;
 import pro.cloudnode.smp.smpcore.Permission;
 import pro.cloudnode.smp.smpcore.SMPCore;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 public final class SeenCommand extends Command {
@@ -19,7 +19,7 @@ public final class SeenCommand extends Command {
 
         if (args.length != 1) return sendMessage(sender, SMPCore.messages().usage(label, "<player>"));
 
-        final @NotNull OfflinePlayer player = sender.getServer().getOfflinePlayer(args[0]);
+        final @NotNull OfflinePlayer player = CachedProfile.get(args[0]);
 
         if (!player.hasPlayedBefore()) return sendMessage(sender, SMPCore.messages().errorNeverJoined(player));
 
@@ -31,10 +31,12 @@ public final class SeenCommand extends Command {
                 .orElseGet(() -> sendMessage(sender, SMPCore.messages().seen(player)));
     }
 
-    @SuppressWarnings("NullableProblems")
     @Override
     public @NotNull List<@NotNull String> tab(@NotNull CommandSender sender, @NotNull String label, @NotNull String @NotNull [] args) {
         if (sender.hasPermission(Permission.SEEN_STAFF)) return Member.getNames().stream().toList();
-        else return Member.get().stream().filter(m -> !m.staff).map(m -> m.player().getName()).filter(Objects::nonNull).toList();
+        else return Member.get().stream()
+                .filter(m -> !m.staff)
+                .map(m -> CachedProfile.getName(m.player()))
+                .toList();
     }
 }

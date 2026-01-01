@@ -6,6 +6,7 @@ import org.bukkit.BanEntry;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
+import pro.cloudnode.smp.smpcore.CachedProfile;
 import pro.cloudnode.smp.smpcore.Member;
 import pro.cloudnode.smp.smpcore.Permission;
 import pro.cloudnode.smp.smpcore.SMPCore;
@@ -23,7 +24,7 @@ public final class UnbanCommand extends Command {
     public boolean run(@NotNull CommandSender sender, @NotNull String label, @NotNull String @NotNull [] args) {
         if (!sender.hasPermission(Permission.BAN)) return sendMessage(sender, SMPCore.messages().errorNoPermission());
         if (args.length < 1) return sendMessage(sender, SMPCore.messages().usage(label, "<username>"));
-        final @NotNull OfflinePlayer target = SMPCore.getInstance().getServer().getOfflinePlayer(args[0]);
+        final @NotNull OfflinePlayer target = CachedProfile.get(args[0]);
         final @NotNull Optional<@NotNull Member> targetMember = Member.get(target);
         if (targetMember.isEmpty()) {
             if (!target.isBanned()) return sendMessage(sender, SMPCore.messages().errorPlayerNotBanned(target));

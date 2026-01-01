@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pro.cloudnode.smp.smpcore.CachedProfile;
 import pro.cloudnode.smp.smpcore.CitizenRequest;
 import pro.cloudnode.smp.smpcore.Member;
 import pro.cloudnode.smp.smpcore.Messages;
@@ -20,7 +21,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -159,9 +159,10 @@ public final class NationCommand extends Command {
                                 if (!sender.hasPermission(Permission.NATION_CITIZENS_KICK))
                                     break;
                                 list.addAll(nation.get().citizens().stream()
-                                                  .filter(c -> !c.uuid.equals(nation.get().leaderUUID))
-                                                  .map(c -> c.player().getName())
-                                                  .filter(Objects::nonNull).toList());
+                                        .filter(c -> !c.uuid.equals(nation.get().leaderUUID))
+                                        .map(c -> CachedProfile.getName(c.player()))
+                                        .toList()
+                                );
                             }
                             case "promote" -> {
                                 if (other && !sender.hasPermission(Permission.NATION_PROMOTE_OTHER))
@@ -169,9 +170,10 @@ public final class NationCommand extends Command {
                                 if (!sender.hasPermission(Permission.NATION_PROMOTE))
                                     break;
                                 list.addAll(nation.get().citizens().stream()
-                                                  .filter(c -> !(c.uuid.equals(nation.get().leaderUUID) || c.uuid.equals(nation.get().viceLeaderUUID)))
-                                                  .map(c -> c.player().getName())
-                                                  .filter(Objects::nonNull).toList());
+                                        .filter(c -> !(c.uuid.equals(nation.get().leaderUUID) ||
+                                                c.uuid.equals(nation.get().viceLeaderUUID)))
+                                        .map(c -> CachedProfile.getName(c.player()))
+                                        .toList());
                             }
                             case "demote" -> {
                                 if (other && !sender.hasPermission(Permission.NATION_DEMOTE_OTHER))
@@ -181,9 +183,8 @@ public final class NationCommand extends Command {
                                 final @NotNull Member vice = nation.get().vice();
                                 if (vice.uuid.equals(nation.get().leaderUUID))
                                     break;
-                                final var name = vice.player().getName();
-                                if (name != null)
-                                    list.add(name);
+
+                                list.add(CachedProfile.getName(vice.player()));
                             }
                             case "invite", "request", "req" -> {
                                 if (other && !sender.hasPermission(Permission.NATION_INVITE_OTHER))
@@ -192,8 +193,8 @@ public final class NationCommand extends Command {
                                     break;
                                 list.addAll(Member.get().stream()
                                     .filter(m -> !nation.get().id.equals(m.nationID))
-                                    .map(c -> c.player().getName())
-                                    .filter(Objects::nonNull).toList());
+                                    .map(c -> CachedProfile.getName(c.player()))
+                                    .toList());
                             }
                             case "cancel", "reject", "decline", "withdraw", "refuse", "deny" -> {
                                 if (other && !sender.hasPermission(Permission.NATION_INVITE_OTHER))
@@ -203,7 +204,9 @@ public final class NationCommand extends Command {
                                 list.addAll(Stream.concat(
                                         CitizenRequest.get(nation.get(), true).stream(),
                                         CitizenRequest.get(nation.get(), false).stream()
-                                ).map(req -> req.member().player().getName()).filter(Objects::nonNull).sorted().toList());
+                                ).map(req -> CachedProfile.getName(req.member().player()))
+                                        .sorted()
+                                        .toList());
                             }
                             case "add" -> {
                                 if (other && !sender.hasPermission(Permission.NATION_CITIZEN_ADD_OTHER))
@@ -211,9 +214,9 @@ public final class NationCommand extends Command {
                                 if (!sender.hasPermission(Permission.NATION_CITIZEN_ADD))
                                     break;
                                 list.addAll(Member.get().stream()
-                                                                          .filter(m -> !nation.get().id.equals(m.nationID))
-                                                                          .map(c -> c.player().getName())
-                                                                          .filter(Objects::nonNull).toList());
+                                        .filter(m -> !nation.get().id.equals(m.nationID))
+                                        .map(c -> CachedProfile.getName(c.player()))
+                                        .toList());
                             }
                         }
                     }
@@ -433,7 +436,7 @@ public final class NationCommand extends Command {
         if (args.length == 0)
             return sendMessage(sender, SMPCore.messages().usage(label, "<citizen>"));
 
-        final @NotNull OfflinePlayer target = sender.getServer().getOfflinePlayer(args[0]);
+        final @NotNull OfflinePlayer target = CachedProfile.get(args[0]);
         final @NotNull Optional<@NotNull Member> targetMemberOptional = Member.get(target);
         if (targetMemberOptional.isEmpty())
             return sendMessage(sender, SMPCore.messages().errorNotMember(target));
@@ -464,7 +467,7 @@ public final class NationCommand extends Command {
         if (args.length == 0)
             return sendMessage(sender, SMPCore.messages().usage(label, "<citizen>"));
 
-        final @NotNull OfflinePlayer target = sender.getServer().getOfflinePlayer(args[0]);
+        final @NotNull OfflinePlayer target = CachedProfile.get(args[0]);
         final @NotNull Optional<@NotNull Member> targetMember = Member.get(target);
         if (targetMember.isEmpty())
             return sendMessage(sender, SMPCore.messages().errorNotMember(target));
@@ -509,7 +512,7 @@ public final class NationCommand extends Command {
         if (args.length == 0)
             return sendMessage(sender, SMPCore.messages().usage(label, "<citizen>"));
 
-        final @NotNull OfflinePlayer target = sender.getServer().getOfflinePlayer(args[0]);
+        final @NotNull OfflinePlayer target = CachedProfile.get(args[0]);
         final @NotNull Optional<@NotNull Member> targetMemberOptional = Member.get(target);
         if (targetMemberOptional.isEmpty())
             return sendMessage(sender, SMPCore.messages().errorNotMember(target));
@@ -552,7 +555,7 @@ public final class NationCommand extends Command {
         if (args.length < 1)
             return sendMessage(sender, SMPCore.messages().usage(label, "<member>"));
 
-        final var targetPlayer = sender.getServer().getOfflinePlayer(args[0]);
+        final var targetPlayer = CachedProfile.get(args[0]);
         final @NotNull var target = Member.get(targetPlayer);
 
         if (target.isEmpty())
@@ -604,7 +607,7 @@ public final class NationCommand extends Command {
         if (args.length < 1)
             return sendMessage(sender, SMPCore.messages().usage(label, "<member>"));
 
-        final @NotNull var targetPlayer = sender.getServer().getOfflinePlayer(args[0]);
+        final @NotNull var targetPlayer = CachedProfile.get(args[0]);
         final @NotNull var target = Member.get(targetPlayer);
 
         if (target.isEmpty())
@@ -737,7 +740,7 @@ public final class NationCommand extends Command {
         if (args.length < 1)
             return sendMessage(sender, SMPCore.messages().usage(label, "<member>"));
 
-        final var targetPlayer = sender.getServer().getOfflinePlayer(args[0]);
+        final var targetPlayer = CachedProfile.get(args[0]);
         final @NotNull var target = Member.get(targetPlayer);
 
         if (target.isEmpty())

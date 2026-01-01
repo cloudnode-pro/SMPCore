@@ -1,0 +1,52 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="23997a40-4f2f-3fd3-a5be-4ec039e1783b" enabled="true" level="ERROR" enabled_by_default="true" editorAttributes="ERRORS_ATTRIBUTES" />
+    <inspection_tool class="SSBasedInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <replaceConfiguration name="Use profile cache" uuid="23997a40-4f2f-3fd3-a5be-4ec039e1783b" description="Get names of offline players and look up offline players by name only using the cache." suppressId="ProfileCache" text="$srv$.getOfflinePlayer($str$)" recursive="false" caseInsensitive="false" type="JAVA" pattern_context="default" reformatAccordingToStyle="true" shortenFQN="true" replacement="pro.cloudnode.smp.smpcore.CachedProfile.get($str$)">
+        <constraint name="__context__" within="" contains="" />
+        <constraint name="srv" nameOfExprType="org\.bukkit\.Server" within="" contains="" />
+        <constraint name="str" nameOfExprType="java\.lang\.String" within="" contains="" />
+      </replaceConfiguration>
+      <replaceConfiguration name="Use profile cache" uuid="23997a40-4f2f-3fd3-a5be-4ec039e1783b" text="org.bukkit.Bukkit.getOfflinePlayer($str$)" recursive="false" caseInsensitive="false" type="JAVA" pattern_context="default" reformatAccordingToStyle="true" shortenFQN="true" replacement="pro.cloudnode.smp.smpcore.CachedProfile.get($str$)">
+        <constraint name="__context__" within="" contains="" />
+        <constraint name="str" nameOfExprType="java\.lang\.String" within="" contains="" />
+      </replaceConfiguration>
+      <replaceConfiguration name="Use profile cache" uuid="23997a40-4f2f-3fd3-a5be-4ec039e1783b" text="$offlinePlayer$.getName()" recursive="false" caseInsensitive="false" type="JAVA" pattern_context="default" reformatAccordingToStyle="true" shortenFQN="true" replacement="pro.cloudnode.smp.smpcore.CachedProfile.getName($offlinePlayer$)">
+        <constraint name="__context__" within="" contains="" />
+        <constraint name="offlinePlayer" nameOfExprType="org\.bukkit\.OfflinePlayer" within="" contains="" />
+      </replaceConfiguration>
+    </inspection_tool>
+    <inspection_tool class="SpellCheckingInspection" enabled="true" level="WARNING" enabled_by_default="true" editorAttributes="WARNING_ATTRIBUTES">
+      <scope name="Project Files" level="TYPO" enabled="true">
+        <option name="processCode" value="true" />
+        <option name="processLiterals" value="true" />
+        <option name="processComments" value="true" />
+      </scope>
+      <option name="processCode" value="true" />
+      <option name="processLiterals" value="true" />
+      <option name="processComments" value="true" />
+    </inspection_tool>
+    <inspection_tool class="SwitchStatementWithTooFewBranches" enabled="false" level="WARNING" enabled_by_default="false">
+      <option name="m_limit" value="2" />
+    </inspection_tool>
+    <inspection_tool class="VulnerableLibrariesLocal" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="isIgnoringEnabled" value="true" />
+      <option name="ignoredModules">
+        <list>
+          <option value="SMPCore" />
+        </list>
+      </option>
+      <option name="ignoredPackages">
+        <list>
+          <option value="org.apache.commons:commons-lang3:3.12.0" />
+        </list>
+      </option>
+      <option name="ignoredReasons">
+        <list>
+          <option value="Not exploitable" />
+        </list>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>

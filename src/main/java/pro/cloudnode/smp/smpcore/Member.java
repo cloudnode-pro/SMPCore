@@ -13,7 +13,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -82,7 +81,8 @@ public final class Member {
             while (rs.next()) alts.add(new Member(rs));
         }
         catch (final @NotNull SQLException e) {
-            SMPCore.getInstance().getLogger().log(Level.SEVERE, "could not get alts for " + player().getName(), e);
+            SMPCore.getInstance().getLogger().log(Level.SEVERE, "could not get alts for "
+                    + CachedProfile.getName(player()), e);
         }
 
         return alts;
@@ -248,14 +248,17 @@ public final class Member {
         }
     }
 
-    @SuppressWarnings("NullableProblems")
     public static @NotNull Set<@NotNull String> getNames() {
-        return get().stream().map(m -> m.player().getName()).filter(Objects::nonNull).collect(Collectors.toSet());
+        return get().stream()
+                .map(m -> CachedProfile.getName(m.player()))
+                .collect(Collectors.toSet());
     }
 
-    @SuppressWarnings("NullableProblems")
     public static @NotNull Set<@NotNull String> getAltNames() {
-        return get().stream().filter(Member::isAlt).map(m -> m.player().getName()).filter(Objects::nonNull).collect(Collectors.toSet());
+        return get().stream()
+                .filter(Member::isAlt)
+                .map(m -> CachedProfile.getName(m.player()))
+                .collect(Collectors.toSet());
     }
 
     public static @NotNull Team createStaffTeam() {
