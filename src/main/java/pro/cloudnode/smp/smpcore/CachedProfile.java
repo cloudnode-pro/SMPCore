@@ -19,10 +19,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Represents a player profile cached in the database.
@@ -39,6 +41,12 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
     private static final @NotNull HttpClient client = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(15))
             .build();
+
+    private static final @NotNull Logger logger = Logger.getLogger("ProfileCache");
+
+    static {
+        logger.setParent(SMPCore.getInstance().getLogger());
+    }
 
     /**
      * Gets a cached profile by UUID.
@@ -58,7 +66,7 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
             return Optional.<@NotNull CachedProfile>ofNullable(CachedProfile.from(rs));
         }
         catch (final SQLException e) {
-            SMPCore.getInstance().getLogger().log(Level.SEVERE, "could not get cached profile for UUID " + uuid, e);
+            logger.log(Level.SEVERE, "could not get profile for UUID " + uuid, e);
             return Optional.empty();
         }
     }
@@ -78,6 +86,8 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
      * @param uuid UUID of the player to fetch.
      */
     private static @Nullable CachedProfile fetch(final @NotNull UUID uuid) {
+        logger.fine("Miss for UUID " + uuid);
+
         final PluginMeta meta = SMPCore.getInstance().getPluginMeta();
 
         final HttpRequest req = HttpRequest.newBuilder()
@@ -91,8 +101,8 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
                     .send(req, HttpResponse.BodyHandlers.ofString());
 
             if (res.statusCode() >= 400 || res.statusCode() == 204 || res.statusCode() < 200 || res.body() == null) {
-                SMPCore.getInstance().getLogger().log(Level.SEVERE, "got HTTP status " + res.statusCode()
-                        + " fetching profile for UUID " + uuid + ". Body is" + (res.body() == null ? "" : " not")
+                logger.log(Level.SEVERE, "got HTTP status " + res.statusCode()
+                        + " for UUID " + uuid + ". Body is" + (res.body() == null ? "" : " not")
                         + " null.");
                 return null;
             }
@@ -103,7 +113,7 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
                     .save();
         }
         catch (final IOException | InterruptedException e) {
-            SMPCore.getInstance().getLogger().log(Level.SEVERE, "could not fetch profile for UUID " + uuid, e);
+            logger.log(Level.SEVERE, "could not fetch profile for UUID " + uuid, e);
             return null;
         }
     }
@@ -147,7 +157,7 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
      * @param name Username of the player to look up.
      */
     public static @Nullable OfflinePlayer getOffline(final @NotNull String name) {
-            final @Nullable OfflinePlayer player = Bukkit.getOfflinePlayerIfCached(name);
+        final @Nullable OfflinePlayer player = Bukkit.getOfflinePlayerIfCached(name);
         if (player != null)
             return player;
         
@@ -167,7 +177,7 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
             return Bukkit.getOfflinePlayer(profile.uuid());
         }
         catch (final SQLException e) {
-            SMPCore.getInstance().getLogger().log(Level.SEVERE, "could not get cached profile for name " + name, e);
+            logger.log(Level.SEVERE, "could not get cached profile for name " + name, e);
             return null;
         }
     }
@@ -179,13 +189,17 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
      */
     public static @NotNull OfflinePlayer get(final @NotNull String name) {
         final OfflinePlayer player = Optional.<@NotNull OfflinePlayer>ofNullable(getOffline(name))
-                .orElseGet(() -> Bukkit.getOfflinePlayer(name));
+                .orElseGet(() -> {
+                    logger.fine("Miss for name " + name);
+                    return Bukkit.getOfflinePlayer(name);
+                });
 
         final @Nullable CachedProfile profile = CachedProfile.from(player);
         if (profile != null)
             return Bukkit.getOfflinePlayer(profile.uuid());
 
         // unlikely
+        logger.warning("Unlikely cache miss for name " + name);
         return Bukkit.getOfflinePlayer(name);
     }
 
@@ -193,7 +207,7 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
      * Deletes stale cached profiles.
      */
     public static void cleanUp() {
-        SMPCore.getInstance().getLogger().info("Cleaning up stale cached profiles...");
+        logger.fine("Cleaning up stale cached profiles...");
         try (final @NotNull PreparedStatement stmt = SMPCore.getInstance().conn.prepareStatement(
                 "DELETE FROM `cached_profiles` WHERE `fetched` < ?"
         )) {
@@ -201,7 +215,7 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
             stmt.execute();
         }
         catch (final SQLException e) {
-            SMPCore.getInstance().getLogger().log(Level.SEVERE, "could not clean up cached profiles", e);
+            logger.log(Level.SEVERE, "could not clean up cached profiles", e);
         }
     }
 
@@ -222,7 +236,7 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
             return get(player).name();
         }
         catch (IllegalStateException e) {
-            SMPCore.getInstance().getLogger().warning("Failed to fetch");
+            logger.log(Level.SEVERE, "Failed to fetch", e);
             return player.getUniqueId().toString();
         }
     }
@@ -243,9 +257,14 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
         );
 
         if (profile.stale()) {
+            logger.fine("Profile cache is stale for " + profile.uuid + " (" + Duration.between(profile.fetched.toInstant(), Instant.now()) + " old). Revalidation scheduled.");
             SMPCore.runAsync(() -> CachedProfile.fetch(profile.uuid()));
 
-            return profile.staleWhileRevalidate() ? profile : null;
+            if (profile.staleWhileRevalidate()) {
+                logger.fine("Serving stale cache for " + profile.uuid + " while revalidating.");
+                return profile;
+            }
+            return null;
         }
 
         return profile;
@@ -277,7 +296,7 @@ public record CachedProfile(@NotNull UUID uuid, @NotNull String name, @NotNull D
                 stmt.setTimestamp(3, new Timestamp(fetched().getTime()));
                 stmt.executeUpdate();
             } catch (final SQLException e) {
-                SMPCore.getInstance().getLogger().log(Level.SEVERE, "could not save profile for UUID " + uuid, e);
+                logger.log(Level.SEVERE, "could not save profile for UUID " + uuid, e);
             }
         });
 
