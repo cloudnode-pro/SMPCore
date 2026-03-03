@@ -13,8 +13,10 @@ import pro.cloudnode.smp.smpcore.SMPCore;
 import pro.cloudnode.smp.smpcore.api.REST;
 
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 public final class Members {
     private final @NotNull REST rest;
@@ -41,56 +43,59 @@ public final class Members {
         return obj;
     }
 
+    private static OptionalInt parseInt(final @Nullable String value) {
+        if (value == null)
+            return OptionalInt.empty();
+        try {
+            return OptionalInt.of(Integer.parseInt(value));
+        }
+        catch (final NumberFormatException ignored) {
+            return OptionalInt.empty();
+        }
+    }
+
+    private static int parseInt(final @Nullable String value, final int defaultValue) {
+        if (value == null)
+            return defaultValue;
+        try {
+            return Integer.parseInt(value);
+        }
+        catch (final NumberFormatException ignored) {
+            return defaultValue;
+        }
+    }
+
+    private static Predicate<Member> resolveFilter(final @Nullable String filter) {
+        if (filter == null)
+            return _ -> true;
+
+        return switch (filter) {
+            case "online" -> member ->
+                    !member.staff && member.player().isOnline();
+            case "offline" -> member ->
+                    member.staff || !member.player().isOnline();
+            case "banned" -> member ->
+                    member.player().isBanned();
+            default -> _ -> true;
+        };
+    }
+
     public void list(final @NotNull Context ctx) {
-        final @Nullable String filter = ctx.queryParam("filter");
-        final @Nullable String limitString = ctx.queryParam("limit");
-        final @Nullable String pageString = ctx.queryParam("page");
         final @Nullable String include = ctx.queryParam("include");
 
-        final @Nullable Integer limit;
-        if (limitString == null)
-            limit = null;
-        else {
-            @Nullable Integer t = null;
-            try {
-                t = Integer.parseInt(limitString);
-            }
-            catch (final @NotNull NumberFormatException ignored) {}
-            limit = t;
-        }
+        final var limit = parseInt(ctx.queryParam("limit"));
+        final var page = parseInt(ctx.queryParam("page"), 1);
 
-        final int page;
-        if (pageString == null)
-            page = 1;
-        else {
-            int t;
-            try {
-                t = Integer.parseInt(pageString);
-            }
-            catch (final @NotNull NumberFormatException ignored) {
-                t = 1;
-            }
-            page = t;
-        }
-
-        final @NotNull Set<@NotNull Member> members = limit == null ? Member.get() : Member.get(limit, page);
+        final @NotNull Set<@NotNull Member> members = limit.isEmpty() ? Member.get()
+                : Member.get(limit.getAsInt(), page);
         final @NotNull JsonArray arr = new JsonArray();
+
+        final var filterPredicate = resolveFilter(ctx.queryParam("filter"));
+
         for (final @NotNull Member member : members) {
-            if (filter != null)
-                switch (filter) {
-                    case "online" -> {
-                        if (member.staff || !member.player().isOnline())
-                                continue;
-                    }
-                    case "offline" -> {
-                        if (!member.staff && member.player().isOnline())
-                            continue;
-                    }
-                    case "banned" -> {
-                        if (!member.player().isBanned())
-                            continue;
-                    }
-                }
+            if (!filterPredicate.test(member))
+                continue;
+
             final @NotNull JsonObject m = map(member);
             if (include != null) {
                 switch (include) {
