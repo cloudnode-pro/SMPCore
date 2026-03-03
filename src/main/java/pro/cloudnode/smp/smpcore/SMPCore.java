@@ -9,6 +9,7 @@ import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pro.cloudnode.smp.smpcore.api.REST;
 import pro.cloudnode.smp.smpcore.command.AltsCommand;
 import pro.cloudnode.smp.smpcore.command.BanCommand;
 import pro.cloudnode.smp.smpcore.command.CitizensCommand;
@@ -112,7 +113,7 @@ public final class SMPCore extends JavaPlugin {
             getLogger().log(Level.SEVERE, "failed to close db connection", e);
         }
         db.close();
-        if (rest != null) rest.javalin.stop();
+        if (rest != null) rest.stop();
     }
 
     public void reload() {
@@ -121,7 +122,7 @@ public final class SMPCore extends JavaPlugin {
         if (messages != null) messages.reload();
         setupDatabase();
         Member.createStaffTeam();
-        if (rest != null) rest.javalin.stop();
+        if (rest != null) rest.stop();
         rest = new REST(config.apiPort());
     }
 
