@@ -78,15 +78,18 @@ public final class Members {
         for (final @NotNull Member member : members) {
             if (filter != null)
                 switch (filter) {
-                    case "online":
+                    case "online" -> {
                         if (member.staff || !member.player().isOnline())
-                            continue;
-                    case "offline":
+                                continue;
+                    }
+                    case "offline" -> {
                         if (!member.staff && member.player().isOnline())
                             continue;
-                    case "banned":
+                    }
+                    case "banned" -> {
                         if (!member.player().isBanned())
                             continue;
+                    }
                 }
             final @NotNull JsonObject m = map(member);
             if (include != null) {
