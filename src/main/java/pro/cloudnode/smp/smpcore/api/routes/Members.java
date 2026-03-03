@@ -8,7 +8,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pro.cloudnode.smp.smpcore.CachedProfile;
 import pro.cloudnode.smp.smpcore.Member;
-import pro.cloudnode.smp.smpcore.Nation;
 import pro.cloudnode.smp.smpcore.SMPCore;
 import pro.cloudnode.smp.smpcore.api.REST;
 
@@ -74,9 +73,18 @@ public final class Members {
         };
     }
 
-    public void list(final @NotNull Context ctx) {
-        final @Nullable String include = ctx.queryParam("include");
+    private static void applyInclude(@NotNull JsonObject json, @NotNull Member member, @Nullable String include) {
+        if (include == null)
+            return;
 
+        if ("nation".equals(include)) {
+            member.nation()
+                  .map(Nations::map)
+                  .ifPresentOrElse(nation -> json.add("nation", nation), () -> json.add("nation", null));
+        }
+    }
+
+    public void list(final @NotNull Context ctx) {
         final var limit = parseInt(ctx.queryParam("limit"));
         final var page = parseInt(ctx.queryParam("page"), 1);
 
@@ -86,22 +94,14 @@ public final class Members {
 
         final var filterPredicate = resolveFilter(ctx.queryParam("filter"));
 
+        final @Nullable String include = ctx.queryParam("include");
+
         for (final @NotNull Member member : members) {
             if (!filterPredicate.test(member))
                 continue;
 
             final @NotNull JsonObject m = map(member);
-            if (include != null) {
-                switch (include) {
-                    case "nation" -> {
-                        final @NotNull Optional<@NotNull Nation> optionalNation = member.nation();
-                        if (optionalNation.isEmpty())
-                            m.add("nation", null);
-                        else
-                            m.add("nation", Nations.map(optionalNation.get()));
-                    }
-                }
-            }
+            applyInclude(m, member, include);
             arr.add(m);
         }
         ctx.json(arr);
