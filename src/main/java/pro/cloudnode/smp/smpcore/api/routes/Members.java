@@ -66,17 +66,11 @@ public final class Members {
     }
 
     private static Predicate<Member> resolveFilter(final @Nullable String filter) {
-        if (filter == null)
-            return _ -> true;
-
         return switch (filter) {
-            case "online" -> member ->
-                    !member.staff && member.player().isOnline();
-            case "offline" -> member ->
-                    member.staff || !member.player().isOnline();
-            case "banned" -> member ->
-                    member.player().isBanned();
-            default -> _ -> true;
+            case "online" -> member -> !member.staff && member.player().isOnline();
+            case "offline" -> member -> member.staff || !member.player().isOnline();
+            case "banned" -> member -> member.player().isBanned();
+            case null, default -> _ -> true;
         };
     }
 
